@@ -8,7 +8,8 @@ app.use(bodyParser.urlencoded({
     extended: false,
     limit: "50mb", extended: true, parameterLimit: 50000 ,
 }));
-
+app.use('/public/audio/uploads',express.static(__dirname + '/public/audio/uploads'));
+app.use('/public/image/uploads',express.static(__dirname + '/public/image/uploads'));
 var storageImage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
         cb(null, './public/image/uploads/')
@@ -61,7 +62,7 @@ app.post('/api/uploadPhoto', function(req, res) {
 
 /** API for multi file image upload */
 app.post('/api/uploadPhotos', function(req, res) {
-    uploadSingleAudio(req,res,function(err){
+    uploadMultipleImage(req,res,function(err){
         if(err){
             console.log(err);
              res.json({status:-1,message:err});
