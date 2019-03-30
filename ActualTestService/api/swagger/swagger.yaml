@@ -3,11 +3,11 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-host: 103.114.107.16:8003
-# host: localhost:8003
+host: 139.59.190.205:8000
 
+# host: localhost:8000
 # basePath prefixes all resource paths 
-basePath: /api/learning
+basePath: /api
 # 
 securityDefinitions:
   auth0:
@@ -16,376 +16,758 @@ securityDefinitions:
     in: header
     description: "Authorization logged to application"
 schemes:
+  # tip: remove http to make production-grade
   - http
   - https
 # format of bodies a client can send (Content-Type)
 consumes:
   - application/json
 # format of the responses to the client (Accepts)
+tags:
+
+- name: "user"
+  description: "Everything about authorization your account role user"
+- name: "admin"
+  description: "Everything about authorization your account role admin"
+
+
 produces:
   - application/json
 paths:
-  /lessons:
-    x-swagger-router-controller: lesson
-    get:
-      description: Returns all lesson
-      operationId: getLessons
-      tags:
-        - lesson
-      security:
-        - auth0: []
-      parameters:
-        - in: query
-          name: limit
-          type: integer
-          description: limit value return
-        - in: query
-          name: page
-          type: integer
-          description: page get
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
+  /login:
+    x-swagger-router-controller: user
     post:
-      description: Add new lesson
-      operationId: addLesson
       tags:
-        - lesson
-      security:
-        - auth0: []
+        - user
+      description: user sign-in account to application and return access_token to authenticate
+      operationId: signin
       parameters:
         - in: body
           name: body
-          description: parameters with content, topic, category, title in new lesson .
+          description: parameters with email & password.
           schema:
-            $ref: '#/definitions/LessonReq'
+            $ref: '#/definitions/UserSignin'     # <----------
       responses:
         "200":
-          description: Success
+          description: Login Success
           schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /lessons/{lessonId}:
-    x-swagger-router-controller: lesson
-    get:
-      description: Returns lesson info with parameters lessonId
-      operationId: findOneLesson
-      tags:
-        - lesson
-      security:
-        - auth0: []
-      parameters:
-        - in: path
-          name: lessonId
-          type: string
-          required: true
-          description: id lesson
-      responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/MessageResp"
-        # responses may fall through to errors
-        default:
-          description: Error
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              accessToken: 'accessToken'
+              refreshToken: 'refreshToken'
+        "401":
+          description: Login Fail
           schema:
             $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Login Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /register:
+    x-swagger-router-controller: user
     post:
-      description: Update lesson info
-      operationId: updateLesson
+      description: user sign-up account to application and return id, and name if you sign-up success
+      operationId: signup
       tags:
-        - lesson
-      security:
-        - auth0: []
-      parameters:
-        - in: path
-          name: lessonId
-          type: string
-          required: true
-          description: id lesson
-        - in: body
-          name: body
-          description: parameters with content, topic, category, title in new lesson.
-          schema:
-            $ref: '#/definitions/LessonReq'
-      responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/MessageResp"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /topics:
-    x-swagger-router-controller: topic
-    get:
-      description: Returns all topic
-      operationId: getAllTopic
-      tags:
-        - topic
-      security:
-        - auth0: []
-      parameters:
-        - in: query
-          name: limit
-          type: integer
-          description: limit value return
-        - in: query
-          name: page
-          type: integer
-          description: page get
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    post:
-      description: Add new topic
-      operationId: addTopic
-      tags:
-        - topic
-      security:
-        - auth0: []
+        - user
       parameters:
         - in: body
           name: body
-          description: parameters with name, category.
+          description: parameters with email, password, name.
           schema:
-            $ref: '#/definitions/TopicReq'
+            $ref: '#/definitions/UserSignup'
       responses:
         "200":
-          description: Success
+          description: Sign-up Success
           schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              accessToken: 'accessToken'
+              refreshToken: 'refreshToken'
+        "401":
+          description: Sign-up Fail
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /topics/{topicId}:
+        default:
+          description: Sign-up Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"  
+  /facebook:
+    x-swagger-router-controller: user
+    post:
+      tags:
+        - user
+      description: user sign-in account to application by facebook
+      operationId: signinFB
+      parameters:
+        - in: body
+          name: body
+          description: parameters with access_token return when auth in client.
+          schema:
+            $ref: '#/definitions/UserSigninFB_GG'     # <----------
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              accessToken: 'accessToken'
+              refreshToken: 'refreshToken'
+        "401":
+          description: Login Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Login Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /google:
+    x-swagger-router-controller: user
+    post:
+      tags:
+        - user
+      description: user sign-in account to application by google
+      operationId: signinGoogle
+      parameters:
+        - in: body
+          name: body
+          description: parameters with access_token return when auth in client
+          schema:
+            $ref: '#/definitions/UserSigninFB_GG'     # <----------
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              accessToken: 'accessToken'
+              refreshToken: 'refreshToken'
+        "401":
+          description: Login Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Login Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /profile:
     # binds a127 app logic to a route
-    x-swagger-router-controller: topic
+    x-swagger-router-controller: user
     get:
-      description: Returns topic info with parameters topicId
-      operationId: getOneTopic
+      description: Returns 'Profile account' to the caller
+      # used as the method name of the controller
+      operationId: getInfo
       tags:
-        - topic
+        - profile
       security:
-        - auth0: []
-      parameters:
-        - in: path
-          name: topicId
-          type: string
-          required: true
-          description: id topic
+      - auth0: []
       responses:
         "200":
           description: Success
           schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    post:
-      description: Update topic info
-      operationId: updateTopic
-      tags:
-        - topic
-      security:
-        - auth0: []
-      parameters:
-        - in: path
-          name: topicId
-          type: string
-          required: true
-          description: id topic
-        - in: body
-          name: body
-          description: parameters with name, category.
-          schema:
-            $ref: '#/definitions/TopicReq'
-      responses:
-        "200":
-          description: Success
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              info:
+                _id: 'id'
+                email: 'email'
+                name: 'name'
+                avatar: 'avatar'
+                city: 'hcm'
+                sex: 1
+        "401":
+          description: Fail
           schema:
             # a pointer to a definition
-            $ref: "#/definitions/MessageResp"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
             $ref: "#/definitions/ErrorResponse"
-  /categories:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: category
-    get:
-      description: Returns all topic
-      operationId: getAll
-      tags:
-        - category
-      security:
-        - auth0: []
-      parameters:
-        - in: query
-          name: limit
-          type: integer
-          description: limit value return
-        - in: query
-          name: page
-          type: integer
-          description: page get
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    post:
-      description: Add new topic
-      operationId: add
-      tags:
-        - category
-      security:
-        - auth0: []
-      parameters:
-        - in: body
-          name: body
-          description: parameters with name
-          schema:
-            $ref: '#/definitions/CategoryReq'
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageResp"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /categories/{categoryId}:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: category
-    get:
-      description: Returns category info with parameters by categoryId
-      operationId: getOne
-      tags:
-        - category
-      security:
-        - auth0: []
-      parameters:
-        - in: path
-          name: categoryId
-          type: string
-          required: true
-          description: Id category
-      responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/MessageResp"
         # responses may fall through to errors
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
     post:
-      description: Update category info 
-      operationId: update
+      description: Returns 'Profile account' to the caller
+      # used as the method name of the controller
       tags:
-        - category
+        - profile
+      operationId: updateInfo
       security:
         - auth0: []
       parameters:
-        - in: path
-          name: categoryId
-          type: string
-          required: true
-          description: description of paramete
         - in: body
           name: body
-          description: parameters with name.
+          description: The user to update profile with name, sex, city, avatar URL.
           schema:
-            $ref: '#/definitions/CategoryReq'
+            $ref: '#/definitions/UserProfile'     # <----------
       responses:
         "200":
           description: Success
           schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:
+            data:
+              status: 200
+              message: 'Update successfull'
+        "401":
+          description: Fail
+          schema:
             # a pointer to a definition
-            $ref: "#/definitions/MessageResp"
+            $ref: "#/definitions/ErrorResponse"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"    
+  /user/me:
+    x-swagger-router-controller: user
+    get:
+      description: Returns 'Profile account' to the caller
+      # used as the method name of the controller
+      operationId: userMe
+      tags:
+        - profile
+      security:
+      - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              info:
+                email: 'email'
+        "401":
+          description: Fail
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/ErrorResponse"
         # responses may fall through to errors
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /swagger:
-    x-swagger-pipe: swagger_raw
-# complex objects have schema definitions
+  /password:
+    x-swagger-router-controller: user
+    post:
+      tags:
+        - user
+        - admin
+      description: The user to change password account
+      operationId: changePassword
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with oldPassword, newPassword and reNewPassword.
+          schema:
+            $ref: '#/definitions/ChangePass'     # <----------
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:
+            data:
+              status: 200
+              message: 'Update successfull'
+        "401":
+          description: Login Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Login Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"            
+  /admin/login:
+    x-swagger-router-controller: admin
+    post:
+      tags:
+        - admin
+      description: admin sign-in account to application and return access_token to authenticate
+      operationId: adminSignin
+      parameters:
+        - in: body
+          name: body
+          description: parameters with email & password.
+          schema:
+            $ref: '#/definitions/UserSignin'     # <----------
+      responses:
+        "200":
+          description: Login Success
+          schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              accessToken: 'accessToken'
+              refreshToken: 'refreshToken'
+        "401":
+          description: Login Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Login Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /blankQuestion:
+    x-swagger-router-controller: questions_reading_test
+    post:
+      tags:
+        - questionReadingTest
+      description: admin has logged in, and use import questions of part 5 in the exam. We have received the result include id, content_question, pos, part, level, position blank.
+      operationId: importBlankQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters is json object such as {
+            question_content, answer, right_answer, level, part} .
+          schema:
+            $ref: '#/definitions/ImportBlankQuestion'     # <----------
+      responses:
+        "200":
+          description: Return a question object has imported in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+                description: The user ID.
+              question_content:
+                type: string
+              pos:
+                type: integer
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              question_content: This is new app for practise toeic.
+              pos: 2
+              answers:
+                  optA: a
+                  optB: an
+                  optC: one
+                  optD: two
+              level: 1
+              part: 5
+              _id: 5c9c86aef41bf82ed47ac679
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /admim/register:
+    x-swagger-router-controller: admin
+    post:
+      description: admin sign-up account to application and return access_token to authenticate
+      operationId: adminSignup
+      tags:
+        - admin
+      parameters:
+        - in: body
+          name: body
+          description: parameters with email, password, name.
+          schema:
+            $ref: '#/definitions/UserSignup'
+      responses:
+        "200":
+          description: Sign-up Success
+          schema:
+            $ref: "#/definitions/MessageReturn"
+          examples:    # Child of media type
+            data:   # Example 1
+              accessToken: 'accessToken'
+              refreshToken: 'refreshToken'
+        "401":
+          description: Sign-up Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Sign-up Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /blankParagraphandQuestion:
+    x-swagger-router-controller: questions_reading_test
+    post:
+      tags:
+        - questionReadingTest
+      description: admin has logged in, and use import paragraph has blank and array options in the exam. We have received the result include id, content_question, pos, part, level, position blank.
+      operationId: importParagraphQuestionPart6
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters is json object include blank paragraph, list options, list right answer, level of paragraph, and part.
+          schema:
+            $ref: '#/definitions/ImportParagraphQuestionPart6'     # <----------
+      responses:
+        "200":
+          description: Return a paragraph object and list options have imported in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+                description: The record ID.
+              blank_paragraph:
+                type: string
+              list_position:
+                type: array
+                items:
+                  type: integer
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              blank_paragraph: This is new app for practise toeic.
+              list_position: [7, 16]
+              level: 1
+              part: 6
+              _id: 5c9c86aef41bf82ed47ac679
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /paragraphPart7:
+    x-swagger-router-controller: questions_reading_test
+    post:
+      tags:
+        - questionReadingTest
+      description: admin has logged in, and use import paragraphs in part 7.
+      operationId: importParagraphPart7
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters is json object include paragraphs we need to import.
+          schema:
+            $ref: '#/definitions/ImportParagraphPart7'     # <----------
+      responses:
+        "200":
+          description: Return a id record pf paragraphs have imported in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+                description: The record ID.
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              level: 1
+              part: 7
+              _id: 5c9c86aef41bf82ed47ac679
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /questionPart7:
+    x-swagger-router-controller: questions_reading_test
+    post:
+      tags:
+        - questionReadingTest
+      description: admin has logged in, and use import question of the paragraph have imported in part 7.
+      operationId: importQuestionsPart7
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters is json object include question, options, right answer, level, part, id_paragraph and explain right answer we need to import.
+          schema:
+            $ref: '#/definitions/ImportQuestionPart7'     # <----------
+      responses:
+        "200":
+          description: Return a id record question have imported in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+                description: The record ID.
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              level: 1
+              part: 7
+              _id: 5c9c86aef41bf82ed47ac679
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
-  LessonReq:
+  UserSignin:
+    type: object
     required:
-      - title
-      - content
-      - topicId
-      - categoryId
+      - email
+      - password
     properties:
-      content:
+      email:
         type: string
-      topicId:
+      password:
         type: string
-      categoryId:
+  UserSigninFB_GG:
+    type: object
+    required:
+      - access_token
+    properties:
+      access_token:
         type: string
-      title:
+  UserSignup:
+    type: object
+    required:
+      - email
+      - password
+      - name
+    properties:
+      email:
         type: string
-  TopicReq:
+      password:
+        type: string
+      name: 
+        type: string
+  UserProfile:
+    type: object
     required:
       - name
-      - categoryId
+      - sex
+      - city
     properties:
       name:
         type: string
-      categoryId:
+      sex: 
+        type: number
+        minimum: 0
+      city: 
         type: string
-  CategoryReq:
-    required:
-      - name
-    properties:
-      name:
+      avatar: 
         type: string
-  MessageResp:
+  MessageReturn:
     type: object
     required: 
-      - success
+      - data
     properties:
-      success:
-        type: boolean
-      message:
-        type: string
-      value:
+      data:
         type: object
   ErrorResponse:
     required:
-      - message
+      - messageError
     properties:
-      message:
+      messageError:
         type: string
+  ChangePass:
+    type: object
+    required:
+      - oldPassword
+      - newPassword
+      - reNewPassword
+    properties:
+      oldPassword:
+        type: string
+      newPassword:
+        type: string
+      reNewPassword: 
+        type: string
+  ImportBlankQuestion:
+    type: object
+    required:
+      - question_content
+      - answers
+      - right_answer
+      - explain
+      - level
+      - part
+    properties:
+      question_content:
+        type: string
+      answers:
+        type: object
+        properties:
+          optA:
+            type: string
+          optB:
+            type: string
+          optC:
+            type: string
+          optD:
+            type: string
+      right_answer: 
+        type: string
+      explain:
+        type: string      
+      level: 
+        type: integer
+      part: 
+        type: integer
+    example: #sample object
+      question_content: This is __ new app for practise toeic.
+      answers:
+          optA: a
+          optB: an
+          optC: one
+          optD: two
+      right_answer: optA
+      explain: We need a article in front of Noun
+      level: 1
+      part: 5
+  ImportParagraphQuestionPart6:
+    type: object
+    required:
+      - blank_paragraph
+      - list_options
+      - list_right_answers
+      - list_explains
+      - level
+      - part
+    properties:
+      blank_paragraph:
+        type: string
+      list_options:
+        type: array
+        items:
+          type: object
+          properties:
+            optA:
+              type: string
+            optB:
+              type: string
+            optC:
+              type: string
+            optD:
+              type: string
+      list_right_answers:
+        type: array
+        items:
+          type: string
+      list_explains:
+        type: array
+        items:
+          type: string
+      level:
+        type: integer
+      part:
+        type: integer
+    example: #sample object
+      blank_paragraph: This is __ new app __ practise toeic.
+      list_options: [
+        { optA: a, optB: an, optC: one, optD: two},
+        { optA: to, optB: for, optC: the, optD: have},
+      ]
+      list_right_answers: [
+        "optA",
+        "optB",
+      ]
+      list_explains: [
+        "We need a article in front of Noun",
+        "We need a article in front of Noun",
+      ]
+      level: 1
+      part: 6
+  ImportParagraphPart7:
+    type: object
+    required:
+      - paragraphs
+      - level
+      - part
+    properties:
+      paragraphs:
+        type: array
+        items:
+          type: string
+      level:
+        type: integer
+      part:
+        type: integer
+    example: #sample object
+      paragraphs: [
+        "More than 50,000 electronics retailers and distributors are expected at the McCormick Convention Center in Chicago starting next Saturday. Some 1,300 manufacturers from more than 35 countries will exhibit their latest high-technology equipment, including industrial equipment, office machines, and household appliances. 
+        The new products won't appear on retailers' shelves until next fall, but show attendees will be able to purchase them during the show at special prices.
+        Highlights of the show include the following:
+        1. Demonstrations of robots designed for household use. Watch robots perform everyday household chores. Each day, models from a different group of manufacturers will be shown. Hall of Industry, 3:00-5.00 P.M. daily.",
+      ]
+      level: 1
+      part: 7
+  ImportQuestionPart7:
+    type: object
+    required:
+      - question_content
+      - answers
+      - right_answer
+      - level
+      - part
+      - id_paragraph
+    properties:
+      question_content:
+        type: string
+      answers:
+        type: object
+        properties:
+          optA:
+            type: string
+          optB:
+            type: string
+          optC:
+            type: string
+          optD:
+            type: string
+      right_answer: 
+        type: string
+      explain:
+        type: string      
+      level: 
+        type: integer
+      part: 
+        type: integer
+      id_paragraph:
+        type: string
+    example: #sample object
+      question_content: What is the main topic of the press release ?
+      answers:
+          optA: The McCormick Convention Center
+          optB: Chicago's convention centers 
+          optC: Electronics retailers
+          optD: The Summer Consumer Electronics Show
+      right_answer: optA
+      level: 1
+      part: 7
+      id_paragraph: 5c9c86aef41bf82ed47ac679
