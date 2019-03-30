@@ -1,0 +1,552 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Toeic
+# during dev, should point to your local machine
+#host: 103.114.107.16:8003
+host: localhost:8003
+
+# basePath prefixes all resource paths 
+basePath: /api/learning
+# 
+securityDefinitions:
+  auth0:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "Authorization logged to application"
+schemes:
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /lessons:
+    x-swagger-router-controller: lesson
+    get:
+      description: Returns all lesson
+      operationId: getLessons
+      tags:
+        - lesson
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit value return
+        - in: query
+          name: page
+          type: integer
+          description: page get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              lessons: 
+                - _id: '5c9dc0de515d0a30cb9c7ddd'
+                  content: 'V_ing'
+                  categoryId: '5c9dc079515d0a30cb9c7ddb'
+                  topicId: '5c9dc0ae515d0a30cb9c7ddc'
+                  title: 'Thì hiện tại tiếp diễn'
+                - _id: '5c9dc0de515d0a30cb9c7ddd'
+                  content: 'V_ing'
+                  categoryId: '5c9dc079515d0a30cb9c7ddb'
+                  topicId: '5c9dc0ae515d0a30cb9c7ddc'
+                  title: 'Thì hiện tại tiếp diễn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Add new lesson
+      operationId: addLesson
+      tags:
+        - lesson
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with content, topic, category, title in new lesson .
+          schema:
+            $ref: '#/definitions/LessonReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /lessons/{lessonId}:
+    x-swagger-router-controller: lesson
+    get:
+      description: Returns lesson info with parameters lessonId
+      operationId: findOneLesson
+      tags:
+        - lesson
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: lessonId
+          type: string
+          required: true
+          description: id lesson
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              _id: '5c9dc0de515d0a30cb9c7ddd'
+              content: 'V_ing'
+              categoryId: '5c9dc079515d0a30cb9c7ddb'
+              topicId: '5c9dc0ae515d0a30cb9c7ddc'
+              title: 'Thì hiện tại tiếp diễn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update lesson info
+      operationId: updateLesson
+      tags:
+        - lesson
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: lessonId
+          type: string
+          required: true
+          description: id lesson
+        - in: body
+          name: body
+          description: parameters with content, topic, category, title in new lesson.
+          schema:
+            $ref: '#/definitions/LessonReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              lessons: 
+                _id: '5c9dc0de515d0a30cb9c7ddd'
+                content: 'V_ing'
+                categoryId: '5c9dc079515d0a30cb9c7ddb'
+                topicId: '5c9dc0ae515d0a30cb9c7ddc'
+                title: 'Thì hiện tại tiếp diễn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'        
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /topics:
+    x-swagger-router-controller: topic
+    get:
+      description: Returns all topic
+      operationId: getAllTopic
+      tags:
+        - topic
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit value return
+        - in: query
+          name: page
+          type: integer
+          description: page get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              topics: 
+                - _id: '5c9dc0ae515d0a30cb9c7ddc'
+                  categoryId: '5c9dc079515d0a30cb9c7ddb'
+                  name: 'Thì trong tiếng anh'
+                  lessons:
+                    - _id: '5c9dc0de515d0a30cb9c7ddd'
+                      title: 'Thì hiện tại tiếp diễn'
+                    - _id: '5c9de535b998253b800b4d2d'
+                      title: 'Thì hiện tại đơn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Add new topic
+      operationId: addTopic
+      tags:
+        - topic
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with name, category.
+          schema:
+            $ref: '#/definitions/TopicReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /topics/{topicId}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: topic
+    get:
+      description: Returns topic info with parameters topicId
+      operationId: getOneTopic
+      tags:
+        - topic
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: topicId
+          type: string
+          required: true
+          description: id topic
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              _id: '5c9dc0ae515d0a30cb9c7ddc'
+              categoryId: '5c9dc079515d0a30cb9c7ddb'
+              name: 'Thì trong tiếng anh'
+              lessons:
+                - _id: '5c9dc0de515d0a30cb9c7ddd'
+                  title: 'Thì hiện tại tiếp diễn'
+                - _id: '5c9de535b998253b800b4d2d'
+                  title: 'Thì hiện tại đơn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update topic info
+      operationId: updateTopic
+      tags:
+        - topic
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: topicId
+          type: string
+          required: true
+          description: id topic
+        - in: body
+          name: body
+          description: parameters with name, category.
+          schema:
+            $ref: '#/definitions/TopicReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /categories:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: category
+    get:
+      description: Returns all topic
+      operationId: getAll
+      tags:
+        - category
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit value return
+        - in: query
+          name: page
+          type: integer
+          description: page get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              categories: 
+                - _id: '5c9dc079515d0a30cb9c7ddb'
+                  name: 'Ngữ Pháp'
+                  topics:
+                    - _id: '5c9dc0ae515d0a30cb9c7ddc'
+                      name: 'Thì trong tiếng anh 1'
+                      categoryId: '5c9dc079515d0a30cb9c7ddb'
+                      lessons:
+                        - _id: '5c9dc0de515d0a30cb9c7ddd'
+                          title: 'Thì hiện tại tiếp diễn' 
+                        - _id: '5c9dc0de515d0a30cb9c7ddd'
+                          title: 'Thì hiện tại tiếp diễn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Add new topic
+      operationId: add
+      tags:
+        - category
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with name
+          schema:
+            $ref: '#/definitions/CategoryReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /categories/{categoryId}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: category
+    get:
+      description: Returns category info with parameters by categoryId
+      operationId: getOne
+      tags:
+        - category
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: categoryId
+          type: string
+          required: true
+          description: Id category
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+          examples:
+            success: true
+            value: 
+              _id: '5c9dc079515d0a30cb9c7ddb'
+              name: 'Ngữ Pháp'
+              topics:
+                - _id: '5c9dc0ae515d0a30cb9c7ddc'
+                  name: 'Thì trong tiếng anh 1'
+                  categoryId: '5c9dc079515d0a30cb9c7ddb'
+                  lessons:
+                    - _id: '5c9dc0de515d0a30cb9c7ddd'
+                      title: 'Thì hiện tại tiếp diễn' 
+                    - _id: '5c9dc0de515d0a30cb9c7ddd'
+                      title: 'Thì hiện tại tiếp diễn'
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update category info 
+      operationId: update
+      tags:
+        - category
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: categoryId
+          type: string
+          required: true
+          description: description of paramete
+        - in: body
+          name: body
+          description: parameters with name.
+          schema:
+            $ref: '#/definitions/CategoryReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        "400":
+          description: Failed
+          schema:
+              $ref: "#/definitions/ErrorResponse"
+          examples:
+            success: false
+            message: 'error message'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+definitions:
+  LessonReq:
+    required:
+      - title
+      - content
+      - topicId
+      - categoryId
+    properties:
+      content:
+        type: string
+      topicId:
+        type: string
+      categoryId:
+        type: string
+      title:
+        type: string
+  TopicReq:
+    required:
+      - name
+      - categoryId
+    properties:
+      name:
+        type: string
+      categoryId:
+        type: string
+  CategoryReq:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+  MessageResp:
+    type: object
+    required: 
+      - success
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+      value:
+        type: object
+  ErrorResponse:
+    required:
+      - message
+      - success
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
