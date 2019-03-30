@@ -3,8 +3,8 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-#host: 103.114.107.16:8003
-host: localhost:8003
+host: 103.114.107.16:8003
+# host: localhost:8003
 
 # basePath prefixes all resource paths 
 basePath: /api/learning
@@ -48,27 +48,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              lessons: 
-                - _id: '5c9dc0de515d0a30cb9c7ddd'
-                  content: 'V_ing'
-                  categoryId: '5c9dc079515d0a30cb9c7ddb'
-                  topicId: '5c9dc0ae515d0a30cb9c7ddc'
-                  title: 'Thì hiện tại tiếp diễn'
-                - _id: '5c9dc0de515d0a30cb9c7ddd'
-                  content: 'V_ing'
-                  categoryId: '5c9dc079515d0a30cb9c7ddb'
-                  topicId: '5c9dc0ae515d0a30cb9c7ddc'
-                  title: 'Thì hiện tại tiếp diễn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -91,13 +70,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -121,22 +93,9 @@ paths:
         "200":
           description: Success
           schema:
+            # a pointer to a definition
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              _id: '5c9dc0de515d0a30cb9c7ddd'
-              content: 'V_ing'
-              categoryId: '5c9dc079515d0a30cb9c7ddb'
-              topicId: '5c9dc0ae515d0a30cb9c7ddc'
-              title: 'Thì hiện tại tiếp diễn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
+        # responses may fall through to errors
         default:
           description: Error
           schema:
@@ -165,22 +124,7 @@ paths:
           schema:
             # a pointer to a definition
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              lessons: 
-                _id: '5c9dc0de515d0a30cb9c7ddd'
-                content: 'V_ing'
-                categoryId: '5c9dc079515d0a30cb9c7ddb'
-                topicId: '5c9dc0ae515d0a30cb9c7ddc'
-                title: 'Thì hiện tại tiếp diễn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'        
+        # responses may fall through to errors
         default:
           description: Error
           schema:
@@ -208,25 +152,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              topics: 
-                - _id: '5c9dc0ae515d0a30cb9c7ddc'
-                  categoryId: '5c9dc079515d0a30cb9c7ddb'
-                  name: 'Thì trong tiếng anh'
-                  lessons:
-                    - _id: '5c9dc0de515d0a30cb9c7ddd'
-                      title: 'Thì hiện tại tiếp diễn'
-                    - _id: '5c9de535b998253b800b4d2d'
-                      title: 'Thì hiện tại đơn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -249,13 +174,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -281,24 +199,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              _id: '5c9dc0ae515d0a30cb9c7ddc'
-              categoryId: '5c9dc079515d0a30cb9c7ddb'
-              name: 'Thì trong tiếng anh'
-              lessons:
-                - _id: '5c9dc0de515d0a30cb9c7ddd'
-                  title: 'Thì hiện tại tiếp diễn'
-                - _id: '5c9de535b998253b800b4d2d'
-                  title: 'Thì hiện tại đơn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -325,14 +225,9 @@ paths:
         "200":
           description: Success
           schema:
+            # a pointer to a definition
             $ref: "#/definitions/MessageResp"
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
+        # responses may fall through to errors
         default:
           description: Error
           schema:
@@ -361,28 +256,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              categories: 
-                - _id: '5c9dc079515d0a30cb9c7ddb'
-                  name: 'Ngữ Pháp'
-                  topics:
-                    - _id: '5c9dc0ae515d0a30cb9c7ddc'
-                      name: 'Thì trong tiếng anh 1'
-                      categoryId: '5c9dc079515d0a30cb9c7ddb'
-                      lessons:
-                        - _id: '5c9dc0de515d0a30cb9c7ddd'
-                          title: 'Thì hiện tại tiếp diễn' 
-                        - _id: '5c9dc0de515d0a30cb9c7ddd'
-                          title: 'Thì hiện tại tiếp diễn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -405,13 +278,6 @@ paths:
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
         default:
           description: Error
           schema:
@@ -438,27 +304,7 @@ paths:
           schema:
             # a pointer to a definition
             $ref: "#/definitions/MessageResp"
-          examples:
-            success: true
-            value: 
-              _id: '5c9dc079515d0a30cb9c7ddb'
-              name: 'Ngữ Pháp'
-              topics:
-                - _id: '5c9dc0ae515d0a30cb9c7ddc'
-                  name: 'Thì trong tiếng anh 1'
-                  categoryId: '5c9dc079515d0a30cb9c7ddb'
-                  lessons:
-                    - _id: '5c9dc0de515d0a30cb9c7ddd'
-                      title: 'Thì hiện tại tiếp diễn' 
-                    - _id: '5c9dc0de515d0a30cb9c7ddd'
-                      title: 'Thì hiện tại tiếp diễn'
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
+        # responses may fall through to errors
         default:
           description: Error
           schema:
@@ -485,20 +331,16 @@ paths:
         "200":
           description: Success
           schema:
+            # a pointer to a definition
             $ref: "#/definitions/MessageResp"
-        "400":
-          description: Failed
-          schema:
-              $ref: "#/definitions/ErrorResponse"
-          examples:
-            success: false
-            message: 'error message'
+        # responses may fall through to errors
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
 definitions:
   LessonReq:
     required:
@@ -544,9 +386,6 @@ definitions:
   ErrorResponse:
     required:
       - message
-      - success
     properties:
-      success:
-        type: boolean
       message:
         type: string
