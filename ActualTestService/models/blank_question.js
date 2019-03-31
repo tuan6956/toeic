@@ -31,7 +31,24 @@ const importBlankQuestion = (data) => {
     return d.promise;
 }
 
+const getAll = (page = 0, limit = 5) => {
+    const d = q.defer();
+
+    dbController.getAll(collections.blank_question, page, limit)
+                .then(result => {
+                    console.log(result);
+                    d.resolve(result);
+                })
+                .catch(err => {
+                    d.reject({
+                        status: 500,
+                        message: "Can not get all question into database"
+                    });
+                })
+    return d.promise;
+}
 
 module.exports = {
-    importBlankQuestion
+    importBlankQuestion,
+    getAll
 }

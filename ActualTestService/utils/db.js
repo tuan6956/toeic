@@ -14,3 +14,8 @@ let connectDB = (callback) => {
 module.exports = {
     connectDB
 }
+
+
+// export class MongoConnector {
+    
+// }

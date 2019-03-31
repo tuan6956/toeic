@@ -134,9 +134,25 @@ function importQuestionsPart7(req, res){
   });
 }
 
+function getAllQuestionPart5(req, res){
+  console.log(req.body)
+  let page = _.get(req.body, 'page');
+  let limit = _.get(req.body, 'limit')
+
+  blankQuestionModel.getAll(page, limit)
+    .then(result => {
+      handleSuccess(res, 200, result);
+    })
+    .catch(error => {
+      handleError(res, error.status, error.message);
+    });
+
+}
+
 module.exports = {
   importBlankQuestion: importBlankQuestion,
   importParagraphQuestionPart6: importParagraphQuestionPart6,
   importParagraphPart7: importParagraphPart7,
   importQuestionsPart7: importQuestionsPart7,
+  getAllQuestionPart5: getAllQuestionPart5
   };

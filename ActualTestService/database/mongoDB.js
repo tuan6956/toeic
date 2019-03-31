@@ -2,7 +2,7 @@ const { connectDB } = require('../utils/db');
 const nameDB = require('../configs/db').name;
 const q = require('q');
 
-const findRecord = (collection, query) => {
+const findRecord = (collection, find_data) => {
     const d = q.defer();
     connectDB((error, client) => {
         if (error) throw error;
@@ -18,7 +18,7 @@ const findRecord = (collection, query) => {
     return d.promise;
 };
 
-const insertRecord = (collection, query) => {
+const insertRecord = (collection, data) => {
     const d = q.defer();
     connectDB((error, client) => {
         if (error) throw error;
@@ -68,9 +68,28 @@ const deleteRecord = (collection, query) => {
     return d.promise;
 }
 
+const getAll = (collection, page, limit) => {
+    const d = q.defer();
+    connectDB((error, client) => {
+        if (error) throw error;
+        const db = client.db(nameDB);
+        db.collection(collection)
+            .find()
+            .sort({time:-1})
+            .skip(+page).limit(+limit)
+            .toArray((error, result) => {
+                error ? d.reject(error) : d.resolve(result);
+                client.close();
+            });
+    });
+
+    return d.promise;
+}
+
 module.exports = {
     find: findRecord,
     insert: insertRecord,
     update: updateRecord,
-    delete: deleteRecord
+    delete: deleteRecord,
+    getAll: getAll
 }

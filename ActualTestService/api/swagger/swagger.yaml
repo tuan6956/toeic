@@ -3,9 +3,9 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-host: 139.59.190.205:8000
+# host: 139.59.190.205:8000
 
-# host: localhost:8000
+host: localhost:8000
 # basePath prefixes all resource paths 
 basePath: /api
 # 
@@ -24,296 +24,13 @@ consumes:
   - application/json
 # format of the responses to the client (Accepts)
 tags:
-
-- name: "user"
-  description: "Everything about authorization your account role user"
-- name: "admin"
-  description: "Everything about authorization your account role admin"
+- name: "questionReadingTest"
+  description: "Everything about question reading test have managed by admin"
 
 
 produces:
   - application/json
 paths:
-  /login:
-    x-swagger-router-controller: user
-    post:
-      tags:
-        - user
-      description: user sign-in account to application and return access_token to authenticate
-      operationId: signin
-      parameters:
-        - in: body
-          name: body
-          description: parameters with email & password.
-          schema:
-            $ref: '#/definitions/UserSignin'     # <----------
-      responses:
-        "200":
-          description: Login Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              accessToken: 'accessToken'
-              refreshToken: 'refreshToken'
-        "401":
-          description: Login Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Login Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /register:
-    x-swagger-router-controller: user
-    post:
-      description: user sign-up account to application and return id, and name if you sign-up success
-      operationId: signup
-      tags:
-        - user
-      parameters:
-        - in: body
-          name: body
-          description: parameters with email, password, name.
-          schema:
-            $ref: '#/definitions/UserSignup'
-      responses:
-        "200":
-          description: Sign-up Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              accessToken: 'accessToken'
-              refreshToken: 'refreshToken'
-        "401":
-          description: Sign-up Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Sign-up Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"  
-  /facebook:
-    x-swagger-router-controller: user
-    post:
-      tags:
-        - user
-      description: user sign-in account to application by facebook
-      operationId: signinFB
-      parameters:
-        - in: body
-          name: body
-          description: parameters with access_token return when auth in client.
-          schema:
-            $ref: '#/definitions/UserSigninFB_GG'     # <----------
-      responses:
-        "200":
-          description: Login Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              accessToken: 'accessToken'
-              refreshToken: 'refreshToken'
-        "401":
-          description: Login Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Login Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /google:
-    x-swagger-router-controller: user
-    post:
-      tags:
-        - user
-      description: user sign-in account to application by google
-      operationId: signinGoogle
-      parameters:
-        - in: body
-          name: body
-          description: parameters with access_token return when auth in client
-          schema:
-            $ref: '#/definitions/UserSigninFB_GG'     # <----------
-      responses:
-        "200":
-          description: Login Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              accessToken: 'accessToken'
-              refreshToken: 'refreshToken'
-        "401":
-          description: Login Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Login Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /profile:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: user
-    get:
-      description: Returns 'Profile account' to the caller
-      # used as the method name of the controller
-      operationId: getInfo
-      tags:
-        - profile
-      security:
-      - auth0: []
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              info:
-                _id: 'id'
-                email: 'email'
-                name: 'name'
-                avatar: 'avatar'
-                city: 'hcm'
-                sex: 1
-        "401":
-          description: Fail
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/ErrorResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-    post:
-      description: Returns 'Profile account' to the caller
-      # used as the method name of the controller
-      tags:
-        - profile
-      operationId: updateInfo
-      security:
-        - auth0: []
-      parameters:
-        - in: body
-          name: body
-          description: The user to update profile with name, sex, city, avatar URL.
-          schema:
-            $ref: '#/definitions/UserProfile'     # <----------
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:
-            data:
-              status: 200
-              message: 'Update successfull'
-        "401":
-          description: Fail
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/ErrorResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"    
-  /user/me:
-    x-swagger-router-controller: user
-    get:
-      description: Returns 'Profile account' to the caller
-      # used as the method name of the controller
-      operationId: userMe
-      tags:
-        - profile
-      security:
-      - auth0: []
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              info:
-                email: 'email'
-        "401":
-          description: Fail
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/ErrorResponse"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-  /password:
-    x-swagger-router-controller: user
-    post:
-      tags:
-        - user
-        - admin
-      description: The user to change password account
-      operationId: changePassword
-      security:
-        - auth0: []
-      parameters:
-        - in: body
-          name: body
-          description: parameters with oldPassword, newPassword and reNewPassword.
-          schema:
-            $ref: '#/definitions/ChangePass'     # <----------
-      responses:
-        "200":
-          description: Login Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:
-            data:
-              status: 200
-              message: 'Update successfull'
-        "401":
-          description: Login Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Login Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"            
-  /admin/login:
-    x-swagger-router-controller: admin
-    post:
-      tags:
-        - admin
-      description: admin sign-in account to application and return access_token to authenticate
-      operationId: adminSignin
-      parameters:
-        - in: body
-          name: body
-          description: parameters with email & password.
-          schema:
-            $ref: '#/definitions/UserSignin'     # <----------
-      responses:
-        "200":
-          description: Login Success
-          schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              accessToken: 'accessToken'
-              refreshToken: 'refreshToken'
-        "401":
-          description: Login Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-        default:
-          description: Login Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
   /blankQuestion:
     x-swagger-router-controller: questions_reading_test
     post:
@@ -377,34 +94,29 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /admim/register:
-    x-swagger-router-controller: admin
-    post:
-      description: admin sign-up account to application and return access_token to authenticate
-      operationId: adminSignup
+    get:
+      description: Returns all question
+      operationId: getAllQuestionPart5
       tags:
-        - admin
+        - questionReadingTest
+      security:
+        - auth0: []
       parameters:
-        - in: body
-          name: body
-          description: parameters with email, password, name.
-          schema:
-            $ref: '#/definitions/UserSignup'
+        - in: query
+          name: limit
+          type: integer
+          description: limit record return
+        - in: query
+          name: page
+          type: integer
+          description: page you need to get
       responses:
         "200":
-          description: Sign-up Success
+          description: Success
           schema:
-            $ref: "#/definitions/MessageReturn"
-          examples:    # Child of media type
-            data:   # Example 1
-              accessToken: 'accessToken'
-              refreshToken: 'refreshToken'
-        "401":
-          description: Sign-up Fail
-          schema:
-            $ref: "#/definitions/ErrorResponse"
+            $ref: "#/definitions/MessageResp"
         default:
-          description: Sign-up Error
+          description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
   /blankParagraphandQuestion:
@@ -536,77 +248,11 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
 definitions:
-  UserSignin:
-    type: object
-    required:
-      - email
-      - password
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-  UserSigninFB_GG:
-    type: object
-    required:
-      - access_token
-    properties:
-      access_token:
-        type: string
-  UserSignup:
-    type: object
-    required:
-      - email
-      - password
-      - name
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-      name: 
-        type: string
-  UserProfile:
-    type: object
-    required:
-      - name
-      - sex
-      - city
-    properties:
-      name:
-        type: string
-      sex: 
-        type: number
-        minimum: 0
-      city: 
-        type: string
-      avatar: 
-        type: string
-  MessageReturn:
-    type: object
-    required: 
-      - data
-    properties:
-      data:
-        type: object
   ErrorResponse:
     required:
       - messageError
     properties:
       messageError:
-        type: string
-  ChangePass:
-    type: object
-    required:
-      - oldPassword
-      - newPassword
-      - reNewPassword
-    properties:
-      oldPassword:
-        type: string
-      newPassword:
-        type: string
-      reNewPassword: 
         type: string
   ImportBlankQuestion:
     type: object
@@ -771,3 +417,14 @@ definitions:
       level: 1
       part: 7
       id_paragraph: 5c9c86aef41bf82ed47ac679
+  MessageResp:
+    type: object
+    required: 
+      - success
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+      value:
+        type: object
