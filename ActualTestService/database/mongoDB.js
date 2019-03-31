@@ -1,4 +1,4 @@
-const { connectDB } = require('../utils/db');
+const { connectDB } = require('../middlewares/db');
 const nameDB = require('../configs/db').name;
 const q = require('q');
 

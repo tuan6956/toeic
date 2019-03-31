@@ -32,7 +32,7 @@ produces:
   - application/json
 paths:
   /blankQuestion:
-    x-swagger-router-controller: questions_reading_test
+    x-swagger-router-controller: blank_question_part5
     post:
       tags:
         - questionReadingTest
@@ -96,7 +96,7 @@ paths:
             $ref: "#/definitions/ErrorResponse"
     get:
       description: Returns all question
-      operationId: getAllQuestionPart5
+      operationId: getAll
       tags:
         - questionReadingTest
       security:
@@ -168,12 +168,12 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /paragraphPart7:
-    x-swagger-router-controller: questions_reading_test
+    x-swagger-router-controller: paragraph_part7
     post:
       tags:
         - questionReadingTest
       description: admin has logged in, and use import paragraphs in part 7.
-      operationId: importParagraphPart7
+      operationId: importParagraph
       security:
         - auth0: []
       parameters:
@@ -208,12 +208,12 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionPart7:
-    x-swagger-router-controller: questions_reading_test
+    x-swagger-router-controller: question_part7
     post:
       tags:
         - questionReadingTest
       description: admin has logged in, and use import question of the paragraph have imported in part 7.
-      operationId: importQuestionsPart7
+      operationId: importQuestion
       security:
         - auth0: []
       parameters:

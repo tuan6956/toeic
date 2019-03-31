@@ -3,8 +3,6 @@ const { collections } = require('../configs/db');
 const { dbController } = require('../database/index');
 var ObjectId = require('mongodb').ObjectID;
 
-const { } = require('../utils/auth')
-
 const importBlankQuestion = (data) => {
     const d = q.defer();
     const {
@@ -52,3 +50,27 @@ module.exports = {
     importBlankQuestion,
     getAll
 }
+
+
+// export default class BlankQuestion {
+//     // constructor(){
+
+//     // }
+
+//     getAll = (page = 0, limit = 5) => {
+//         const d = q.defer();
+    
+//         dbController.getAll(collections.blank_question, page, limit)
+//                     .then(result => {
+//                         console.log(result);
+//                         d.resolve(result);
+//                     })
+//                     .catch(err => {
+//                         d.reject({
+//                             status: 500,
+//                             message: "Can not get all question into database"
+//                         });
+//                     })
+//         return d.promise;
+//     }    
+// }
