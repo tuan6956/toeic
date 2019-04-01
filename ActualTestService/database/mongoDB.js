@@ -8,7 +8,7 @@ const findRecord = (collection, find_data) => {
         if (error) throw error;
         const db = client.db(nameDB);
         db.collection(collection)
-            .find(query)
+            .find(find_data)
             .toArray((error, result) => {
                 error ? d.reject(error) : d.resolve(result);
                 client.close();
@@ -24,7 +24,7 @@ const insertRecord = (collection, data) => {
         if (error) throw error;
         const db = client.db(nameDB);
         db.collection(collection)
-            .insertOne(query, (error, result) => {
+            .insertOne(data, (error, result) => {
                 error ? d.reject(error) : d.resolve(result.ops[0]);
                 client.close();
             });

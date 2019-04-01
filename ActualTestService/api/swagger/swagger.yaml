@@ -26,7 +26,8 @@ consumes:
 tags:
 - name: "questionReadingTest"
   description: "Everything about question reading test have managed by admin"
-
+- name: "readingQuestionPart7"
+  description: "Everything about question in part 7"
 
 produces:
   - application/json
@@ -124,7 +125,7 @@ paths:
     post:
       tags:
         - questionReadingTest
-      description: admin has logged in, and use import paragraph has blank and array options in the exam. We have received the result include id, content_question, pos, part, level, position blank.
+      description: admin has logged in, and use import paragraph has blank and array options in the exam.
       operationId: importParagraphQuestionPart6
       security:
         - auth0: []
@@ -211,7 +212,7 @@ paths:
     x-swagger-router-controller: question_part7
     post:
       tags:
-        - questionReadingTest
+        - readingQuestionPart7
       description: admin has logged in, and use import question of the paragraph have imported in part 7.
       operationId: importQuestion
       security:
@@ -247,6 +248,72 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /listeningPart1:
+    x-swagger-router-controller: listening_part1
+    post:
+      tags:
+        - questionReadingTest
+      description: admin has logged in, and use import questions of part 1 in the exam.
+      operationId: importQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters is json object such as {
+            image_link, answer, right_answer, level, part} .
+          schema:
+            $ref: '#/definitions/ImportListeningQuestionPart1'     # <----------
+      responses:
+        "200":
+          description: Return a question object has imported in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+                description: The record ID.
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              level: 1
+              part: 1
+              _id: 5ca263d039b6666db8e6e4a0
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    get:
+      description: Returns all question
+      operationId: getAll
+      tags:
+        - questionReadingTest
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit record return
+        - in: query
+          name: page
+          type: integer
+          description: page you need to get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:
@@ -254,6 +321,17 @@ definitions:
     properties:
       messageError:
         type: string
+  MessageResp:
+    type: object
+    required: 
+      - success
+    properties:
+      success:
+        type: boolean
+      message:
+        type: string
+      value:
+        type: object
   ImportBlankQuestion:
     type: object
     required:
@@ -417,14 +495,45 @@ definitions:
       level: 1
       part: 7
       id_paragraph: 5c9c86aef41bf82ed47ac679
-  MessageResp:
+  ImportListeningQuestionPart1:
     type: object
-    required: 
-      - success
+    required:
+      - image_link
+      - answers
+      - right_answer
+      - explain
+      - level
+      - part
     properties:
-      success:
-        type: boolean
-      message:
+      image_link:
         type: string
-      value:
+      answers:
         type: object
+        properties:
+          optA:
+            type: string
+          optB:
+            type: string
+          optC:
+            type: string
+          optD:
+            type: string
+      right_answer: 
+        type: string
+      explain:
+        type: string      
+      level: 
+        type: integer
+      part: 
+        type: integer
+    example: #sample object
+      image_link: pulic/image/part1/question_image1
+      answers:
+          optA: public/audio/part1/question_audio1
+          optB: public/audio/part1/question_audio2
+          optC: public/audio/part1/question_audio3
+          optD: public/audio/part1/question_audio4
+      right_answer: optA
+      explain: No Explain
+      level: 1
+      part: 1
