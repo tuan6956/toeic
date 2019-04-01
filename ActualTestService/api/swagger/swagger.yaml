@@ -24,8 +24,18 @@ consumes:
   - application/json
 # format of the responses to the client (Accepts)
 tags:
-- name: "questionReadingTest"
-  description: "Everything about question reading test have managed by admin"
+- name: "listeningQuestionPart1"
+  description: "Everything about question in part 1"
+- name: "listeningQuestionPart2"
+  description: "Everything about question in part 2"
+- name: "listeningQuestionPart3"
+  description: "Everything about question in part 3"
+- name: "listeningQuestionPart4"
+  description: "Everything about question in part 4"
+- name: "readingQuestionPart5"
+  description: "Everything about question in part 5"
+- name: "readingQuestionPart6"
+  description: "Everything about question in part 6"
 - name: "readingQuestionPart7"
   description: "Everything about question in part 7"
 
@@ -36,7 +46,7 @@ paths:
     x-swagger-router-controller: blank_question_part5
     post:
       tags:
-        - questionReadingTest
+        - readingQuestionPart5
       description: admin has logged in, and use import questions of part 5 in the exam. We have received the result include id, content_question, pos, part, level, position blank.
       operationId: importBlankQuestion
       security:
@@ -99,7 +109,7 @@ paths:
       description: Returns all question
       operationId: getAll
       tags:
-        - questionReadingTest
+        - readingQuestionPart5
       security:
         - auth0: []
       parameters:
@@ -124,7 +134,7 @@ paths:
     x-swagger-router-controller: questions_reading_test
     post:
       tags:
-        - questionReadingTest
+        - readingQuestionPart6
       description: admin has logged in, and use import paragraph has blank and array options in the exam.
       operationId: importParagraphQuestionPart6
       security:
@@ -172,7 +182,7 @@ paths:
     x-swagger-router-controller: paragraph_part7
     post:
       tags:
-        - questionReadingTest
+        - readingQuestionPart7
       description: admin has logged in, and use import paragraphs in part 7.
       operationId: importParagraph
       security:
@@ -252,7 +262,7 @@ paths:
     x-swagger-router-controller: listening_part1
     post:
       tags:
-        - questionReadingTest
+        - listeningQuestionPart1
       description: admin has logged in, and use import questions of part 1 in the exam.
       operationId: importQuestion
       security:
@@ -293,7 +303,7 @@ paths:
       description: Returns all question
       operationId: getAll
       tags:
-        - questionReadingTest
+        - listeningQuestionPart1
       security:
         - auth0: []
       parameters:
