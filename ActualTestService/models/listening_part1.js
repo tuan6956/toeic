@@ -46,8 +46,26 @@ const getAll = (page = 0, limit = 5) => {
     return d.promise;
 }
 
+const getQuestionById = (id) => {
+    console.log(id)
+    const d = q.defer();
+
+    dbController.find(collections.listening_question_part1, id)
+                .then(result => {
+                    console.log(result)
+                    d.resolve(result);
+                })
+                .catch(err => {
+                    d.reject({
+                        status: 500,
+                        message: "Can not get all question into database"
+                    });
+                })
+    return d.promise;
+}
 
 module.exports = {
     importQuestion,
-    getAll
+    getAll,
+    getQuestionById
 }

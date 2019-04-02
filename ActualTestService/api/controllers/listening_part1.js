@@ -46,7 +46,21 @@ function getAll(req, res){
     });
 }
 
+function getQuestionById(req, res){
+  let questionId = req.swagger.params.questionId.value.trim();
+
+  listeningPar1Model.getQuestionById(questionId)
+  .then(result => {
+    handleSuccess(res, 200, result);
+  })
+  .catch(error => {
+    handleError(res, error.status, error.message);
+  });
+
+}
+
 module.exports = {
     importQuestion: importQuestion,
-    getAll: getAll
+    getAll: getAll,
+    getQuestionById
   };
