@@ -7,16 +7,18 @@ var _ = require('lodash');
 const importQuestion = (data) => {
     const d = q.defer();
     const {
-        audio_link,
+        image_link,
         anwsers,
         right_anwser,
         level,
         part
     } = data;
 
-    dbController.insert(collections.listening_question_part2, data)
+    // dbController.find(collections.listening_question_part3)
+
+    dbController.insert(collections.listening_question_part3, data)
                 .then(result => {
-                    delete result.audio_link;
+                    delete result.image_link;
                     delete result.answers;
                     delete result.right_answer;
                     delete result.explain;
@@ -34,7 +36,7 @@ const importQuestion = (data) => {
 const getAll = (page = 0, limit = 5) => {
     const d = q.defer();
 
-    dbController.getAll(collections.listening_question_part2, page, limit)
+    dbController.getAll(collections.listening_question_part3, page, limit)
                 .then(result => {
                     d.resolve(result);
                 })
@@ -50,7 +52,7 @@ const getAll = (page = 0, limit = 5) => {
 const getQuestionById = (id) => {
     const d = q.defer();
 
-    dbController.find(collections.listening_question_part2, id)
+    dbController.find(collections.listening_question_part3, id)
                 .then(result => {
                     d.resolve(result[0]);
                 })
@@ -87,7 +89,7 @@ const updateQuestionById = (_id, data) => {
     console.log(data_update)
     const d = q.defer();
 
-    dbController.update(collections.listening_question_part2, _id, data_update)
+    dbController.update(collections.listening_question_part3, _id, data_update)
                 .then(result => {
                     d.resolve(result);
                 })
