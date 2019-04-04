@@ -52,8 +52,7 @@ const getQuestionById = (id) => {
 
     dbController.find(collections.listening_question_part1, id)
                 .then(result => {
-                    console.log(result)
-                    d.resolve(result);
+                    d.resolve(result[0]);
                 })
                 .catch(err => {
                     d.reject({

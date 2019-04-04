@@ -317,7 +317,7 @@ paths:
           description: page you need to get
       responses:
         "200":
-          description: Success
+          description: Return all records you request by paging
           schema:
             properties:
               _id:
@@ -387,7 +387,7 @@ paths:
           description: id question
       responses:
         "200":
-          description: Success
+          description: Return the question you request
           schema:
             properties:
               _id:
@@ -448,21 +448,45 @@ paths:
             $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
       responses:
         "200":
-          description: Return a question object has imported in DB
+          description: Return a question object has updated in DB
           schema:
             type: object
             properties:
               _id:
                 type: integer
-                description: The record ID.
+              image_link:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
             example: #sample object
+              id: 5ca37b32d7e9b81653ad1dc9
+              image_link: pulic/image/part1/question_image1
+              answers: 
+                optA: public/audio/part1/question_audio1
+                optB: public/audio/part1/question_audio2
+                optC: public/audio/part1/question_audio3
+                optD: public/audio/part1/question_audio4
+              right_answer: optA
+              explain: No Explain
               level: 1
               part: 1
-              _id: 5ca263d039b6666db8e6e4a0
         "401":
           description: Import Fail
           schema:
