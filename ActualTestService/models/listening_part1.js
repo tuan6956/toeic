@@ -2,6 +2,7 @@ const q = require('q');
 const { collections } = require('../configs/db');
 const { dbController } = require('../database/index');
 var ObjectId = require('mongodb').ObjectID;
+var _ = require('lodash');
 
 const importQuestion = (data) => {
     const d = q.defer();
@@ -47,7 +48,6 @@ const getAll = (page = 0, limit = 5) => {
 }
 
 const getQuestionById = (id) => {
-    console.log(id)
     const d = q.defer();
 
     dbController.find(collections.listening_question_part1, id)
@@ -64,8 +64,46 @@ const getQuestionById = (id) => {
     return d.promise;
 }
 
+const updateQuestionById = (_id, data) => {
+    _id = ObjectId(_id);
+
+    let data_update = new Object();
+    let answers = _.get(data, 'answers')
+    if(answers){
+        if(answers.optA){
+            data_update['answers.optA'] = answers.optA;
+        }
+        if(answers.optB){
+            data_update['answers.optB'] = answers.optB;
+        }
+        if(answers.optC){
+            data_update['answers.optC'] = answers.optC;
+        }
+        if(answers.optD){
+            data_update['answers.optD'] = answers.optD;
+        }
+        
+    }
+    else{data_update = data}
+    console.log(data_update)
+    const d = q.defer();
+
+    dbController.update(collections.listening_question_part1, _id, data_update)
+                .then(result => {
+                    d.resolve(result);
+                })
+                .catch(err => {
+                    d.reject({
+                        status: 500,
+                        message: "Can not update question into database"
+                    });
+                })
+    return d.promise;
+}
+
 module.exports = {
     importQuestion,
     getAll,
-    getQuestionById
+    getQuestionById,
+    updateQuestionById
 }

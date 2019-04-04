@@ -33,7 +33,6 @@ function importQuestion(req, res){
 }
 
 function getAll(req, res){
-  console.log(req.body)
   let page = _.get(req.body, 'page');
   let limit = _.get(req.body, 'limit')
 
@@ -59,8 +58,22 @@ function getQuestionById(req, res){
 
 }
 
+function updateQuestion(req, res){
+  let data = req.body;
+  let _id = req.swagger.params.questionId.value.trim()
+
+  listeningPar1Model.updateQuestionById(_id, data)
+  .then(result => {
+    handleSuccess(res, 200, result);
+  })
+  .catch(error => {
+    handleError(res, error.status, error.message);
+  });
+}
+
 module.exports = {
     importQuestion: importQuestion,
     getAll: getAll,
-    getQuestionById
+    getQuestionById,
+    updateQuestion
   };
