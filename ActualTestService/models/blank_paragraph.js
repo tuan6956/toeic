@@ -24,7 +24,6 @@ const importBlankParagraph = (data) => {
     return d.promise;
 }
 
-
 module.exports = {
     importBlankParagraph
 }

@@ -580,7 +580,7 @@ paths:
                 type: integer
               part: 
                 type: integer
-            example: #sample object
+            example: #sample array
               - _id: 5ca5cf9625b3a91485d29ef9
                 audio_link: public/audio/part2/question_audio2
                 answers:
@@ -745,7 +745,7 @@ paths:
         - in: body
           name: body
           description: parameters is json object such as {
-            audio_link, dialogue_id, answer, right_answer, level, part, explain } .
+            dialogue_link, questionObjects, answer, right_answers, level, part } .
           schema:
             $ref: '#/definitions/ImportListeningQuestionPart3'     # <----------
       responses:
@@ -754,17 +754,35 @@ paths:
           schema:
             type: object
             properties:
-              _id:
-                type: integer
-                description: The record ID.
-              level: 
-                type: integer
-              part: 
-                type: integer
+              dialogue:
+                type: object
+                properties:
+                  _id:
+                    type: integer
+                    description: The record ID.
+                  level: 
+                    type: integer
+                  part: 
+                    type: integer
+              questionObjects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    question: 
+                      type: string
             example: #sample object
-              level: 1
-              part: 3
-              _id: 5ca263d039b6666db8e6e4a0
+              dialogue:
+                level: 1
+                part: 3
+                _id: 5ca263d039b6666db8e6e4a0
+              questionObjects:
+                - id: 5cb05fef3c34db1f9b6e7736
+                  question: Who most likely is Mr. Metts?
+                - id: 5cb05fef3c34db1f9b6e7734
+                  question: Who most likely is Mr. Metts? 
         "401":
           description: Import Fail
           schema:
@@ -1295,45 +1313,49 @@ definitions:
   ImportListeningQuestionPart3:
     type: object
     required:
-      - audio_link
-      - dialogue_id
-      - answers
-      - right_answer
+      - dialogue_link
+      - questionObjects
       - level
       - part
     properties:
-      audio_link:
+      dialogue_link:
         type: string
-      dialogue_id:
-        type: string
-      answers:
-        type: object
-        properties:
-          optA:
-            type: string
-          optB:
-            type: string
-          optC:
-            type: string
-          optD:
-            type: string
-      right_answer: 
-        type: string
-      explain:
-        type: string      
+      questionObjects:
+        type: array
+        items:
+          type: object
+          properties:
+            question_content:
+              type: string
+            answers:
+              type: object
+              properties:
+                optA:
+                  type: string
+                optB:
+                  type: string
+                optC:
+                  type: string
+                optD:
+                  type: string
+            right_answer: 
+              type: string
+            explain:
+              type: string      
       level: 
         type: integer
       part: 
         type: integer
     example: #sample object
-      audio_link: public/audio/part2/question_audio3
-      dialogue_id: 5ca263d039b6666db8e6e4a0
-      answers:
-          optA: public/audio/part2/question_audio1
-          optB: public/audio/part2/question_audio2
-          optC: public/audio/part2/question_audio3
-          optD: public/audio/part2/question_audio4
-      right_answer: optA
-      explain: Can be null
+      dialogue_link: public/audio/part3/dialogue_01
+      questionObjects:
+        - question_content: Who most likely is Mr. Metts?
+          answers: 
+            optA: Emily's boss
+            optB: Emily's colleague
+            optC: Emily's teacher
+            optD: Emily's lawyer
+          right_answer: optA,
+          explain: Can be null
       level: 1
       part: 3

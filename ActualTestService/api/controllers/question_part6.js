@@ -10,40 +10,6 @@ const { blankQuestionModel,
       } = require('../../models/index');
 const { handleSuccess, handleError } = require('../../middlewares/request');
 
-function importBlankQuestion(req, res){
-
-  let question_content = _.get(req.body, "question_content");
-  let answers = _.get(req.body, "answers");
-  let right_answer = _.get(req.body, "right_answer");
-  let explain = _.get(req.body, "explain");
-  let level = _.get(req.body, "level");
-  let part = _.get(req.body, "part");
-
-  if(question_content.indexOf('__') === -1){
-    ///maybe blank not exist
-    handleError(res, 412, 'Blank is not exits, please check again');
-  }
-  let pos = question_content.indexOf('__');
-
-  let data = {
-    question_content: question_content.replace(/[_]/g,''),
-    pos: pos,
-    answers: answers,
-    right_answer: right_answer,
-    explain: explain,
-    level: level,
-    part: part
-  }
-
-  blankQuestionModel.importBlankQuestion(data)
-  .then(result => {
-    handleSuccess(res, 200, result);
-  })
-  .catch(error => {
-    handleError(res, error.status, error.message);
-  });
-}
-
 function importParagraphQuestionPart6(req, res){
   let blank_paragraph = _.get(req.body, 'blank_paragraph');
   let list_options = _.get(req.body, 'list_options');
@@ -83,72 +49,6 @@ function importParagraphQuestionPart6(req, res){
     })
 }
 
-function importParagraphPart7(req, res){
-  let paragraphs = _.get(req.body, 'paragraphs');
-  let level = _.get(req.body, "level");
-  let part = _.get(req.body, "part");
-
-  let data = {
-    paragraphs: paragraphs,
-    level: level,
-    part: part
-  }
-
-  paragraphPart7Model.importParagraphPart7(data)
-  .then(result => {
-    handleSuccess(res, 200, result);
-  })
-  .catch(error => {
-    handleError(res, error.status, error.message);
-  });
-}
-
-function importQuestionsPart7(req, res){
-  let question_content = _.get(req.body, "question_content");
-  let answers = _.get(req.body, "answers");
-  let right_answer = _.get(req.body, "right_answer");
-  let explain = _.get(req.body, "explain");
-  let level = _.get(req.body, "level");
-  let part = _.get(req.body, "part");
-  let id_paragraph = _.get(req.body, "id_paragraph");
-
-  let data = {
-    question_content: question_content.replace(/[_]/g,''),
-    answers: answers,
-    right_answer: right_answer,
-    explain: explain,
-    level: level,
-    part: part,
-    id_paragraph: id_paragraph
-  }
-
-  questionOfPart7Model.importQuestionsPart7(data)
-  .then(result => {
-    handleSuccess(res, 200, result);
-  })
-  .catch(error => {
-    handleError(res, error.status, error.message);
-  });
-}
-
-function getAllQuestionPart5(req, res){
-  console.log(req.body)
-  let page = _.get(req.body, 'page');
-  let limit = _.get(req.body, 'limit')
-
-  blankQuestionModel.getAll(page, limit)
-    .then(result => {
-      handleSuccess(res, 200, result);
-    })
-    .catch(error => {
-      handleError(res, error.status, error.message);
-    });
-}
-
 module.exports = {
-  importBlankQuestion: importBlankQuestion,
   importParagraphQuestionPart6: importParagraphQuestionPart6,
-  importParagraphPart7: importParagraphPart7,
-  importQuestionsPart7: importQuestionsPart7,
-  getAllQuestionPart5: getAllQuestionPart5
   };
