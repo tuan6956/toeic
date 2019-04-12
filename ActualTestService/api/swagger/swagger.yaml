@@ -807,6 +807,10 @@ paths:
           name: page
           type: integer
           description: page you need to get
+        - in: query
+          name: part
+          type: integer
+          description: quesition of part you want to get
       responses:
         "200":
           description: Return all records you request by paging

@@ -19,8 +19,9 @@ function importQuestion(req, res){
 function getAll(req, res){
   let page = _.get(req.body, 'page');
   let limit = _.get(req.body, 'limit')
+  let part = _.get(req.body, "part")
 
-  listeningPar1Model.getAll(page, limit)
+  listeningModel.getAll(page, limit, part)
     .then(result => {
       handleSuccess(res, 200, result);
     })

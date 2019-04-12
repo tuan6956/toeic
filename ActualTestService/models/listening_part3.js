@@ -66,10 +66,25 @@ export default class ListeningPart3 {
           }
     }
     
-    getAll(page = 0, limit = 5){
+    getAll(page = 0, limit = 5, part){
         const d = q.defer();
-    
-        dbController.getAll(collections.listening_question_part3, page, limit)
+
+        switch(part){
+            case 3:
+                dbController.getAll(collections.listening_question_part3, page, limit, part)
+                            .then(result => {
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: "Can not get all question into database"
+                                });
+                            })
+                return d.promise;
+
+            default:
+                dbController.getAll(collections.listening_question_part3, page, limit)
                     .then(result => {
                         d.resolve(result);
                     })
@@ -79,7 +94,9 @@ export default class ListeningPart3 {
                             message: "Can not get all question into database"
                         });
                     })
-        return d.promise;
+                return d.promise;
+        }
+    
     }
     
     getQuestionById(id){
@@ -138,3 +155,4 @@ export default class ListeningPart3 {
 
 // https://viblo.asia/q/asyncawait-foreach-for-o754DoEJ5M6
 // https://medium.com/@bluepnume/even-with-async-await-you-probably-still-need-promises-9b259854c161
+// https://ehkoo.com/bai-viet/tat-tan-tat-ve-promise-va-async-await
