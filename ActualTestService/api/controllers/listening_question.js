@@ -33,7 +33,7 @@ function getAll(req, res){
 function getQuestionById(req, res){
   let questionId = req.swagger.params.questionId.value.trim();
 
-  listeningPar1Model.getQuestionById(questionId)
+  listeningModel.getQuestionById(questionId)
   .then(result => {
     handleSuccess(res, 200, result);
   })

@@ -259,7 +259,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart1:
-    x-swagger-router-controller: listening_part1
+    x-swagger-router-controller: listening_question
     post:
       tags:
         - listeningQuestionPart1
@@ -371,7 +371,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart1/{questionId}:
-    x-swagger-router-controller: listening_part1
+    x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
       operationId: getQuestionById
@@ -733,7 +733,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart3:
-    x-swagger-router-controller: listening_part3
+    x-swagger-router-controller: listening_question
     post:
       tags:
         - listeningQuestionPart3
@@ -871,7 +871,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart3/{questionId}:
-    x-swagger-router-controller: listening_part3
+    x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
       operationId: getQuestionById
@@ -996,7 +996,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart4:
-    x-swagger-router-controller: listening_part3
+    x-swagger-router-controller: listening_question
     post:
       tags:
         - listeningQuestionPart4

@@ -3,6 +3,7 @@ const nameDB = require('../configs/db').name;
 const q = require('q');
 
 const findRecord = (collection, find_data) => {
+    console.log(find_data)
     const d = q.defer();
     connectDB((error, client) => {
         if (error) throw error;

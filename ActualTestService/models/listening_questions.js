@@ -12,6 +12,23 @@ export default class ListeningQuestion {
         let level = _.get(data, "level");
 
         switch(part) {
+            case 1:{
+                dbController.insert(collections.listening_question, data)
+                            .then(result => {
+                                delete result.image_link;
+                                delete result.answers;
+                                delete result.right_answer;
+                                delete result.explain;
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString()
+                                });
+                            })
+                return d.promise;
+            }
             case 3:{
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
@@ -162,6 +179,7 @@ export default class ListeningQuestion {
     }
     
     getQuestionById(id){
+        id = ObjectId(id);
         const d = q.defer();
     
         dbController.find(collections.listening_question, id)
@@ -198,7 +216,6 @@ export default class ListeningQuestion {
             
         }
         else{data_update = data}
-        console.log(data_update)
         const d = q.defer();
     
         dbController.update(collections.listening_question_part3, _id, data_update)
