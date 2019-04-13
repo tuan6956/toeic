@@ -110,8 +110,16 @@ export default class ReadingQuestion {
                             })
                 return d.promise;
         }else{
-            dbController.getAll(collections.listening_question, page, limit)
+            dbController.getAll(collections.reading_question, page, limit)
                             .then(result => {
+                                result = result.map(item=>{
+                                    return {
+                                        id: item._id,
+                                        test_id: item.test_id ? item.test_id : null,
+                                        level: item.level ? item.level : null,
+                                        part: item.part
+                                    }
+                                })
                                 d.resolve(result);
                             })
                             .catch(err => {
@@ -163,7 +171,7 @@ export default class ReadingQuestion {
         }
     
         switch(part){
-            case 1:{
+            case 5:{
                 let data_update = new Object();
                 let answers = _.get(data, 'answers')
                 if(answers){
@@ -195,7 +203,14 @@ export default class ReadingQuestion {
                             })
                 return d.promise;
             }
-            case 2: {
+            case 6:{
+                d.reject({
+                    status: 500,
+                    message: "the function is not supported"
+                })
+                return d.promise;
+            }
+            case 7:{
                 let data_update = new Object();
                 let answers = _.get(data, 'answers')
                 if(answers){
@@ -227,20 +242,7 @@ export default class ReadingQuestion {
                             })
                 return d.promise;
             }
-            case 3:{
-                d.reject({
-                    status: 500,
-                    message: "the function is not supported"
-                })
-                return d.promise;
-            }
-            case 4:{
-                d.reject({
-                    status: 500,
-                    message: "the function is not supported"
-                })
-                return d.promise;
-            }
+            
             default:
                 break;
         }

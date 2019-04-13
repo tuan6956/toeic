@@ -68,7 +68,7 @@ const deleteRecord = (collection, query) => {
     return d.promise;
 }
 
-const getAll = (collection, page, limit, part) => {
+const getAll = (collection, page, limit, part=null) => {
     const d = q.defer();
     connectDB((error, client) => {
         if (error) throw error;

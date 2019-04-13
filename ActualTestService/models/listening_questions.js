@@ -182,6 +182,14 @@ export default class ListeningQuestion {
         }else{
             dbController.getAll(collections.listening_question, page, limit)
                             .then(result => {
+                                result = result.map(item=>{
+                                    return {
+                                        id: item._id,
+                                        test_id: item.test_id ? item.test_id : null,
+                                        level: item.level ? item.level : null,
+                                        part: item.part
+                                    }
+                                })
                                 d.resolve(result);
                             })
                             .catch(err => {
