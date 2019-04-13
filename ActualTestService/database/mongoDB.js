@@ -42,7 +42,7 @@ const updateRecord = (collection, query, data) => {
             .findOneAndUpdate(
                 query, 
                 { $set: data }, 
-                { returnOriginal:true },
+                { returnOriginal:false },
                 (error, result) => {
                     error ? d.reject(error) : d.resolve(result.value);
                     client.close();

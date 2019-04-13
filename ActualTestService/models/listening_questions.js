@@ -236,7 +236,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question, _id, data_update)
+                dbController.update(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
