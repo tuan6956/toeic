@@ -195,40 +195,62 @@ export default class ListeningQuestion {
         return d.promise;
     }
     
-    updateQuestionById(_id, data){
+    async updateQuestionById(_id, data){
         _id = ObjectId(_id);
-    
-        let data_update = new Object();
-        let answers = _.get(data, 'answers')
-        if(answers){
-            if(answers.optA){
-                data_update['answers.optA'] = answers.optA;
-            }
-            if(answers.optB){
-                data_update['answers.optB'] = answers.optB;
-            }
-            if(answers.optC){
-                data_update['answers.optC'] = answers.optC;
-            }
-            if(answers.optD){
-                data_update['answers.optD'] = answers.optD;
-            }
-            
-        }
-        else{data_update = data}
         const d = q.defer();
+
+        let part = await this.getQuestionById(_id).then(res=>{
+            return res.part;
+        })
+        .catch(err=>{
+            return err.toString();
+            console.log(err)
+        })
+        if(!_.isInteger(part)){
+            console.log(_.isInteger(part))
+            d.reject({
+                status: 500,
+                message: part
+            })
+            return d.promise;
+        }
     
-        dbController.update(collections.listening_question_part3, _id, data_update)
-                    .then(result => {
-                        d.resolve(result);
-                    })
-                    .catch(err => {
-                        d.reject({
-                            status: 500,
-                            message: "Can not update question into database"
-                        });
-                    })
-        return d.promise;
+        switch(part){
+            case 1:{
+                let data_update = new Object();
+                let answers = _.get(data, 'answers')
+                if(answers){
+                    if(answers.optA){
+                        data_update['answers.optA'] = answers.optA;
+                    }
+                    if(answers.optB){
+                        data_update['answers.optB'] = answers.optB;
+                    }
+                    if(answers.optC){
+                        data_update['answers.optC'] = answers.optC;
+                    }
+                    if(answers.optD){
+                        data_update['answers.optD'] = answers.optD;
+                    }
+                    
+                }
+                else{data_update = data}
+            
+                dbController.update(collections.listening_question, _id, data_update)
+                            .then(result => {
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString()
+                                });
+                            })
+                return d.promise;
+            }
+            default:
+                break;
+        }
     }
 }
 

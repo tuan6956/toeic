@@ -47,7 +47,7 @@ function updateQuestion(req, res){
   let data = req.body;
   let _id = req.swagger.params.questionId.value.trim()
 
-  listeningPar1Model.updateQuestionById(_id, data)
+  listeningModel.updateQuestionById(_id, data)
   .then(result => {
     handleSuccess(res, 200, result);
   })

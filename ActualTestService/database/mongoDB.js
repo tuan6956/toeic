@@ -3,7 +3,6 @@ const nameDB = require('../configs/db').name;
 const q = require('q');
 
 const findRecord = (collection, find_data) => {
-    console.log(find_data)
     const d = q.defer();
     connectDB((error, client) => {
         if (error) throw error;
@@ -43,7 +42,7 @@ const updateRecord = (collection, query, data) => {
             .findOneAndUpdate(
                 query, 
                 { $set: data }, 
-                { returnOriginal:false },
+                { returnOriginal:true },
                 (error, result) => {
                     error ? d.reject(error) : d.resolve(result.value);
                     client.close();

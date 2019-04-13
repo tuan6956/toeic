@@ -47,10 +47,12 @@ const getAll = (page = 0, limit = 5) => {
     return d.promise;
 }
 
-const getQuestionById = (id) => {
+const getQuestionById = (_id) => {
+    _id = ObjectId(_id);
+
     const d = q.defer();
 
-    dbController.find(collections.listening_question_part2, id)
+    dbController.find(collections.listening_question_part2, _id)
                 .then(result => {
                     d.resolve(result[0]);
                 })
