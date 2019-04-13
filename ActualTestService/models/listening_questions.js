@@ -4,11 +4,12 @@ const { dbController } = require('../database/index');
 var ObjectId = require('mongodb').ObjectID;
 var _ = require('lodash');
 
-export default class ListeningPart3 {
+export default class ListeningQuestion {
     
     async importQuestion(data){
         const d = q.defer();
         let part = _.get(data, "part");
+        let level = _.get(data, "level");
 
         switch(part) {
             case 3:
@@ -42,7 +43,13 @@ export default class ListeningPart3 {
                                 });
                                 return d.promise;
                             })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question_part3, item)))
+                questionObjects = questionObjects.map(item=>{
+                    item.id_dialogue = result_insert_dialogue._id;
+                    item.part = 3;
+                    item.level = level;
+                    return item;
+                })
+                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
@@ -56,7 +63,55 @@ export default class ListeningPart3 {
                 })
                 return d.promise;
             case 4:
-              break;
+                let dialogue = {
+                    dialogue_link: data.dialogue_link,
+                    level: data.level,
+                    part: data.part
+                }
+
+                let questionObjects = _.get(data, "questionObjects")
+
+                if(questionObjects.length < 3) {
+                    d.reject({
+                            status: 500,
+                            message: "you need to import at least 3 questions"
+                        });
+                    return d.promise;
+                }
+                
+                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
+                            .then(result => {
+                                delete result.dialogue_link;
+                                return result;
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                d.reject({
+                                    status: 500,
+                                    message: "Can not insert dialogue into database",
+                                    err: err
+                                });
+                                return d.promise;
+                            })
+                questionObjects = questionObjects.map(item=>{
+                    item.id_dialogue = result_insert_dialogue._id;
+                    item.part = 3;
+                    item.level = level;
+                    return item;
+                })
+                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
+                result_insert_question = result_insert_question.map(item=>{
+                    return {
+                        id: item._id,
+                        question: item.question_content
+
+                    }
+                })
+                d.resolve({
+                    dialogue: result_insert_dialogue,
+                    questionObjects: result_insert_question
+                })
+                return d.promise;
             default:
                 d.reject({
                         status: 500,
@@ -66,12 +121,30 @@ export default class ListeningPart3 {
           }
     }
     
-    getAll(page = 0, limit = 5, part){
+    getAll(page = 1, limit = 5, part){
         const d = q.defer();
-
-        switch(part){
-            case 3:
-                dbController.getAll(collections.listening_question_part3, page, limit, part)
+        if(part) {
+            dbController.getAll(collections.listening_question, page, limit, part)
+                            .then(result => {
+                                result = result.map(item=>{
+                                    return {
+                                        id: item._id,
+                                        test_id: item.test_id ? item.test_id : null,
+                                        level: item.level ? item.level : null,
+                                        part: item.part
+                                    }
+                                })
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString(),
+                                });
+                            })
+                return d.promise;
+        }else{
+            dbController.getAll(collections.listening_question, page, limit)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -82,27 +155,14 @@ export default class ListeningPart3 {
                                 });
                             })
                 return d.promise;
-
-            default:
-                dbController.getAll(collections.listening_question_part3, page, limit)
-                    .then(result => {
-                        d.resolve(result);
-                    })
-                    .catch(err => {
-                        d.reject({
-                            status: 500,
-                            message: "Can not get all question into database"
-                        });
-                    })
-                return d.promise;
         }
-    
+        
     }
     
     getQuestionById(id){
         const d = q.defer();
     
-        dbController.find(collections.listening_question_part3, id)
+        dbController.find(collections.listening_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })

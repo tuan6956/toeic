@@ -6,10 +6,10 @@ const questionOfPart7Model = require('./question_of_part7');
 const listeningPar1Model = require('./listening_part1');
 const listeningPart2Model = require('./listening_part2');
 import BlankQuestion from './blank_question';
-import ListeningPart3 from './listening_part3';
+import ListeningQuestion from './listening_questions';
 
 var blankQuestion = new BlankQuestion();
-var listeningModel = new ListeningPart3();
+var listeningModel = new ListeningQuestion();
 module.exports = {
     blankQuestionModel: blankQuestion,
     listeningModel: listeningModel,

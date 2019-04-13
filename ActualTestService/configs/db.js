@@ -12,8 +12,7 @@ module.exports = {
         question_of_part7: "questionOfPart7",
         listening_question_part1: "listeningQuestionPart1",
         listening_question_part2: "listeningQuestionPart2",
-        listening_question_part3: "listeningQuestionPart3",
-        listening_question_part4: "listeningQuestionPart4",
+        listening_question: "listening_question",
         dialogues: "dialogues",
     }
 }

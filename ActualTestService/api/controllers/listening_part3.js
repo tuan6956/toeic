@@ -17,11 +17,11 @@ function importQuestion(req, res){
 }
 
 function getAll(req, res){
-  let page = _.get(req.body, 'page');
-  let limit = _.get(req.body, 'limit')
-  let part = _.get(req.body, "part")
+  let page = _.get(req.swagger.params, 'page');
+  let limit = _.get(req.swagger.params, 'limit')
+  let part = _.get(req.swagger.params, 'part')
 
-  listeningModel.getAll(page, limit, part)
+  listeningModel.getAll(page.value, limit.value, part.value)
     .then(result => {
       handleSuccess(res, 200, result);
     })

@@ -870,172 +870,269 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  # /questionsPart3/{questionId}:
-  #   x-swagger-router-controller: listening_part2
-  #   get:
-  #     description: Returns this question by id record
-  #     operationId: getQuestionById
-  #     tags:
-  #       - listeningQuestionPart2
-  #     security:
-  #       - auth0: []
-  #     parameters:
-  #       - in: path
-  #         name: questionId
-  #         type: string
-  #         required: true
-  #         description: id question
-  #     responses:
-  #       "200":
-  #         description: Return the question you request
-  #         schema:
-  #           properties:
-  #             _id:
-  #               type: integer
-  #             audio_link:
-  #               type: string
-  #             answers:
-  #               type: object
-  #               properties:
-  #                 optA:
-  #                   type: string
-  #                 optB:
-  #                   type: string
-  #                 optC:
-  #                   type: string
-  #                 optD:
-  #                   type: string
-  #             right_answer: 
-  #               type: string
-  #             explain:
-  #               type: string      
-  #             level: 
-  #               type: integer
-  #             part: 
-  #               type: integer
-  #           example: #sample object
-  #             id: 5ca37b32d7e9b81653ad1dc9
-  #             image_link: public/audio/part2/question_audio2
-  #             answers: 
-  #               optA: public/audio/part1/answer_audio1
-  #               optB: public/audio/part1/answer_audio2
-  #               optC: public/audio/part1/answer_audio3
-  #               optD: public/audio/part1/answer_audio4
-  #             right_answer: optA
-  #             explain: Can be null
-  #             level: 1
-  #             part: 1
-  #       default:
-  #         description: Error
-  #         schema:
-  #           $ref: "#/definitions/ErrorResponse"
-  #   put:
-  #     tags:
-  #       - listeningQuestionPart2
-  #     description: admin has logged in, and update content of question.
-  #     operationId: updateQuestion
-  #     security:
-  #       - auth0: []
-  #     parameters:
-  #       - in: path
-  #         name: questionId
-  #         type: string
-  #         required: true
-  #       - in: body
-  #         name: body
-  #         description: Add field you need update in this question.
-  #         schema:
-  #           $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
-  #     responses:
-  #       "200":
-  #         description: Return a question object has updated in DB
-  #         schema:
-  #           type: object
-  #           properties:
-  #             _id:
-  #               type: integer
-  #             image_link:
-  #               type: string
-  #             answers:
-  #               type: object
-  #               properties:
-  #                 optA:
-  #                   type: string
-  #                 optB:
-  #                   type: string
-  #                 optC:
-  #                   type: string
-  #                 optD:
-  #                   type: string
-  #             right_answer: 
-  #               type: string
-  #             explain:
-  #               type: string      
-  #             level: 
-  #               type: integer
-  #             part: 
-  #               type: integer
-  #           example: #sample object
-  #             id: 5ca37b32d7e9b81653ad1dc9
-  #             image_link: public/audio/part2/question_image1
-  #             answers: 
-  #               optA: public/audio/part2/question_audio1
-  #               optB: public/audio/part2/question_audio2
-  #               optC: public/audio/part2/question_audio3
-  #               optD: public/audio/part2/question_audio4
-  #             right_answer: optA
-  #             explain: No Explain
-  #             level: 1
-  #             part: 1
-  #       "401":
-  #         description: Import Fail
-  #         schema:
-  #           $ref: "#/definitions/ErrorResponse"
-  #       default:
-  #         description: Import Error
-  #         schema:
-  #           $ref: "#/definitions/ErrorResponse"
-    
-  # /dialogue:
-  #   x-swagger-router-controller: dialogue
-  #   post:
-  #     tags:
-  #       - readingQuestionPart7
-  #     description: admin has logged in, and use import paragraphs in part 7.
-  #     operationId: importParagraph
-  #     security:
-  #       - auth0: []
-  #     parameters:
-  #       - in: body
-  #         name: body
-  #         description: parameters is json object include paragraphs we need to import.
-  #         schema:
-  #           $ref: '#/definitions/ImportParagraphPart7'     # <----------
-  #     responses:
-  #       "200":
-  #         description: Return a id record pf paragraphs have imported in DB
-  #         schema:
-  #           type: object
-  #           properties:
-  #             _id:
-  #               type: integer
-  #               description: The record ID.
-  #             level: 
-  #               type: integer
-  #             part: 
-  #               type: integer
-  #           example: #sample object
-  #             level: 1
-  #             part: 7
-  #             _id: 5c9c86aef41bf82ed47ac679
-  #       "401":
-  #         description: Import Fail
-  #         schema:
-  #           $ref: "#/definitions/ErrorResponse"
-  #       default:
-  #         description: Import Error
-  #         schema:
-  #           $ref: "#/definitions/ErrorResponse"
+  /questionsPart3/{questionId}:
+    x-swagger-router-controller: listening_part3
+    get:
+      description: Returns this question by id record
+      operationId: getQuestionById
+      tags:
+        - listeningQuestionPart3
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+          description: id question
+      responses:
+        "200":
+          description: Return the question you request
+          schema:
+            properties:
+              _id:
+                type: integer
+              audio_link:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              id: 5ca37b32d7e9b81653ad1dc9
+              image_link: public/audio/part2/question_audio2
+              answers: 
+                optA: public/audio/part1/answer_audio1
+                optB: public/audio/part1/answer_audio2
+                optC: public/audio/part1/answer_audio3
+                optD: public/audio/part1/answer_audio4
+              right_answer: optA
+              explain: Can be null
+              level: 1
+              part: 1
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+        - listeningQuestionPart3
+      description: admin has logged in, and update content of question.
+      operationId: updateQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+        - in: body
+          name: body
+          description: Add field you need update in this question.
+          schema:
+            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+      responses:
+        "200":
+          description: Return a question object has updated in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+              image_link:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              id: 5ca37b32d7e9b81653ad1dc9
+              image_link: public/audio/part2/question_image1
+              answers: 
+                optA: public/audio/part2/question_audio1
+                optB: public/audio/part2/question_audio2
+                optC: public/audio/part2/question_audio3
+                optD: public/audio/part2/question_audio4
+              right_answer: optA
+              explain: No Explain
+              level: 1
+              part: 1
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /questionsPart4:
+    x-swagger-router-controller: listening_part3
+    post:
+      tags:
+        - listeningQuestionPart4
+      description: admin has logged in, and use import questions of part 3 in the exam.
+      operationId: importQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters is json object such as {
+            dialogue_link, questionObjects, answer, right_answers, level, part } .
+          schema:
+            $ref: '#/definitions/ImportListeningQuestionPart3'     # <----------
+      responses:
+        "200":
+          description: Return a question object has imported in DB
+          schema:
+            type: object
+            properties:
+              dialogue:
+                type: object
+                properties:
+                  _id:
+                    type: integer
+                    description: The record ID.
+                  level: 
+                    type: integer
+                  part: 
+                    type: integer
+              questionObjects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    question: 
+                      type: string
+            example: #sample object
+              dialogue:
+                level: 1
+                part: 3
+                _id: 5ca263d039b6666db8e6e4a0
+              questionObjects:
+                - id: 5cb05fef3c34db1f9b6e7736
+                  question: Who most likely is Mr. Metts?
+                - id: 5cb05fef3c34db1f9b6e7734
+                  question: Who most likely is Mr. Metts? 
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    get:
+      description: Returns all question
+      operationId: getAll
+      tags:
+        - listeningQuestionPart4
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit record return
+        - in: query
+          name: page
+          type: integer
+          description: page you need to get
+        - in: query
+          name: part
+          type: integer
+          description: quesition of part you want to get
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              _id:
+                type: integer
+              audio_link:
+                type: string
+              dialogue_id:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              - _id: 5ca5cf9625b3a91485d29ef9
+                audio_link: public/audio/part2/question_audio2
+                dialogue_id: 5ca263d039b6666db8e6e4a0
+                answers:
+                    optA: public/audio/part2/question_audio1
+                    optB: public/audio/part2/question_audio2
+                    optC: public/audio/part2/question_audio3
+                    optD: public/audio/part2/question_audio4
+                right_answer: optA
+                explain: Can be null
+                level: 1
+                part: 3
+              - _id: 5ca5cfd621a34914ef9a2f38
+                audio_link: public/audio/part2/question_audio3
+                dialogue_id: 5ca263d039b6666db8e6e4a0
+                answers:
+                    optA: public/audio/part2/question_audio1
+                    optB: public/audio/part2/question_audio2
+                    optC: public/audio/part2/question_audio3
+                    optD: public/audio/part2/question_audio4
+                right_answer: optA
+                explain: Can be null
+                level: 1
+                part: 3
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:

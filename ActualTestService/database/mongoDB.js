@@ -74,7 +74,7 @@ const getAll = (collection, page, limit, part) => {
         if (error) throw error;
         const db = client.db(nameDB);
         db.collection(collection)
-            .find({part: part})
+            .find({"part": part})
             .sort({time:-1})
             .skip(+page).limit(+limit)
             .toArray((error, result) => {
