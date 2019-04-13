@@ -12,7 +12,7 @@ export default class ListeningQuestion {
         let level = _.get(data, "level");
 
         switch(part) {
-            case 3:
+            case 3:{
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
                     level: data.level,
@@ -45,7 +45,7 @@ export default class ListeningQuestion {
                             })
                 questionObjects = questionObjects.map(item=>{
                     item.id_dialogue = result_insert_dialogue._id;
-                    item.part = 3;
+                    item.part = part;
                     item.level = level;
                     return item;
                 })
@@ -62,7 +62,8 @@ export default class ListeningQuestion {
                     questionObjects: result_insert_question
                 })
                 return d.promise;
-            case 4:
+            }
+            case 4:{
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
                     level: data.level,
@@ -95,7 +96,7 @@ export default class ListeningQuestion {
                             })
                 questionObjects = questionObjects.map(item=>{
                     item.id_dialogue = result_insert_dialogue._id;
-                    item.part = 3;
+                    item.part = part;
                     item.level = level;
                     return item;
                 })
@@ -112,6 +113,7 @@ export default class ListeningQuestion {
                     questionObjects: result_insert_question
                 })
                 return d.promise;
+            }
             default:
                 d.reject({
                         status: 500,
