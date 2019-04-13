@@ -26,6 +26,58 @@ export default class ReadingQuestion {
                     })
             return d.promise;
             }
+            case 6:{
+
+            }
+            case 7:{
+                let paragraph = {
+                    paragraph: data.paragraph,
+                    level: data.level,
+                    part: data.part
+                }
+
+                let questionObjects = _.get(data, "questionObjects")
+
+                if(questionObjects.length < 2) {
+                    d.reject({
+                            status: 500,
+                            message: "you need to import at least 2 questions"
+                        });
+                    return d.promise;
+                }
+                let result_insert_paragraph = await dbController.insert(collections.paragraphs, paragraph)
+                            .then(result => {
+                                delete result.paragraph;
+                                return result;
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                d.reject({
+                                    status: 500,
+                                    message: err
+                                });
+                                return d.promise;
+                            })
+                questionObjects = questionObjects.map(item=>{
+                    item.id_paragraph = result_insert_paragraph._id;
+                    item.part = part;
+                    item.level = level;
+                    return item;
+                })
+                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.reading_question, item)))
+                result_insert_question = result_insert_question.map(item=>{
+                    return {
+                        id: item._id,
+                        question: item.question_content
+
+                    }
+                })
+                d.resolve({
+                    paragraph: result_insert_paragraph,
+                    questionObjects: result_insert_question
+                })
+                return d.promise;
+            }
             default:
                 d.reject({
                         status: 500,

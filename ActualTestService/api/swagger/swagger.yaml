@@ -319,7 +319,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart7:
-    x-swagger-router-controller: question_part7
+    x-swagger-router-controller: reading_question
     post:
       tags:
         - readingQuestionPart7
@@ -339,17 +339,35 @@ paths:
           schema:
             type: object
             properties:
-              _id:
-                type: integer
-                description: The record ID.
-              level: 
-                type: integer
-              part: 
-                type: integer
+              paragraph:
+                type: object
+                properties:
+                  _id:
+                    type: integer
+                    description: The record ID.
+                  level: 
+                    type: integer
+                  part: 
+                    type: integer
+              questionObjects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    question: 
+                      type: string
             example: #sample object
-              level: 1
-              part: 7
-              _id: 5c9c86aef41bf82ed47ac679
+              paragraph:
+                level: 1
+                part: 7
+                _id: 5cb21291725335380159e937
+              questionObjects:
+                - id: 5cb21291725335380159e938
+                  question: What is the main topic of the article?
+                - id: 5cb21291725335380159e939
+                  question: What do police officials fear might happen?
         "401":
           description: Import Fail
           schema:
@@ -358,6 +376,134 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /questionsPart7/{questionId}:
+    x-swagger-router-controller: reading_question
+    get:
+      description: Returns this question by id record
+      operationId: getQuestionById
+      tags:
+        - readingQuestionPart7
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+          description: id question
+      responses:
+        "200":
+          description: Return the question you request
+          schema:
+            properties:
+              _id:
+                type: integer
+              question_content:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string
+              id_paragraph:
+                type: string    
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              _id: 5cb21291725335380159e938
+              question_content: What is the main topic of the article?
+              answers:
+                optA: Protests in Sydney
+                optB: Racial unrest
+                optC: Severely injured police officers
+                optD: Fair treatment by police
+              right_answer: optA
+              explain: Can be null
+              id_paragraph: 5cb21291725335380159e937
+              level: 1
+              part: 7
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    # put:
+    #   tags:
+    #     - listeningQuestionPart2
+    #   description: admin has logged in, and update content of question.
+    #   operationId: updateQuestion
+    #   security:
+    #     - auth0: []
+    #   parameters:
+    #     - in: path
+    #       name: questionId
+    #       type: string
+    #       required: true
+    #     - in: body
+    #       name: body
+    #       description: Add field you need update in this question.
+    #       schema:
+    #         $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+    #   responses:
+    #     "200":
+    #       description: Return a question object has updated in DB
+    #       schema:
+    #         type: object
+    #         properties:
+    #           _id:
+    #             type: integer
+    #           image_link:
+    #             type: string
+    #           answers:
+    #             type: object
+    #             properties:
+    #               optA:
+    #                 type: string
+    #               optB:
+    #                 type: string
+    #               optC:
+    #                 type: string
+    #               optD:
+    #                 type: string
+    #           right_answer: 
+    #             type: string
+    #           explain:
+    #             type: string      
+    #           level: 
+    #             type: integer
+    #           part: 
+    #             type: integer
+    #         example: #sample object
+    #           id: 5ca37b32d7e9b81653ad1dc9
+    #           image_link: public/audio/part2/question_image1
+    #           answers: 
+    #             optA: public/audio/part2/question_audio1
+    #             optB: public/audio/part2/question_audio2
+    #             optC: public/audio/part2/question_audio3
+    #             optD: public/audio/part2/question_audio4
+    #           right_answer: optA
+    #           explain: No Explain
+    #           level: 1
+    #           part: 2
+    #     "401":
+    #       description: Import Fail
+    #       schema:
+    #         $ref: "#/definitions/ErrorResponse"
+    #     default:
+    #       description: Import Error
+    #       schema:
+    #         $ref: "#/definitions/ErrorResponse"
   /questionsPart1:
     x-swagger-router-controller: listening_question
     post:
@@ -992,7 +1138,7 @@ paths:
             properties:
               _id:
                 type: integer
-              audio_link:
+              question_content:
                 type: string
               answers:
                 type: object
@@ -1008,23 +1154,26 @@ paths:
               right_answer: 
                 type: string
               explain:
-                type: string      
+                type: string
+              id_dialogue:
+                type: string   
               level: 
                 type: integer
               part: 
                 type: integer
             example: #sample object
-              id: 5ca37b32d7e9b81653ad1dc9
-              image_link: public/audio/part2/question_audio2
-              answers: 
-                optA: public/audio/part1/answer_audio1
-                optB: public/audio/part1/answer_audio2
-                optC: public/audio/part1/answer_audio3
-                optD: public/audio/part1/answer_audio4
+              _id: 5cb15f643e61721ec8402e5c
+              question_content: Who most likely is Mr. Metts?
+              answers:
+                optA: Emily's boss
+                optB: Emily's colleague
+                optC: Emily's teacher
+                optD: Emily's lawyer
               right_answer: optA
               explain: Can be null
+              id_dialogue: 5cb15f643e61721ec8402e5a
+              part: 3
               level: 1
-              part: 1
         default:
           description: Error
           schema:
@@ -1154,7 +1303,134 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-    
+  /questionsPart4/{questionId}:
+    x-swagger-router-controller: listening_question
+    get:
+      description: Returns this question by id record
+      operationId: getQuestionById
+      tags:
+        - listeningQuestionPart4
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+          description: id question
+      responses:
+        "200":
+          description: Return the question you request
+          schema:
+            properties:
+              _id:
+                type: integer
+              question_content:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string
+              id_dialogue:
+                type: string   
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              _id: 5cb15f643e61721ec8402e5c
+              question_content: Who most likely is Mr. Metts?
+              answers:
+                optA: Emily's boss
+                optB: Emily's colleague
+                optC: Emily's teacher
+                optD: Emily's lawyer
+              right_answer: optA
+              explain: Can be null
+              id_dialogue: 5cb15f643e61721ec8402e5a
+              part: 4
+              level: 1
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    put:
+      tags:
+        - listeningQuestionPart4
+      description: admin has logged in, and update content of question.
+      operationId: updateQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+        - in: body
+          name: body
+          description: Add field you need update in this question.
+          schema:
+            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+      responses:
+        "200":
+          description: Return a question object has updated in DB
+          schema:
+            type: object
+            properties:
+              _id:
+                type: integer
+              image_link:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              id: 5ca37b32d7e9b81653ad1dc9
+              image_link: public/audio/part2/question_image1
+              answers: 
+                optA: public/audio/part2/question_audio1
+                optB: public/audio/part2/question_audio2
+                optC: public/audio/part2/question_audio3
+                optD: public/audio/part2/question_audio4
+              right_answer: optA
+              explain: No Explain
+              level: 1
+              part: 1
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:
@@ -1295,47 +1571,61 @@ definitions:
   ImportQuestionPart7:
     type: object
     required:
-      - question_content
-      - answers
-      - right_answer
+      - paragraph
+      - questionObjects
       - level
       - part
-      - id_paragraph
     properties:
-      question_content:
+      paragraph:
         type: string
-      answers:
-        type: object
-        properties:
-          optA:
-            type: string
-          optB:
-            type: string
-          optC:
-            type: string
-          optD:
-            type: string
-      right_answer: 
-        type: string
-      explain:
-        type: string      
+      questionObjects:
+        type: array
+        items:
+          type: object
+          properties:
+            question_content:
+              type: string
+            answers:
+              type: object
+              properties:
+                optA:
+                  type: string
+                optB:
+                  type: string
+                optC:
+                  type: string
+                optD:
+                  type: string
+            right_answer: 
+              type: string
+            explain:
+              type: string      
       level: 
         type: integer
       part: 
         type: integer
-      id_paragraph:
-        type: string
     example: #sample object
-      question_content: What is the main topic of the press release ?
-      answers:
-          optA: The McCormick Convention Center
-          optB: Chicago's convention centers 
-          optC: Electronics retailers
-          optD: The Summer Consumer Electronics Show
-      right_answer: optA
+      paragraph: Melbourne - There has been an increase in racial unrest in this city, as hundreds of Australian Aboriginal people have protested what they say is unfair treatment by police.
+                Some of these protests have turned violent, and while no major injuries have been reported, police officials say that the situation has been increasing in severity over the last week, and they fear that there may be more severe injuries among both police and protestors if the trend continues.
+      questionObjects:
+        - question_content: What is the main topic of the article?
+          answers: 
+            optA: Protests in Sydney
+            optB: Racial unrest
+            optC: Severely injured police officers
+            optD: Fair treatment by police
+          right_answer: optA,
+          explain: Can be null
+        - question_content: What do police officials fear might happen?
+          answers: 
+            optA: The protests may not continue.
+            optB: The protestors may claim they are being treated unfairly.
+            optC: There may be fatal injuries in the future.
+            optD: The protestors may become better.
+          right_answer: optA,
+          explain: Can be null
       level: 1
       part: 7
-      id_paragraph: 5c9c86aef41bf82ed47ac679
   ImportListeningQuestionPart1:
     type: object
     required:
