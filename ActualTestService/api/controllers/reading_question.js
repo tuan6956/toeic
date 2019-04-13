@@ -2,28 +2,12 @@
 
 var util = require("util");
 var _ = require('lodash');
-const { listeningPar1Model } = require('../../models/index');
+const { readingQuestionModel } = require('../../models/index');
 const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importQuestion(req, res){
 
-  let image_link = _.get(req.body, "image_link");
-  let answers = _.get(req.body, "answers");
-  let right_answer = _.get(req.body, "right_answer");
-  let explain = _.get(req.body, "explain");
-  let level = _.get(req.body, "level");
-  let part = _.get(req.body, "part");
-
-  let data = {
-    image_link: image_link,
-    answers: answers,
-    right_answer: right_answer,
-    explain: explain,
-    level: level,
-    part: part
-  }
-
-  listeningPar1Model.importQuestion(data)
+  readingQuestionModel.importQuestion(req.body)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -33,10 +17,11 @@ function importQuestion(req, res){
 }
 
 function getAll(req, res){
-  let page = _.get(req.body, 'page');
-  let limit = _.get(req.body, 'limit')
+  let page = _.get(req.swagger.params, 'page');
+  let limit = _.get(req.swagger.params, 'limit')
+  let part = _.get(req.swagger.params, 'part')
 
-  listeningPar1Model.getAll(page, limit)
+  readingQuestionModel.getAll(page.value, limit.value, part.value)
     .then(result => {
       handleSuccess(res, 200, result);
     })
@@ -48,7 +33,7 @@ function getAll(req, res){
 function getQuestionById(req, res){
   let questionId = req.swagger.params.questionId.value.trim();
 
-  listeningPar1Model.getQuestionById(questionId)
+  readingQuestionModel.getQuestionById(questionId)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -62,7 +47,7 @@ function updateQuestion(req, res){
   let data = req.body;
   let _id = req.swagger.params.questionId.value.trim()
 
-  listeningPar1Model.updateQuestionById(_id, data)
+  readingQuestionModel.updateQuestionById(_id, data)
   .then(result => {
     handleSuccess(res, 200, result);
   })

@@ -42,13 +42,13 @@ tags:
 produces:
   - application/json
 paths:
-  /blankQuestion:
+  /questionPart5:
     x-swagger-router-controller: blank_question_part5
     post:
       tags:
         - readingQuestionPart5
       description: admin has logged in, and use import questions of part 5 in the exam. We have received the result include id, content_question, pos, part, level, position blank.
-      operationId: importBlankQuestion
+      operationId: importQuestionPart5
       security:
         - auth0: []
       parameters:
@@ -105,31 +105,131 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /questionsPart5/{questionId}:
+    x-swagger-router-controller: reading_question
     get:
-      description: Returns all question
-      operationId: getAll
+      description: Returns this question by id record
+      operationId: getQuestionById
       tags:
         - readingQuestionPart5
       security:
         - auth0: []
       parameters:
-        - in: query
-          name: limit
-          type: integer
-          description: limit record return
-        - in: query
-          name: page
-          type: integer
-          description: page you need to get
+        - in: path
+          name: questionId
+          type: string
+          required: true
+          description: id question
       responses:
         "200":
-          description: Success
+          description: Return the question you request
           schema:
-            $ref: "#/definitions/MessageResp"
+            properties:
+              _id:
+                type: integer
+              question_content:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              id: 5ca37b32d7e9b81653ad1dc9
+              question_content: This is __ new app for practise toeic.
+              answers:
+                  optA: a
+                  optB: an
+                  optC: one
+                  optD: two
+              right_answer: optA
+              explain: We need a article in front of Noun
+              level: 1
+              part: 5
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    # put:
+    #   tags:
+    #     - listeningQuestionPart2
+    #   description: admin has logged in, and update content of question.
+    #   operationId: updateQuestion
+    #   security:
+    #     - auth0: []
+    #   parameters:
+    #     - in: path
+    #       name: questionId
+    #       type: string
+    #       required: true
+    #     - in: body
+    #       name: body
+    #       description: Add field you need update in this question.
+    #       schema:
+    #         $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+    #   responses:
+    #     "200":
+    #       description: Return a question object has updated in DB
+    #       schema:
+    #         type: object
+    #         properties:
+    #           _id:
+    #             type: integer
+    #           image_link:
+    #             type: string
+    #           answers:
+    #             type: object
+    #             properties:
+    #               optA:
+    #                 type: string
+    #               optB:
+    #                 type: string
+    #               optC:
+    #                 type: string
+    #               optD:
+    #                 type: string
+    #           right_answer: 
+    #             type: string
+    #           explain:
+    #             type: string      
+    #           level: 
+    #             type: integer
+    #           part: 
+    #             type: integer
+    #         example: #sample object
+    #           id: 5ca37b32d7e9b81653ad1dc9
+    #           image_link: public/audio/part2/question_image1
+    #           answers: 
+    #             optA: public/audio/part2/question_audio1
+    #             optB: public/audio/part2/question_audio2
+    #             optC: public/audio/part2/question_audio3
+    #             optD: public/audio/part2/question_audio4
+    #           right_answer: optA
+    #           explain: No Explain
+    #           level: 1
+    #           part: 2
+    #     "401":
+    #       description: Import Fail
+    #       schema:
+    #         $ref: "#/definitions/ErrorResponse"
+    #     default:
+    #       description: Import Error
+    #       schema:
+    #         $ref: "#/definitions/ErrorResponse"
   /blankParagraphandQuestion:
     x-swagger-router-controller: questions_reading_test
     post:
@@ -496,7 +596,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart2:
-    x-swagger-router-controller: listening_part2
+    x-swagger-router-controller: listening_question
     post:
       tags:
         - listeningQuestionPart2
@@ -608,7 +708,7 @@ paths:
           schema:
             $ref: "#/definitions/ErrorResponse"
   /questionsPart2/{questionId}:
-    x-swagger-router-controller: listening_part2
+    x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
       operationId: getQuestionById
@@ -1062,17 +1162,17 @@ definitions:
     properties:
       messageError:
         type: string
-  MessageResp:
-    type: object
-    required: 
-      - success
-    properties:
-      success:
-        type: boolean
-      message:
-        type: string
-      value:
-        type: object
+  # MessageResp:
+    # type: object
+    # required: 
+    #   - success
+    # properties:
+    #   success:
+    #     type: boolean
+    #   message:
+    #     type: string
+    #   value:
+    #     type: object
   ImportBlankQuestion:
     type: object
     required:

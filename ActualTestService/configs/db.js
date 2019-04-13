@@ -10,9 +10,8 @@ module.exports = {
         question_of_part6: "questionOfPart6",
         paragraphs_of_part7: "paragraphOfPart",
         question_of_part7: "questionOfPart7",
-        listening_question_part1: "listeningQuestionPart1",
-        listening_question_part2: "listeningQuestionPart2",
         listening_question: "listening_question",
+        reading_question: "reading_question",
         dialogues: "dialogues",
     }
 }

@@ -4,36 +4,16 @@ const { dbController } = require('../database/index');
 var ObjectId = require('mongodb').ObjectID;
 var _ = require('lodash');
 
-export default class ListeningQuestion {
-    
+export default class ReadingQuestion {
     async importQuestion(data){
         const d = q.defer();
         let part = _.get(data, "part");
         let level = _.get(data, "level");
 
         switch(part) {
-            case 1:{
-                dbController.insert(collections.listening_question, data)
-                            .then(result => {
-                                delete result.image_link;
-                                delete result.answers;
-                                delete result.right_answer;
-                                delete result.explain;
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString()
-                                });
-                            })
-                return d.promise;
-            }
-            case 2:{
-                dbController.insert(collections.listening_question_part2, data)
+            case 5:{
+                dbController.insert(collections.reading_question, data)
                     .then(result => {
-                        delete result.audio_link;
-                        delete result.answers;
                         delete result.right_answer;
                         delete result.explain;
                         d.resolve(result);
@@ -41,112 +21,10 @@ export default class ListeningQuestion {
                     .catch(err => {
                         d.reject({
                             status: 500,
-                            message: "Can not insert question into database"
+                            message: err.toString()
                         });
                     })
-                return d.promise;
-            }
-            case 3:{
-                let dialogue = {
-                    dialogue_link: data.dialogue_link,
-                    level: data.level,
-                    part: data.part
-                }
-
-                let questionObjects = _.get(data, "questionObjects")
-
-                if(questionObjects.length < 3) {
-                    d.reject({
-                            status: 500,
-                            message: "you need to import at least 3 questions"
-                        });
-                    return d.promise;
-                }
-                
-                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
-                            .then(result => {
-                                delete result.dialogue_link;
-                                return result;
-                            })
-                            .catch(err => {
-                                console.log(err)
-                                d.reject({
-                                    status: 500,
-                                    message: "Can not insert dialogue into database",
-                                    err: err
-                                });
-                                return d.promise;
-                            })
-                questionObjects = questionObjects.map(item=>{
-                    item.id_dialogue = result_insert_dialogue._id;
-                    item.part = part;
-                    item.level = level;
-                    return item;
-                })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
-                result_insert_question = result_insert_question.map(item=>{
-                    return {
-                        id: item._id,
-                        question: item.question_content
-    
-                    }
-                })
-                d.resolve({
-                    dialogue: result_insert_dialogue,
-                    questionObjects: result_insert_question
-                })
-                return d.promise;
-            }
-            case 4:{
-                let dialogue = {
-                    dialogue_link: data.dialogue_link,
-                    level: data.level,
-                    part: data.part
-                }
-
-                let questionObjects = _.get(data, "questionObjects")
-
-                if(questionObjects.length < 3) {
-                    d.reject({
-                            status: 500,
-                            message: "you need to import at least 3 questions"
-                        });
-                    return d.promise;
-                }
-                
-                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
-                            .then(result => {
-                                delete result.dialogue_link;
-                                return result;
-                            })
-                            .catch(err => {
-                                console.log(err)
-                                d.reject({
-                                    status: 500,
-                                    message: "Can not insert dialogue into database",
-                                    err: err
-                                });
-                                return d.promise;
-                            })
-                questionObjects = questionObjects.map(item=>{
-                    item.id_dialogue = result_insert_dialogue._id;
-                    item.part = part;
-                    item.level = level;
-                    return item;
-                })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
-                result_insert_question = result_insert_question.map(item=>{
-                    return {
-                        id: item._id,
-                        question: item.question_content
-
-                    }
-                })
-                d.resolve({
-                    dialogue: result_insert_dialogue,
-                    questionObjects: result_insert_question
-                })
-                return d.promise;
+            return d.promise;
             }
             default:
                 d.reject({
@@ -160,7 +38,7 @@ export default class ListeningQuestion {
     getAll(page = 1, limit = 5, part){
         const d = q.defer();
         if(part) {
-            dbController.getAll(collections.listening_question, page, limit, part)
+            dbController.getAll(collections.reading_question, page, limit, part)
                             .then(result => {
                                 result = result.map(item=>{
                                     return {
@@ -199,7 +77,7 @@ export default class ListeningQuestion {
         id = ObjectId(id);
         const d = q.defer();
     
-        dbController.find(collections.listening_question, id)
+        dbController.find(collections.reading_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })
@@ -316,7 +194,3 @@ export default class ListeningQuestion {
         }
     }
 }
-
-// https://viblo.asia/q/asyncawait-foreach-for-o754DoEJ5M6
-// https://medium.com/@bluepnume/even-with-async-await-you-probably-still-need-promises-9b259854c161
-// https://ehkoo.com/bai-viet/tat-tan-tat-ve-promise-va-async-await

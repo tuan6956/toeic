@@ -2,7 +2,7 @@
 
 var util = require("util");
 var _ = require('lodash');
-const { blankQuestionModel } = require('../../models/index');
+const { readingQuestionModel } = require('../../models/index');
 const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importBlankQuestion(req, res){
@@ -30,7 +30,7 @@ function importBlankQuestion(req, res){
     part: part
   }
 
-  blankQuestionModel.importBlankQuestion(data)
+  readingQuestionModel.importQuestion(data)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -44,7 +44,7 @@ function getAll(req, res){
   let page = _.get(req.body, 'page');
   let limit = _.get(req.body, 'limit')
 
-  blankQuestionModel.getAll(page, limit)
+  readingQuestionModel.getAll(page, limit)
     .then(result => {
       handleSuccess(res, 200, result);
     })
