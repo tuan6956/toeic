@@ -160,7 +160,7 @@ export default class ListeningQuestion {
     getAll(page = 1, limit = 5, part){
         const d = q.defer();
         if(part) {
-            dbController.getAll(collections.listening_question, page, limit, part)
+            dbController.getAll(collections.listening_question, page, limit, new Object({"part": part}))
                             .then(result => {
                                 result = result.map(item=>{
                                     return {

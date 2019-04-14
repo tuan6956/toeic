@@ -68,13 +68,13 @@ const deleteRecord = (collection, query) => {
     return d.promise;
 }
 
-const getAll = (collection, page, limit, part=null) => {
+const getAll = (collection, page, limit, data_fillter) => {
     const d = q.defer();
     connectDB((error, client) => {
         if (error) throw error;
         const db = client.db(nameDB);
         db.collection(collection)
-            .find({"part": part})
+            .find(data_fillter)
             .sort({time:-1})
             .skip(+page).limit(+limit)
             .toArray((error, result) => {
