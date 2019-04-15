@@ -29,11 +29,12 @@ export default class ReadingQuestion {
             case 6:{
                 let questions = _.get(data, "questions");
                 let paragraph = [];
-                questions = questions.map(item=>{
+                questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
-                    return item;
+                        return item;
                 })
+                questions.pop();
                 let result_insert_paragraph = await dbController.insert(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
                             .then(result => {
                                 delete result.paragraphs;
