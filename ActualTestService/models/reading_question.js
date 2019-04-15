@@ -27,7 +27,45 @@ export default class ReadingQuestion {
             return d.promise;
             }
             case 6:{
+                let questions = _.get(data, "questions");
+                let paragraph = [];
+                questions = questions.map(item=>{
+                    paragraph.push(item.paragraph);
+                    delete item.paragraph;
+                    return item;
+                })
+                let result_insert_paragraph = await dbController.insert(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
+                            .then(result => {
+                                delete result.paragraphs;
+                                return result;
+                            })
+                            .catch(err => {
+                                console.log(err)
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString()
+                                });
+                                return d.promise;
+                            })
+                questions = questions.map(item=>{
+                    item.id_paragraph = result_insert_paragraph._id;
+                    item.part = part;
+                    return item;
+                })
 
+                let result_insert_question = await Promise.all(questions.map(item => dbController.insert(collections.reading_question, item)))
+                result_insert_question = result_insert_question.map(item=>{
+                    return {
+                        id: item._id,
+                        question: item.question_content,
+                        level: item.level
+                    }
+                })
+                d.resolve({
+                    paragraphs: result_insert_paragraph,
+                    questions: result_insert_question
+                })
+                return d.promise;
             }
             case 7:{
                 let paragraph = {
@@ -90,7 +128,7 @@ export default class ReadingQuestion {
     getAll(page = 1, limit = 5, part){
         const d = q.defer();
         if(part) {
-            dbController.getAll(collections.reading_question, page, limit, part)
+            dbController.getAll(collections.reading_question, page, limit, new Object({"part": part}))
                             .then(result => {
                                 result = result.map(item=>{
                                     return {
