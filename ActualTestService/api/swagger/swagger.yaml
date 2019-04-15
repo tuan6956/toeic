@@ -326,7 +326,9 @@ paths:
               explain:
                 type: string
               id_paragraph:
-                type: string    
+                type: string
+              pos_in_paragraphs:
+                type: integer
               level: 
                 type: integer
               part: 
@@ -343,6 +345,7 @@ paths:
                         Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
                         Choice D is a verb.
               id_paragraph: 5cb21291725335380159e937
+              pos_in_paragraphs: 3
               level: 1
               part: 6
         default:
@@ -374,8 +377,6 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
-                type: string
               answers:
                 type: object
                 properties:
@@ -392,14 +393,15 @@ paths:
               explain:
                 type: string
               id_paragraph:
-                type: string    
+                type: string
+              pos_in_paragraphs:
+                type: integer
               level: 
                 type: integer
               part: 
                 type: integer
             example: #sample object
               _id: 5cb21291725335380159e938
-              question_content: What is the main topic of the article?
               answers:
                 optA: Protests in Sydney
                 optB: Racial unrest
@@ -408,8 +410,9 @@ paths:
               right_answer: optA
               explain: Can be null
               id_paragraph: 5cb21291725335380159e937
+              pos_in_paragraphs: 2
               level: 1
-              part: 7
+              part: 6
         "401":
           description: Import Fail
           schema:
@@ -1083,18 +1086,18 @@ paths:
                 type: integer
               part: 
                 type: integer
-            example: #sample object
-              _id: 5cb15f643e61721ec8402e5c
-              question_content: Who most likely is Mr. Metts?
-              answers:
+            example: #sample object 
+              id: 5cb490df7a69701a2e53b161 
+              question_content: Who most likely is Mr. Metts?_update
+              answers: 
                 optA: Emily's boss
                 optB: Emily's colleague
                 optC: Emily's teacher
                 optD: Emily's lawyer
               right_answer: optA
               explain: Can be null
-              id_dialogue: 5cb15f643e61721ec8402e5a
-              part: 3
+              id_dialogue: 5cb490de7a69701a2e53b160
+              part: 3,
               level: 1
         default:
           description: Error

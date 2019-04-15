@@ -24,7 +24,7 @@ export default class ReadingQuestion {
                             message: err.toString()
                         });
                     })
-            return d.promise;
+                return d.promise;
             }
             case 6:{
                 let questions = _.get(data, "questions");
@@ -32,7 +32,8 @@ export default class ReadingQuestion {
                 questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
-                        return item;
+                    item.pos_in_paragraphs = index+1;
+                    return item;
                 })
                 questions.pop();
                 let result_insert_paragraph = await dbController.insert(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
@@ -59,6 +60,7 @@ export default class ReadingQuestion {
                     return {
                         id: item._id,
                         question: item.question_content,
+                        pos_in_paragraphs: item.pos_in_paragraphs,
                         level: item.level
                     }
                 })
@@ -230,7 +232,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                dbController.update(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -243,10 +245,35 @@ export default class ReadingQuestion {
                 return d.promise;
             }
             case 6:{
-                d.reject({
-                    status: 500,
-                    message: "the function is not supported"
-                })
+                let data_update = new Object();
+                let answers = _.get(data, 'answers')
+                if(answers){
+                    if(answers.optA){
+                        data_update['answers.optA'] = answers.optA;
+                    }
+                    if(answers.optB){
+                        data_update['answers.optB'] = answers.optB;
+                    }
+                    if(answers.optC){
+                        data_update['answers.optC'] = answers.optC;
+                    }
+                    if(answers.optD){
+                        data_update['answers.optD'] = answers.optD;
+                    }
+                    
+                }
+                else{data_update = data}
+            
+                dbController.update(collections.reading_question,{_id: _id}, data_update)
+                            .then(result => {
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString()
+                                });
+                            })
                 return d.promise;
             }
             case 7:{
@@ -269,7 +296,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                dbController.update(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })

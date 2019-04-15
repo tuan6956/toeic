@@ -30,7 +30,7 @@ export default class ListeningQuestion {
                 return d.promise;
             }
             case 2:{
-                dbController.insert(collections.listening_question_part2, data)
+                dbController.insert(collections.listening_question, data)
                     .then(result => {
                         delete result.audio_link;
                         delete result.answers;
@@ -306,17 +306,67 @@ export default class ListeningQuestion {
                 return d.promise;
             }
             case 3:{
-                d.reject({
-                    status: 500,
-                    message: "the function is not supported"
-                })
+                let data_update = new Object();
+                let answers = _.get(data, 'answers')
+                if(answers){
+                    if(answers.optA){
+                        data_update['answers.optA'] = answers.optA;
+                    }
+                    if(answers.optB){
+                        data_update['answers.optB'] = answers.optB;
+                    }
+                    if(answers.optC){
+                        data_update['answers.optC'] = answers.optC;
+                    }
+                    if(answers.optD){
+                        data_update['answers.optD'] = answers.optD;
+                    }
+                    
+                }
+                else{data_update = data}
+            
+                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                            .then(result => {
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString()
+                                });
+                            })
                 return d.promise;
             }
             case 4:{
-                d.reject({
-                    status: 500,
-                    message: "the function is not supported"
-                })
+                let data_update = new Object();
+                let answers = _.get(data, 'answers')
+                if(answers){
+                    if(answers.optA){
+                        data_update['answers.optA'] = answers.optA;
+                    }
+                    if(answers.optB){
+                        data_update['answers.optB'] = answers.optB;
+                    }
+                    if(answers.optC){
+                        data_update['answers.optC'] = answers.optC;
+                    }
+                    if(answers.optD){
+                        data_update['answers.optD'] = answers.optD;
+                    }
+                    
+                }
+                else{data_update = data}
+            
+                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                            .then(result => {
+                                d.resolve(result);
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: err.toString()
+                                });
+                            })
                 return d.promise;
             }
             default:
