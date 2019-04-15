@@ -214,7 +214,7 @@ export default class ListeningQuestion {
                     .catch(err => {
                         d.reject({
                             status: 500,
-                            message: "Can not get all question into database"
+                            message: err.toString()
                         });
                     })
         return d.promise;
