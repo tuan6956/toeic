@@ -44,12 +44,12 @@ produces:
   - application/json
 paths:
   /questionsPart5:
-    x-swagger-router-controller: blank_question_part5
+    x-swagger-router-controller: reading_question
     post:
       tags:
         - readingQuestionPart5
       description: admin has logged in, and use import questions of part 5 in the exam. We have received the result include id, content_question, pos, part, level, position blank.
-      operationId: importQuestionPart5
+      operationId: importQuestion
       security:
         - auth0: []
       parameters:

@@ -17,6 +17,10 @@ const configJWT = require('./configs/jwt');
     
 const configServer = require('./configs/server');
 require('dotenv').config();
+import generateTest from './models/generate_test';
+import MongoConector from './middlewares/mongo_connector'
+// import MongoModel from './database/mongoModel';
+import Models from './models/index';
 
 let app = express();
 app.use(bodyParser.urlencoded({
@@ -28,6 +32,20 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.models = new Models(app);
+
+new MongoConector().connectDB()
+    .then(db=>{
+        app.db = db;
+        app.db.collection('manage_question_quantity').find().toArray().then(res=>{
+            console.log(res)
+        });
+    })
+    .catch(err=>{
+        console.log(err)
+        throw err;
+    })
 
 module.exports = app; // for testing
 

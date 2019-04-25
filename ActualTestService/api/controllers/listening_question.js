@@ -2,12 +2,15 @@
 
 var util = require("util");
 var _ = require('lodash');
-const { listeningModel } = require('../../models/index');
+// const { listeningModel } = require('../../models/index');
+import Models from '../../models/index';
 const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importQuestion(req, res){
 
-  listeningModel.importQuestion(req.body)
+  let models = new Models(req.app)
+
+  models.listeningModels.importQuestion(req.body)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -21,7 +24,8 @@ function getAll(req, res){
   let limit = _.get(req.swagger.params, 'limit')
   let part = _.get(req.swagger.params, 'part')
 
-  listeningModel.getAll(page.value, limit.value, part.value)
+  let models = new Models(req.app)
+  models.listeningModels.getAll(page.value, limit.value, part.value)
     .then(result => {
       handleSuccess(res, 200, result);
     })
@@ -32,8 +36,9 @@ function getAll(req, res){
 
 function getQuestionById(req, res){
   let questionId = req.swagger.params.questionId.value.trim();
+  let models = new Models(req.app)
 
-  listeningModel.getQuestionById(questionId)
+  models.listeningModels.getQuestionById(questionId)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -45,9 +50,10 @@ function getQuestionById(req, res){
 
 function updateQuestion(req, res){
   let data = req.body;
-  let _id = req.swagger.params.questionId.value.trim()
+  let _id = req.swagger.params.questionId.value.trim();
+  let models = new Models(req.app);
 
-  listeningModel.updateQuestionById(_id, data)
+  models.listeningModels.updateQuestionById(_id, data)
   .then(result => {
     handleSuccess(res, 200, result);
   })
