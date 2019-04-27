@@ -19,10 +19,10 @@ export default class ListeningQuestion {
 
         switch(part) {
             case 1:{
-                this.mongoModels.insert(collections.listening_question, data)
+                this.mongoModels.insertRecord(collections.listening_question, data)
                             .then(result => {
-                                delete result.image_link;
-                                delete result.answers;
+                                // delete result.image_link;
+                                // delete result.answers;
                                 delete result.right_answer;
                                 delete result.explain;
                                 d.resolve(result);
@@ -30,16 +30,16 @@ export default class ListeningQuestion {
                             .catch(err => {
                                 d.reject({
                                     status: 500,
-                                    message: err.toString()
+                                    message: err
                                 });
                             })
                 return d.promise;
             }
             case 2:{
-                this.mongoModels.insert(collections.listening_question, data)
+                this.mongoModels.insertRecord(collections.listening_question, data)
                     .then(result => {
-                        delete result.audio_link;
-                        delete result.answers;
+                        // delete result.audio_link;
+                        // delete result.answers;
                         delete result.right_answer;
                         delete result.explain;
                         d.resolve(result);
@@ -47,7 +47,7 @@ export default class ListeningQuestion {
                     .catch(err => {
                         d.reject({
                             status: 500,
-                            message: "Can not insert question into database"
+                            message: err.toString()
                         });
                     })
                 return d.promise;
@@ -69,7 +69,7 @@ export default class ListeningQuestion {
                     return d.promise;
                 }
                 
-                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
+                let result_insert_dialogue = await this.mongoModels.insertRecord(collections.dialogues, dialogue)
                             .then(result => {
                                 delete result.dialogue_link;
                                 return result;
@@ -89,7 +89,7 @@ export default class ListeningQuestion {
                     item.level = level;
                     return item;
                 })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
+                let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.listening_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
@@ -120,7 +120,7 @@ export default class ListeningQuestion {
                     return d.promise;
                 }
                 
-                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
+                let result_insert_dialogue = await this.mongoModels.insertRecord(collections.dialogues, dialogue)
                             .then(result => {
                                 delete result.dialogue_link;
                                 return result;

@@ -8,9 +8,7 @@ const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importQuestion(req, res){
 
-  let models = new Models(req.app)
-
-  models.listeningModels.importQuestion(req.body)
+  req.app.models.listeningModels.importQuestion(req.body)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -24,8 +22,7 @@ function getAll(req, res){
   let limit = _.get(req.swagger.params, 'limit')
   let part = _.get(req.swagger.params, 'part')
 
-  let models = new Models(req.app)
-  models.listeningModels.getAll(page.value, limit.value, part.value)
+  req.app.models.listeningModels.getAll(page.value, limit.value, part.value)
     .then(result => {
       handleSuccess(res, 200, result);
     })
@@ -36,9 +33,8 @@ function getAll(req, res){
 
 function getQuestionById(req, res){
   let questionId = req.swagger.params.questionId.value.trim();
-  let models = new Models(req.app)
 
-  models.listeningModels.getQuestionById(questionId)
+  req.app.models.listeningModels.getQuestionById(questionId)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -51,9 +47,8 @@ function getQuestionById(req, res){
 function updateQuestion(req, res){
   let data = req.body;
   let _id = req.swagger.params.questionId.value.trim();
-  let models = new Models(req.app);
 
-  models.listeningModels.updateQuestionById(_id, data)
+  req.app.models.listeningModels.updateQuestionById(_id, data)
   .then(result => {
     handleSuccess(res, 200, result);
   })
