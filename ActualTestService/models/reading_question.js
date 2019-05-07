@@ -35,14 +35,19 @@ export default class ReadingQuestion {
             case 6:{
                 let questions = _.get(data, "questions");
                 let paragraph = [];
+                let avg_level = 0;
                 questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
                     item.pos_in_paragraphs = index+1;
+                    if(item.level){
+                        avg_level+= item.level;
+                    }
                     return item;
                 })
                 questions.pop();
-                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
+                avg_level = Math.round(avg_level/3);
+                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": avg_level}))
                             .then(result => {
                                 delete result.paragraphs;
                                 return result;

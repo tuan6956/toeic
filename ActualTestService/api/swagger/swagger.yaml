@@ -40,6 +40,7 @@ tags:
   description: "Everything about question in part 7"
 - name: "listeningQuestion"
 - name: "readingQuestion"
+- name: TestServer
 produces:
   - application/json
 paths:
@@ -1518,7 +1519,224 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-          
+  # /tests:
+  #   x-swagger-router-controller: test
+  #   get:
+  #     description: Returns all question
+  #     operationId: getAll
+  #     tags:
+  #       - readingQuestion
+  #     security:
+  #       - auth0: []
+  #     parameters:
+  #       - in: query
+  #         name: limit
+  #         type: integer
+  #         description: limit record return
+  #       - in: query
+  #         name: page
+  #         type: integer
+  #         description: page you need to get
+  #       - in: query
+  #         name: part
+  #         type: integer
+  #         description: quesition of part you want to get
+  #     responses:
+  #       "200":
+  #         description: Return all records you request by paging
+  #         schema:
+  #           properties:
+  #             _id:
+  #               type: integer
+  #             audio_link:
+  #               type: string
+  #             dialogue_id:
+  #               type: string
+  #             answers:
+  #               type: object
+  #               properties:
+  #                 optA:
+  #                   type: string
+  #                 optB:
+  #                   type: string
+  #                 optC:
+  #                   type: string
+  #                 optD:
+  #                   type: string
+  #             right_answer: 
+  #               type: string
+  #             explain:
+  #               type: string      
+  #             level: 
+  #               type: integer
+  #             part: 
+  #               type: integer
+  #       default:
+  #         description: Error
+  #         schema:
+  #           $ref: "#/definitions/ErrorResponse"
+  /test:
+    x-swagger-router-controller: test
+    get:
+      description: Returns the test by level of user and ordinal of the test.
+      operationId: getTheTestByLevelAndOrdinalTest
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: level
+          type: integer
+          description: current level of user
+        - in: query
+          name: ordinalOfTest
+          type: integer
+          description: ordinal of test
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              questions:
+                type: object
+                properties:
+                  part_1:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_2:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_3:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_4:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_5:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_6:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_7:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /miniTest:
+    x-swagger-router-controller: test
+    get:
+      description: Returns the test by level of user and ordinal of the test.
+      operationId: getMiniTest
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      # parameters:
+        # - in: query
+        #   name: level
+        #   type: integer
+        #   description: current level of user
+        # - in: query
+        #   name: ordinalOfTest
+        #   type: integer
+        #   description: ordinal of test
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              questions:
+                type: object
+                properties:
+                  part_1:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_2:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_3:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_4:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_5:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_6:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_7:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:

@@ -77,10 +77,10 @@ new MongoConector().connectDB()
             
         // });
         //generate the test
-        // app.models.generateTest.generateTestToLevel(1);
+        app.models.testModels.generateTestToLevel(1);
     })
     .catch(err=>{
-        console.log(err)
+        // console.log(err)
         throw err;
     })
 
@@ -127,7 +127,7 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
     swaggerExpress.register(app);
 
     var port = process.env.PORT || configServer.port;
-    console.log(port);
+    console.log("Server is started by port " + port);
     app.listen(port);
 
 
