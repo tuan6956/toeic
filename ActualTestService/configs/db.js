@@ -10,6 +10,8 @@ module.exports = {
         listening_question: "listening_question",
         reading_question: "reading_question",
         manage_question_quantity: "manage_question_quantity",
+        test: "test",
+        mini_test: "mini_test",
     },
     option : {
         useNewUrlParser: true,

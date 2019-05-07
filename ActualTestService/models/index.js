@@ -14,5 +14,6 @@ export default class Models {
         this.app = app;
         this.listeningModels = new ListeningQuestion(app);
         this.readingModels = new ReadingQuestion(app);
+        this.generateTest = new GenerateTest(app);
     }
 }
