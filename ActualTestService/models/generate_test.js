@@ -25,16 +25,48 @@ export default class GenerateTest {
     }
 
     async insertQuestionToTest(collection_get_questions, part, level, skip_records, limit_records, id_test, current_quantity_question,quantity_questions_of_part){
-        
+        // switch (part) {
+        //     case 1: case 2:{
+        //         let questions = await this.getQuestionsToGenerate(collection_get_questions, part, level, skip_records, limit_records);
+        //         console.log(skip_records, limit_records, quantity_questions_of_part, current_quantity_question, id_test, part, "part")
+        //         console.log(questions.length, questions.length)
+
+        //         while(current_quantity_question <= quantity_questions_of_part && questions.length !== 0){
+        //             //insert the question to test
+        //             let insert_to_part = 'questions.part_' + part;
+        //             let insert_question = {};
+        //             // questions[0].test_id = id_test;
+        //             insert_question[insert_to_part] = questions[0];
+        //             this.app.db.collection(collections.collections.test)
+        //                         .findOneAndUpdate({_id: ObjectId(id_test)}, 
+        //                             {$push: insert_question})
+
+        //             //update question add to id_test.
+        //             this.app.db.collection(collection_get_questions)
+        //                         .findOneAndUpdate({_id: questions[0]._id}, {
+        //                             $set: {test_id: id_test}
+        //                         })
+        //             //remove question have inserted.
+        //             questions.shift();
+        //         }
+        //     }
+        //     case 3: case 4:{
+                
+        //     }
+        //     default:
+        //         break;
+        // }
+
+
         let questions = await this.getQuestionsToGenerate(collection_get_questions, part, level, skip_records, limit_records);
-        console.log(skip_records, limit_records, quantity_questions_of_part, current_quantity_question, id_test)
+        console.log(skip_records, limit_records, quantity_questions_of_part, current_quantity_question, id_test, part, "part")
         console.log(questions.length, questions.length)
 
         while(current_quantity_question <= quantity_questions_of_part && questions.length !== 0){
             //insert the question to test
             let insert_to_part = 'questions.part_' + part;
             let insert_question = {};
-            questions[0].test_id = id_test;
+            // questions[0].test_id = id_test;
             insert_question[insert_to_part] = questions[0];
             this.app.db.collection(collections.collections.test)
                         .findOneAndUpdate({_id: ObjectId(id_test)}, 
@@ -57,8 +89,28 @@ export default class GenerateTest {
         let latest_test = await this.get_latest_test(count_test, level);
         if(!_.isNull(latest_test) && latest_test.status === 'pending'){
             // insert for part 1:
-            if(latest_test.questions.part_1.length < 10){
-                this.insertQuestionToTest(collections.collections.listening_question, 1, level, (count_test-1)*10 + latest_test.questions.part_1.length, 10-latest_test.questions.part_1.length, latest_test._id, latest_test.questions.part_1.length, 10)      
+            if(latest_test.questions.part_1.length < 6){
+                this.insertQuestionToTest(collections.collections.listening_question, 1, level, (count_test-1)*6 + latest_test.questions.part_1.length, 6-latest_test.questions.part_1.length, latest_test._id, latest_test.questions.part_1.length, 6);     
+            }
+
+            if(latest_test.questions.part_2.length < 25){
+                this.insertQuestionToTest(collections.collections.listening_question, 2, level, (count_test-1)*25 + latest_test.questions.part_2.length, 25-latest_test.questions.part_2.length,latest_test._id, latest_test.questions.part_2.length, 25);
+            }
+
+            if(latest_test.questions.part_3.length < 13){
+                this.insertQuestionToTest(collections.collections.dialogues, 3, level, (count_test-1)*13 + latest_test.questions.part_3.length, 13-latest_test.questions.part_3.length,latest_test._id, latest_test.questions.part_3.length, 13);
+            }
+            
+            if(latest_test.questions.part_4.length < 10){
+                this.insertQuestionToTest(collections.collections.dialogues, 4, level, (count_test-1)*10 + latest_test.questions.part_4.length, 10-latest_test.questions.part_4.length,latest_test._id, latest_test.questions.part_4.length, 10);
+            }
+
+            if(latest_test.questions.part_5.length < 30){
+                this.insertQuestionToTest(collections.collections.reading_question, 5, level, (count_test-1)*30 + latest_test.questions.part_5.length, 30-latest_test.questions.part_5.length,latest_test._id, latest_test.questions.part_5.length, 30);
+            }
+
+            if(latest_test.questions.part_6.length < 4){
+                this.insertQuestionToTest(collections.collections.paragraphs, 6, level, (count_test-1)*4 + latest_test.questions.part_6.length, 4-latest_test.questions.part_6.length,latest_test._id, latest_test.questions.part_6.length, 4);
             }
         }
         else{
@@ -85,43 +137,22 @@ export default class GenerateTest {
             for (let index = 1; index <= 7; index++){
                 switch (index) {
                     case 1:{
-                        // let questions = await this.getQuestionsToGenerate(collections.collections.listening_question,1, 1, count_test*10,10);
-                        // // insert to collection
-                        // while(questions.length > 0){
-                        //     this.app.db.collection(collections.collections.test)
-                        //         .findOneAndUpdate({_id: ObjectId(id_insert)}, 
-                        //             {$push: {'questions.part_1': questions[0]}})
-                            
-                        //     //update question
-                        //     this.app.db.collection(collections.collections.listening_question)
-                        //         .findOneAndUpdate({_id: questions[0]._id}, {
-                        //             $set: {test_id: id_insert}
-                        //         })
-                        // //     //remove the question has updated
-                        //     questions.shift();
-                        // }
-                        this.insertQuestionToTest(collections.collections.listening_question,1, level, (count_test)*10, 10, id_insert,0, 10);
+                        this.insertQuestionToTest(collections.collections.listening_question,1, level, (count_test)*6, 6, id_insert,0, 6);
                     }
                     case 2:{
-                        // let questions = await this.getQuestionsToGenerate(collections.collections.listening_question,2, level, count_test*30, 30);
-                        // //insert to collection
-                        // while(questions.length > 0){
-                        //     this.app.db.collection(collections.collections.test)
-                        //         .findOneAndUpdate({_id: ObjectId(id_insert)}, 
-                        //             {$push: {'questions.part_2': questions[0]}})
-                            
-                        //     //update question
-                        //     this.app.db.collection(collections.collections.listening_question)
-                        //         .findOneAndUpdate({_id: questions[0]._id}, {
-                        //             $set: {test_id: id_insert}
-                        //         })
-                        // //     //remove the question has updated
-                        //     questions.shift();
-                        // }
-                        this.insertQuestionToTest(collections.collections.listening_question,2, level, (count_test)*30, 30, id_insert, 0,30)
+                        this.insertQuestionToTest(collections.collections.listening_question,2, level, (count_test)*25, 25, id_insert, 0,25)
                     }
                     case 3:{
-
+                        this.insertQuestionToTest(collections.collections.dialogues, index, level, count_test*13, 13, id_insert, 0, 13);
+                    }
+                    case 4:{
+                        this.insertQuestionToTest(collections.collections.dialogues, index, level, count_test*10, 10, id_insert, 0, 10);
+                    }
+                    case 5: {
+                        this.insertQuestionToTest(collections.collections.reading_question, index, level, count_test*30, 30, id_insert, 0, 30);
+                    }
+                    case 6: {
+                        this.insertQuestionToTest(collections.collections.paragraphs, index, level, count_test*4, 4, id_insert, 0, 4);
                     }
                     default:
                         break;
