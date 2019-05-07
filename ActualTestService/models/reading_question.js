@@ -18,7 +18,7 @@ export default class ReadingQuestion {
 
         switch(part) {
             case 5:{
-                this.mongoModels.insert(collections.reading_question, data)
+                this.mongoModels.insertRecord(collections.reading_question, data)
                     .then(result => {
                         delete result.right_answer;
                         delete result.explain;
@@ -42,13 +42,13 @@ export default class ReadingQuestion {
                     return item;
                 })
                 questions.pop();
-                let result_insert_paragraph = await this.mongoModels.insert(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
+                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
                             .then(result => {
                                 delete result.paragraphs;
                                 return result;
                             })
                             .catch(err => {
-                                console.log(err)
+                                console.log(err, "erro loi m oi")
                                 d.reject({
                                     status: 500,
                                     message: err.toString()
@@ -61,7 +61,7 @@ export default class ReadingQuestion {
                     return item;
                 })
 
-                let result_insert_question = await Promise.all(questions.map(item => this.mongoModels.insert(collections.reading_question, item)))
+                let result_insert_question = await Promise.all(questions.map(item => this.mongoModels.insertRecord(collections.reading_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
@@ -80,19 +80,31 @@ export default class ReadingQuestion {
                 let paragraph = {
                     paragraph: data.paragraph,
                     level: data.level,
-                    part: data.part
+                    part: data.part,
+                    type: data.type
                 }
 
                 let questionObjects = _.get(data, "questionObjects")
-
-                if(questionObjects.length < 2) {
-                    d.reject({
-                            status: 500,
-                            message: "you need to import at least 2 questions"
-                        });
-                    return d.promise;
+                if(data.type === 1) {
+                    if(questionObjects.length < 2 || questionObjects.length > 5) {
+                        d.reject({
+                                status: 500,
+                                message: "you need to import at least 2 questions and at most 5 questions"
+                            });
+                        return d.promise;
+                    }
                 }
-                let result_insert_paragraph = await this.mongoModels.insert(collections.paragraphs, paragraph)
+                else {
+                    if(questionObjects.length !== 2) {
+                        d.reject({
+                                status: 500,
+                                message: "you need to check quantity of questions. Just 5 questions"
+                            });
+                        return d.promise;
+                    }
+                }
+                
+                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, paragraph)
                             .then(result => {
                                 delete result.paragraph;
                                 return result;
@@ -111,7 +123,7 @@ export default class ReadingQuestion {
                     item.level = level;
                     return item;
                 })
-                let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insert(collections.reading_question, item)))
+                let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.reading_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,

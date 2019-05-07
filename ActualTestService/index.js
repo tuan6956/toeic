@@ -77,7 +77,7 @@ new MongoConector().connectDB()
             
         // });
         //generate the test
-        app.models.generateTest.generateTestToLevel(1);
+        // app.models.generateTest.generateTestToLevel(1);
     })
     .catch(err=>{
         console.log(err)

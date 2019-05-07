@@ -112,6 +112,10 @@ export default class GenerateTest {
             if(latest_test.questions.part_6.length < 4){
                 this.insertQuestionToTest(collections.collections.paragraphs, 6, level, (count_test-1)*4 + latest_test.questions.part_6.length, 4-latest_test.questions.part_6.length,latest_test._id, latest_test.questions.part_6.length, 4);
             }
+
+            // if(latest_test.questions.part_7.length < 4){
+            //     this.insertQuestionToTest(collections.collections.paragraphs, 6, level, (count_test-1)*4 + latest_test.questions.part_6.length, 4-latest_test.questions.part_6.length,latest_test._id, latest_test.questions.part_6.length, 4);
+            // }
         }
         else{
             let data_insert = {
