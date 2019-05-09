@@ -301,11 +301,11 @@ export default class GenerateTest {
     }
 
     async getMiniTest(){
-        return await this.app.db.collection(collections.collections.mini_test).find({}).toArray();
+        // return await this.app.db.collection(collections.collections.mini_test).find({}).toArray();
     }
     
-    async getAll(level, page, limit){
-        let result = await this.app.db.collection(collections.collections.test).find({}, {questions: false}).toArray();
+    async getAll(level, page = 0, limit = 1){
+        let result = await this.app.db.collection('test').find({level: level},{projection: {questions: 0}}).toArray();
         return result;
     }
 }
