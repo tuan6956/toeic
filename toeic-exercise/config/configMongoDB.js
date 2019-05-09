@@ -1,6 +1,6 @@
 module.exports = {
     database: {
-        url: 'mongodb://103.114.107.16:27017/Toeic',
+        url: 'mongodb://toeic_db:123456zxC@103.114.107.16:27017/Toeic',
         option : {
             useNewUrlParser: true,
             autoReconnect: true,
@@ -15,3 +15,4 @@ module.exports = {
         }
     }
 };
+    

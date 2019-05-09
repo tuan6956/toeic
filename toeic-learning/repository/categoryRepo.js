@@ -15,7 +15,7 @@ exports.findOne = data => {
     return db.findOne(data, collection);
 }
 
-exports.getAll = () => {
+exports.getAll = (limit, skip) => {
     return db.get({}, collection);
 }
 

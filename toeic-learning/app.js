@@ -23,7 +23,7 @@ var config = {
         var token = "" + scopesOrApiKey;
         jwt.verify(token, configJWT.secret.accessToken, function (err, decode) {
             if (err) {
-                req.phone = undefined;
+                req.email = undefined;
                 next();
             } else {
                 if(decode.role !== 'user' && decode.role !== "admin") {
@@ -31,7 +31,7 @@ var config = {
                 } else if (decode.role !== "admin" && req.method !== 'GET'){
                     next(new Error('access denied!'));
                 } else {
-                    req.phone = decode.phone;
+                    req.email = decode.email;
                     req.role = decode.role;
                     next();
                 }

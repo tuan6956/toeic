@@ -14,6 +14,7 @@ module.exports = {
   add: add,
   update: update,
   getOne: getOne,
+  deleteCategory: deleteCategory,
 };
 
 function get(req, res) {
@@ -110,4 +111,8 @@ function update(req, res) {
           message: err.err
       });
   });
+}
+
+function deleteCategory(req, res) {
+  return;
 }
