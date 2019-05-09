@@ -17,7 +17,7 @@ const configJWT = require('./configs/jwt');
     
 const configServer = require('./configs/server');
 require('dotenv').config();
-import generateTest from './models/generate_test';
+// import generateTest from './models/generate_test';
 import MongoConector from './middlewares/mongo_connector'
 import Models from './models/index';
 import _ from 'lodash';
@@ -43,41 +43,22 @@ new MongoConector().connectDB()
 
         // check manage quantity of question to generate the test.
         // app.db.collection('manage_question_quantity').find().toArray().then(res=>{
-        //     if(_.isEmpty(res)){
+        //     if(!_.isEmpty(res)){
         //         // console.log(res)
         //         let object = {}
-        //         for(let i = 1; i <= 7; i++){
-        //             object['part_'+i.toString()] = {
-        //                 level_1: {
-        //                     quantity: 0,
-        //                     status: pending
-        //                 },
-        //                 level_2: {
-        //                     quantity: 0,
-        //                     status: pending
-        //                 },
-        //                 level_3: {
-        //                     quantity: 0,
-        //                     status: pending
-        //                 },
-        //                 level_4: {
-        //                     quantity: 0,
-        //                     status: pending
-        //                 }
-        //             }
-        //         }
-        //         app.db.collection('manage_question_quantity').insertOne(object).then(res=>{
-        //             // console.log(res)
-        //         })
-        //         .catch(err=>{
-        //             // console.log(err)
-        //             throw err
-        //         })
+                
+        //         // app.db.collection('manage_question_quantity').insertOne(object).then(res=>{
+        //         //     // console.log(res)
+        //         // })
+        //         // .catch(err=>{
+        //         //     // console.log(err)
+        //         //     throw err
+        //         // })
         //     }
             
         // });
-        //generate the test
-        app.models.testModels.generateTestToLevel(1);
+            //generate the test
+            // app.models.testModels.generateTestToLevel(1);
     })
     .catch(err=>{
         // console.log(err)

@@ -140,9 +140,9 @@ export default class GenerateTest {
             .catch(err=>{
                 console.log(err)
             })
-            //generate part 1
             for (let index = 1; index <= 7; index++){
                 switch (index) {
+                    //generate part 1
                     case 1:{
                        await this.insertQuestionToTest(collections.collections.listening_question,1, level, (count_test)*6, 6, id_insert,0, 6);
                         break;
@@ -301,9 +301,13 @@ export default class GenerateTest {
     }
 
     async getMiniTest(){
-        this.app.db.collection(collections.collections.mini_test).find()
+        return await this.app.db.collection(collections.collections.mini_test).find({}).toArray();
     }
     
+    async getAll(level, page, limit){
+        let result = await this.app.db.collection(collections.collections.test).find({}, {questions: false}).toArray();
+        return result;
+    }
 }
 
 // user: Adminstrator
