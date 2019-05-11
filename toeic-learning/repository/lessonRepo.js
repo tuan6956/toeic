@@ -15,9 +15,8 @@ exports.findOne = query => {
     return db.findOne(query, collection);
 }
 
-exports.getAll = (limit, skip) => {
-    var obj = {};
-    return db.get(obj, collection);
+exports.getAll = (obj, limit, skip) => {
+    return db.getExclude(obj,{content: 0}, collection, limit, skip);
 }
 
 exports.delete = query => {

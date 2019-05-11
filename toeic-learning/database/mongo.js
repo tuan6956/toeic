@@ -94,7 +94,31 @@ exports.get = (query, collectionMG, limit, skip) => {
                 console.log("Connection established to", url);
             
                 const collection = db.db(dbName).collection(collectionMG);
-                collection.find(query).limit(+limit).skip(+limit*+skip).toArray(function(err, result) {
+                collection.find(query,).limit(+limit).skip(+limit*+skip).toArray(function(err, result) {
+                    db.close();
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            }
+        });
+    });
+}
+
+exports.getExclude = (query, exclude, collectionMG, limit, skip) => { 
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(url, function(err, db) {
+            if (err) {
+                console.log("Unable to connect to the mongoDB server. Error:");
+                reject(err);
+            } else {
+                console.log("Connection established to", url);
+            
+                const collection = db.db(dbName).collection(collectionMG);
+                collection.find(query,{fields: exclude}).limit(+limit).skip(+limit*+skip).toArray(function(err, result) {
+                    console.log(result);
                     db.close();
                     if(err) {
                         reject(err);

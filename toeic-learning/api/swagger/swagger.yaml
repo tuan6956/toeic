@@ -43,13 +43,19 @@ paths:
           name: page
           type: integer
           description: page get
+        - in: query
+          name: level
+          type: integer
+          minimum: 1
+          maximum: 3
+          description: level lesson  
       responses:
         "200":
           description: Success
           schema:
             $ref: "#/definitions/MessageResp"
         default:
-          description: Error
+          description: Error5
           schema:
             $ref: "#/definitions/ErrorResponse"
     post:
@@ -348,6 +354,7 @@ definitions:
       - content
       - topicId
       - categoryId
+      - level
     properties:
       content:
         type: string
@@ -357,6 +364,11 @@ definitions:
         type: string
       title:
         type: string
+      level:
+        type: integer
+        minimum: 1
+        maximum: 3
+        
   TopicReq:
     required:
       - name

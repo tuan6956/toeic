@@ -14,11 +14,13 @@ module.exports = {
   addLesson: add,
   updateLesson: update,
   findOneLesson: getOne,
+  deleteLesson: deleteLesson
 };
 
 function get(req, res) {
   var limit = 10;
   var page = 0;
+  var level = {};
   var params = req.swagger.params;
 
   if(params.page) {
@@ -27,7 +29,11 @@ function get(req, res) {
   if(params.limit) {
     limit = params.limit.value;
   }
-  lessonRepo.getAll(limit, page).then( value => {
+  if(params.level) {
+    level = {level: params.level.value}
+  }  
+  console.log(level);
+  lessonRepo.getAll(level, limit, page).then( value => {
     //console.log(util.inspect(value, {showHidden: false, depth: null}))
     if(!value)
       value = [];
@@ -75,11 +81,14 @@ function add(req, res) {
   var categoryId = body.categoryId;
   var topicId = body.topicId;
   var title = body.title;
+  var level = body.level;
+
   var data = {
     content: content,
     categoryId: categoryId,
     topicId: topicId,
-    title: title
+    title: title,
+    level: level,
   };
   var queryTopic = {"_id": new ObjectId(topicId)};
   var queryCategory = {"_id": new ObjectId(categoryId)};
@@ -104,8 +113,8 @@ function add(req, res) {
       //console.log(util.inspect(data, {showHidden: false, depth: null}))
       
       var queryTopic = {"_id": new ObjectId(topicId)};
-      topicRepo.update(queryTopic, {$push: { lessons: { _id: data._id, title: data.title } } });
-      categoryRepo.update({"_id": new ObjectId(categoryId), "topics._id": new ObjectId(topicId)}, {$push: { 'topics.$.lessons': { _id: data._id, title: data.title } } });
+      topicRepo.update(queryTopic, {$push: { lessons: { _id: data._id, title: data.title, level: data.level } } });
+      categoryRepo.update({"_id": new ObjectId(categoryId), "topics._id": new ObjectId(topicId)}, {$push: { 'topics.$.lessons': { _id: data._id, title: data.title, level: data.level } } });
       
     }).catch( err => {
       res.status(400);
@@ -123,11 +132,13 @@ function update(req, res) {
   var categoryIdNew = body.categoryId;
   var topicIdNew = body.topicId;
   var titleNew = body.title;
+  var levelNew = body.level;
   var data = {
     content: content,
     categoryId: categoryIdNew,
     topicId: topicIdNew,
-    title: titleNew
+    title: titleNew,
+    level: levelNew
   }
   //console.log(util.inspect(data, {showHidden: false, depth: null}))
   var query = {"_id": new ObjectId(lessonId)};
@@ -166,16 +177,16 @@ function update(req, res) {
         var queryTopicOld = {"_id": new ObjectId(lesson.topicId)};
         var queryCategoryOld = {"_id": new ObjectId(lesson.categoryId)};
         
-        topicRepo.update(queryTopicOld, {$pull: { lessons: { _id: lesson._id, title: lesson.title} } });
-        topicRepo.update(queryTopicNew, {$push: { lessons: { _id: lesson._id, title: titleNew} } });
+        topicRepo.update(queryTopicOld, {$pull: { lessons: { _id: lesson._id, title: lesson.title, level: lesson.level} } });
+        topicRepo.update(queryTopicNew, {$push: { lessons: { _id: lesson._id, title: titleNew, level: levelNew} } });
         categoryRepo.update({"_id": new ObjectId(lesson.categoryId), "topics._id": new ObjectId(lesson.topicId)}, {$pull: { 'topics.$.lessons': { _id: lesson._id } } });
-        categoryRepo.update({ "_id": new ObjectId(categoryIdNew), "topics._id": new ObjectId(topicIdNew)}, {$push: { 'topics.$.lessons': { _id: lesson._id, title: data.title } } });
+        categoryRepo.update({ "_id": new ObjectId(categoryIdNew), "topics._id": new ObjectId(topicIdNew)}, {$push: { 'topics.$.lessons': { _id: lesson._id, title: data.title, level: data.level } } });
       } else {
         var queryTopicUpdate = {"lessons._id": lesson._id};
-        topicRepo.update(queryTopicUpdate, {$set: { "lessons.$.title": titleNew} });
+        topicRepo.update(queryTopicUpdate, {$set: { "lessons.$.title": titleNew, "lessons.$.level": levelNew} });
         
         categoryRepo.update({"_id": new ObjectId(lesson.categoryId), "topics._id": new ObjectId(lesson.topicId)}, {$pull: { 'topics.$.lessons': { _id: lesson._id} } });
-        categoryRepo.update({ "_id": new ObjectId(categoryIdNew), "topics._id": new ObjectId(topicIdNew)}, {$push: { 'topics.$.lessons': { _id: lesson._id, title: data.title } } });
+        categoryRepo.update({ "_id": new ObjectId(categoryIdNew), "topics._id": new ObjectId(topicIdNew)}, {$push: { 'topics.$.lessons': { _id: lesson._id, title: data.title, level: data.level } } });
       }
       res.status(200);
       res.json({success: true, value: data});
@@ -188,4 +199,8 @@ function update(req, res) {
     res.status(400);
     res.json({success: false, message: err.err });
   });
+}
+
+function deleteLesson(req, res) {
+  return;
 }
