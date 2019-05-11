@@ -18,16 +18,18 @@ var config = {
   appRoot: __dirname, // required config
   swaggerSecurityHandlers: {
     auth0: function (req, authOrSecDef, scopesOrApiKey, next) {
-      if(process.env.REQ_AUTH === "false" || req.path.indexOf('/api/exercise/game') != -1){
-        console.log("pass:" + req.path)
-        next();
-      } else if(scopesOrApiKey) {
+      // if(process.env.REQ_AUTH === "false" || req.path.indexOf('/api/exercise/game') != -1){
+      //   console.log("pass:" + req.path)
+      //   next();
+      // } else 
+      if(scopesOrApiKey) {
         var token = "" + scopesOrApiKey;
         jwt.verify(token, configJWT.secret , function(err, decode) {
           if (err) {
             next(new Error('access denied!'));
           } else {
-            req.userId = decode.userId;
+            req.email = decode.email;
+            req.role = decode.role;
             next();
           }
 

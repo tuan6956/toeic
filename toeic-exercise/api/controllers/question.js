@@ -32,7 +32,7 @@ function getListQuestionsOfLesson(req, res){
     const lessonId = ObjectId(req.swagger.params.lessonId.value);
     var numberQuestion = req.swagger.params.numberQuestion.value;
     const db = req.app.db;
-    const userId = req.userId;
+    const userId = req.email;
     //get list choice question in db
     if(numberQuestion < helpers.NUMBERQUESTION_LESSON || numberQuestion <= 1){
         numberQuestion = helpers.NUMBERQUESTION_LESSON;
@@ -54,7 +54,6 @@ function getListQuestionsOfLesson(req, res){
     const date = new Date();
     const time = date.getTime();
     const session = sha256(time.toString() + userId);
-
     insertUser(req.app.users, userId, session, object);
 
     const queryChoiceQuesion = [
@@ -107,27 +106,27 @@ function getListQuestionsOfLesson(req, res){
                 }
                 listChoiceQuestions = result;
             }).catch((err) => {
-                // console.log("errr")
+                 console.log("errr")
                 // console.log(err);
-                res.status(400);
-                res.json({
-                    message: err
-                })
+                // res.status(400);
+                // res.json({
+                //     message: err
+                // })
             }),
             questionFunction.aggregateDB(db, helpers.NAME_DB_FILLQUESTION_EXERCISE, queryFillQuesion).then((result) => {
                 // console('fill question')
-                // console.log(result)
                 for(var i = 0; i < result.length; i++){
                     result[i].type = helpers.TYPE_FILL_QUESTION;
                 }
                 listFillQuestions = result;;
             }).catch((err) => {
                 // console.log('error fill question')
-
-                res.status(400);
-                res.json({
-                    message: err
-                })
+                console.log(err);
+                // res.status(400);
+                // res.json({
+                //     message: err
+                // })
+                //return;
             })]
         ).then((result) => {
             var listQuestion = listChoiceQuestions.concat(listFillQuestions);
@@ -138,14 +137,18 @@ function getListQuestionsOfLesson(req, res){
             res.json({
                 session: session,
                 listQuestion: listQuestion
-            })
+            });
+            return;
         })
     }).catch((err) => {
+        console.log(err);
         res.status(400);
         res.json({
             message: "The lesson is not existed"
         })
+        return;
     })
+    
 }
 
 function insertChoiceQuestionIntoLesson(req, res){
