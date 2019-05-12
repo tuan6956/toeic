@@ -55,6 +55,76 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /choice_question/{choice_question_id}:
+    x-swagger-router-controller: question
+    get:
+      description: Returns list questions of lesson
+      operationId: getChoiceQuestion
+      parameters:
+        - name: choice_question_id
+          in: path
+          description: id of choice question
+          required: true
+          type: string
+      security:
+      - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/QuestionResponse"
+          examples:
+            question:
+              _id:  "5cd68826bb40a005a05275fb"
+              answers:
+                ansA:  "123"
+                ansB:  "123"
+                ansC:  "a"
+                ansD:  "12"
+              lessonId:  "5cd304c8396de30e8833ab4e"
+              content:  "His students ________ (not, speak) German in classroom"
+              answerRight:  "optA"
+              explainRight:  "12"
+              suggest:  ""
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /fill_question/{fill_question_id}:
+    x-swagger-router-controller: question
+    get:
+      description: Returns list questions of lesson
+      operationId: getFillQuestion
+      parameters:
+        - name: fill_question_id
+          in: path
+          description: id of choice question
+          required: true
+          type: string
+      security:
+      - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/QuestionResponse"
+          examples:
+            question:
+              _id:  "5cd7fbc85904fa9bdc376510"
+              lessonId:  "5cd304c8396de30e8833ab4e"
+              content:  "His students ________ (not, speak) German in classroom"
+              answerRight:  "is"
+              explainRight:  "is"
+              suggest:  "to be"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
   /choice_question:
     x-swagger-router-controller: question
     post:
@@ -79,7 +149,6 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-
     put:
       description: "update choice question of lesson"
       operationId: updateChoiceQuestionOfLesson
@@ -249,7 +318,13 @@ definitions:
           type: object
           description: if choice question, object have properties (_id, content, answer (ansA, ansB, ansC, ansD), type = 'choice'). if fill question, object have properties (_id, content, type = 'fill')
 
-  
+  QuestionResponse:
+    type: object
+    properties:
+      question:
+        type: object
+        items:
+          type: object
   ChoiceQuestionRequest:
     type: object
     properties:

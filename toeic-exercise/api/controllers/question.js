@@ -13,7 +13,9 @@ module.exports = {
     updateFillQuestionOfLesson: updateFillQuestionOfLesson,   
     verifyAnswer: verifyAnswer,
     getResultExerciseOfLesson: getResultExerciseOfLesson,
-    removeAllSession: removeAllSession
+    removeAllSession: removeAllSession,
+    getChoiceQuestion: getChoiceQuestion,
+    getFillQuestion: getFillQuestion
 };
 
 function insertUser(users, userId, session, object){
@@ -28,6 +30,62 @@ function insertUser(users, userId, session, object){
     }
 }
 
+function getChoiceQuestion(req, res) {
+    const db = req.app.db;
+    const choiceQuestionId = ObjectId(req.swagger.params.choice_question_id.value);
+    questionFunction.findOneDB(db, helpers.NAME_DB_CHOICEQUESTION_EXERCISE, {_id: ObjectId(choiceQuestionId)}).then((result) => {
+        console.log(result);
+        res.status(200);
+            res.json({
+                question: result
+            });
+        // var listQuestion = listChoiceQuestions.concat(listFillQuestions);
+        // listQuestion = listQuestion.sort(()=>{
+        //     return Math.random() - 0.5;
+        // })
+        // res.status(200);
+        // res.json({
+        //     session: session,
+        //     listQuestion: listQuestion
+        // });
+        return;
+    }).catch((err) => {
+        console.log(err);
+        res.status(400);
+        res.json({
+            message: "The question is not existed"
+        })
+        return;
+    })
+}
+
+function getFillQuestion(req, res) {
+    const db = req.app.db;
+    const fillQuestionId = ObjectId(req.swagger.params.fill_question_id.value);
+    questionFunction.findOneDB(db, helpers.NAME_DB_FILLQUESTION_EXERCISE, {_id: ObjectId(fillQuestionId)}).then((result) => {
+        res.status(200);
+            res.json({
+                question: result
+            });
+        // var listQuestion = listChoiceQuestions.concat(listFillQuestions);
+        // listQuestion = listQuestion.sort(()=>{
+        //     return Math.random() - 0.5;
+        // })
+        // res.status(200);
+        // res.json({
+        //     session: session,
+        //     listQuestion: listQuestion
+        // });
+        return;
+    }).catch((err) => {
+        console.log(err);
+        res.status(400);
+        res.json({
+            message: "The question is not existed"
+        })
+        return;
+    })
+}
 function getListQuestionsOfLesson(req, res){
     const lessonId = ObjectId(req.swagger.params.lessonId.value);
     var numberQuestion = req.swagger.params.numberQuestion.value;
