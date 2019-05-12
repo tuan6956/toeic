@@ -1,5 +1,5 @@
 module.exports = {
-    url: "mongodb://103.114.107.16:27017",
+    url: "mongodb://toeic_db:123456zxC@103.114.107.16:27017/Toeic",
     // url: "mongodb://127.0.0.1:27017",
     name: "Toeic",
     collections: {
