@@ -42,23 +42,30 @@ new MongoConector().connectDB()
         app.db = db;
 
         // check manage quantity of question to generate the test.
-        // app.db.collection('manage_question_quantity').find().toArray().then(res=>{
-        //     if(!_.isEmpty(res)){
-        //         // console.log(res)
-        //         let object = {}
-                
-        //         // app.db.collection('manage_question_quantity').insertOne(object).then(res=>{
-        //         //     // console.log(res)
-        //         // })
-        //         // .catch(err=>{
-        //         //     // console.log(err)
-        //         //     throw err
-        //         // })
-        //     }
-            
-        // });
-            //generate the test
-            app.models.testModels.generateTestToLevel(1);
+        app.db.collection('manage_question_quantity').find().toArray().then(res=>{
+            if(_.isEmpty(res)){
+                let object = {
+                    part_1: 0, 
+                    part_2: 0,
+                    part_3: 0,
+                    part_4: 0,
+                    part_5: 0,
+                    part_6: 0,
+                    part_7: 0,
+                }
+                for(let i = 0; i < 3; i++){
+                    object['level'] = i+1
+                    app.db.collection('manage_question_quantity').insertOne({object})
+                }
+            }
+        });
+        //
+        // app.models.testModels.generateTest();
+        // let change_streams = app.db.collection('listening_question').watch({operationType: 'insert'});
+        //     change_streams.on('change', next => {
+        //         // process next document
+        //         console.log(JSON.stringify(change));
+        //     });
     })
     .catch(err=>{
         // console.log(err)

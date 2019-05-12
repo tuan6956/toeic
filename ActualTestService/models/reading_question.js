@@ -138,7 +138,9 @@ export default class ReadingQuestion {
                 })
                 d.resolve({
                     paragraph: result_insert_paragraph,
-                    questionObjects: result_insert_question
+                    questionObjects: result_insert_question,
+                    part: result_insert_paragraph.part,
+                    level: result_insert_paragraph.level
                 })
                 return d.promise;
             }

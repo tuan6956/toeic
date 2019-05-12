@@ -8,8 +8,12 @@ const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importQuestion(req, res){
 
+
   req.app.models.readingModels.importQuestion(req.body)
   .then(result => {
+    console.log(result.level)
+    req.app.models.testModels.generateTestToLevel(result.level);
+
     handleSuccess(res, 200, result);
   })
   .catch(error => {
