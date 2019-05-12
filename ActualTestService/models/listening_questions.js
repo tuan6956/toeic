@@ -1,11 +1,17 @@
 const q = require('q');
 const { collections } = require('../configs/db');
-const { dbController } = require('../database/index');
 var ObjectId = require('mongodb').ObjectID;
 var _ = require('lodash');
+import MongoModel from '../database/mongoModel';
+// var mongoModel = new MongoModel();
 
 export default class ListeningQuestion {
-    
+
+    constructor(app){
+        this.app = app;
+        this.mongoModels = new MongoModel(app);
+    }
+
     async importQuestion(data){
         const d = q.defer();
         let part = _.get(data, "part");
@@ -13,10 +19,10 @@ export default class ListeningQuestion {
 
         switch(part) {
             case 1:{
-                dbController.insert(collections.listening_question, data)
+                this.mongoModels.insertRecord(collections.listening_question, data)
                             .then(result => {
-                                delete result.image_link;
-                                delete result.answers;
+                                // delete result.image_link;
+                                // delete result.answers;
                                 delete result.right_answer;
                                 delete result.explain;
                                 d.resolve(result);
@@ -24,16 +30,16 @@ export default class ListeningQuestion {
                             .catch(err => {
                                 d.reject({
                                     status: 500,
-                                    message: err.toString()
+                                    message: err
                                 });
                             })
                 return d.promise;
             }
             case 2:{
-                dbController.insert(collections.listening_question, data)
+                this.mongoModels.insertRecord(collections.listening_question, data)
                     .then(result => {
-                        delete result.audio_link;
-                        delete result.answers;
+                        // delete result.audio_link;
+                        // delete result.answers;
                         delete result.right_answer;
                         delete result.explain;
                         d.resolve(result);
@@ -41,7 +47,7 @@ export default class ListeningQuestion {
                     .catch(err => {
                         d.reject({
                             status: 500,
-                            message: "Can not insert question into database"
+                            message: err.toString()
                         });
                     })
                 return d.promise;
@@ -63,7 +69,7 @@ export default class ListeningQuestion {
                     return d.promise;
                 }
                 
-                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
+                let result_insert_dialogue = await this.mongoModels.insertRecord(collections.dialogues, dialogue)
                             .then(result => {
                                 delete result.dialogue_link;
                                 return result;
@@ -83,7 +89,7 @@ export default class ListeningQuestion {
                     item.level = level;
                     return item;
                 })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
+                let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.listening_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
@@ -114,7 +120,7 @@ export default class ListeningQuestion {
                     return d.promise;
                 }
                 
-                let result_insert_dialogue = await dbController.insert(collections.dialogues, dialogue)
+                let result_insert_dialogue = await this.mongoModels.insertRecord(collections.dialogues, dialogue)
                             .then(result => {
                                 delete result.dialogue_link;
                                 return result;
@@ -157,10 +163,10 @@ export default class ListeningQuestion {
           }
     }
     
-    getAll(page = 1, limit = 5, part){
+    getAll(page, limit, part){
         const d = q.defer();
         if(part) {
-            dbController.getAll(collections.listening_question, page, limit, new Object({"part": part}))
+            this.mongoModels.getAll(collections.listening_question, page, limit, new Object({"part": part}))
                             .then(result => {
                                 result = result.map(item=>{
                                     return {
@@ -180,7 +186,7 @@ export default class ListeningQuestion {
                             })
                 return d.promise;
         }else{
-            dbController.getAll(collections.listening_question, page, limit)
+            this.mongoModels.getAll(collections.listening_question, page, limit)
                             .then(result => {
                                 result = result.map(item=>{
                                     return {
@@ -207,7 +213,7 @@ export default class ListeningQuestion {
         id = ObjectId(id);
         const d = q.defer();
     
-        dbController.find(collections.listening_question, id)
+        this.mongoModels.find(collections.listening_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })
@@ -261,7 +267,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -293,7 +299,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -325,7 +331,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -357,7 +363,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })

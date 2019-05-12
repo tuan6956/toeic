@@ -2,13 +2,18 @@
 
 var util = require("util");
 var _ = require('lodash');
-const { readingQuestionModel } = require('../../models/index');
+// const { readingQuestionModel } = require('../../models/index');
+import Models from '../../models/index';
 const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importQuestion(req, res){
 
-  readingQuestionModel.importQuestion(req.body)
+
+  req.app.models.readingModels.importQuestion(req.body)
   .then(result => {
+    console.log(result.level)
+    req.app.models.testModels.generateTestToLevel(result.level);
+
     handleSuccess(res, 200, result);
   })
   .catch(error => {
@@ -21,7 +26,7 @@ function getAll(req, res){
   let limit = _.get(req.swagger.params, 'limit')
   let part = _.get(req.swagger.params, 'part')
 
-  readingQuestionModel.getAll(page.value, limit.value, part.value)
+  req.app.models.readingModels.getAll(page.value, limit.value, part.value)
     .then(result => {
       handleSuccess(res, 200, result);
     })
@@ -33,7 +38,7 @@ function getAll(req, res){
 function getQuestionById(req, res){
   let questionId = req.swagger.params.questionId.value.trim();
 
-  readingQuestionModel.getQuestionById(questionId)
+  req.app.models.readingModels.getQuestionById(questionId)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -47,7 +52,7 @@ function updateQuestion(req, res){
   let data = req.body;
   let _id = req.swagger.params.questionId.value.trim()
 
-  readingQuestionModel.updateQuestionById(_id, data)
+  req.app.models.readingModels.updateQuestionById(_id, data)
   .then(result => {
     handleSuccess(res, 200, result);
   })
