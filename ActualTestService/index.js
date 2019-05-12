@@ -17,6 +17,10 @@ const configJWT = require('./configs/jwt');
     
 const configServer = require('./configs/server');
 require('dotenv').config();
+// import generateTest from './models/generate_test';
+import MongoConector from './middlewares/mongo_connector'
+import Models from './models/index';
+import _ from 'lodash';
 
 let app = express();
 app.use(bodyParser.urlencoded({
@@ -28,6 +32,45 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(cors());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+
+///connect to db
+app.models = new Models(app);
+
+new MongoConector().connectDB()
+    .then(db=>{
+        app.db = db;
+
+        // check manage quantity of question to generate the test.
+        app.db.collection('manage_question_quantity').find().toArray().then(res=>{
+            if(_.isEmpty(res)){
+                let object = {
+                    part_1: 0, 
+                    part_2: 0,
+                    part_3: 0,
+                    part_4: 0,
+                    part_5: 0,
+                    part_6: 0,
+                    part_7: 0,
+                }
+                for(let i = 0; i < 3; i++){
+                    object['level'] = i+1
+                    app.db.collection('manage_question_quantity').insertOne({object})
+                }
+            }
+        });
+        //
+        // app.models.testModels.generateTest();
+        // let change_streams = app.db.collection('listening_question').watch({operationType: 'insert'});
+        //     change_streams.on('change', next => {
+        //         // process next document
+        //         console.log(JSON.stringify(change));
+        //     });
+    })
+    .catch(err=>{
+        // console.log(err)
+        throw err;
+    })
 
 module.exports = app; // for testing
 
@@ -52,8 +95,8 @@ var config = {
                     }
                 });
             } else {
-                next();
-                // next(new Error('access denied!'));
+                // next();
+                next(new Error('access denied!'));
             }
         }
     }
@@ -72,7 +115,7 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
     swaggerExpress.register(app);
 
     var port = process.env.PORT || configServer.port;
-    console.log(port);
+    console.log("Server is started by port " + port);
     app.listen(port);
 
 

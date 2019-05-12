@@ -1,10 +1,16 @@
 const q = require('q');
 const { collections } = require('../configs/db');
-const { dbController } = require('../database/index');
 var ObjectId = require('mongodb').ObjectID;
 var _ = require('lodash');
+import MongoModel from '../database/mongoModel';
 
 export default class ReadingQuestion {
+
+    constructor(app){
+        this.app = app;
+        this.mongoModels = new MongoModel(app);
+    }
+
     async importQuestion(data){
         const d = q.defer();
         let part = _.get(data, "part");
@@ -12,7 +18,7 @@ export default class ReadingQuestion {
 
         switch(part) {
             case 5:{
-                dbController.insert(collections.reading_question, data)
+                this.mongoModels.insertRecord(collections.reading_question, data)
                     .then(result => {
                         delete result.right_answer;
                         delete result.explain;
@@ -29,20 +35,25 @@ export default class ReadingQuestion {
             case 6:{
                 let questions = _.get(data, "questions");
                 let paragraph = [];
+                let avg_level = 0;
                 questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
                     item.pos_in_paragraphs = index+1;
+                    if(item.level){
+                        avg_level+= item.level;
+                    }
                     return item;
                 })
                 questions.pop();
-                let result_insert_paragraph = await dbController.insert(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part}))
+                avg_level = Math.round(avg_level/3);
+                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": avg_level}))
                             .then(result => {
                                 delete result.paragraphs;
                                 return result;
                             })
                             .catch(err => {
-                                console.log(err)
+                                console.log(err, "erro loi m oi")
                                 d.reject({
                                     status: 500,
                                     message: err.toString()
@@ -55,7 +66,7 @@ export default class ReadingQuestion {
                     return item;
                 })
 
-                let result_insert_question = await Promise.all(questions.map(item => dbController.insert(collections.reading_question, item)))
+                let result_insert_question = await Promise.all(questions.map(item => this.mongoModels.insertRecord(collections.reading_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
@@ -74,19 +85,31 @@ export default class ReadingQuestion {
                 let paragraph = {
                     paragraph: data.paragraph,
                     level: data.level,
-                    part: data.part
+                    part: data.part,
+                    type: data.type
                 }
 
                 let questionObjects = _.get(data, "questionObjects")
-
-                if(questionObjects.length < 2) {
-                    d.reject({
-                            status: 500,
-                            message: "you need to import at least 2 questions"
-                        });
-                    return d.promise;
+                if(data.type === 1) {
+                    if(questionObjects.length < 2 || questionObjects.length > 5) {
+                        d.reject({
+                                status: 500,
+                                message: "you need to import at least 2 questions and at most 5 questions"
+                            });
+                        return d.promise;
+                    }
                 }
-                let result_insert_paragraph = await dbController.insert(collections.paragraphs, paragraph)
+                else {
+                    if(questionObjects.length !== 2) {
+                        d.reject({
+                                status: 500,
+                                message: "you need to check quantity of questions. Just 5 questions"
+                            });
+                        return d.promise;
+                    }
+                }
+                
+                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, paragraph)
                             .then(result => {
                                 delete result.paragraph;
                                 return result;
@@ -105,7 +128,7 @@ export default class ReadingQuestion {
                     item.level = level;
                     return item;
                 })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.reading_question, item)))
+                let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.reading_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
@@ -115,7 +138,9 @@ export default class ReadingQuestion {
                 })
                 d.resolve({
                     paragraph: result_insert_paragraph,
-                    questionObjects: result_insert_question
+                    questionObjects: result_insert_question,
+                    part: result_insert_paragraph.part,
+                    level: result_insert_paragraph.level
                 })
                 return d.promise;
             }
@@ -131,7 +156,7 @@ export default class ReadingQuestion {
     getAll(page = 1, limit = 5, part){
         const d = q.defer();
         if(part) {
-            dbController.getAll(collections.reading_question, page, limit, new Object({"part": part}))
+            this.mongoModels.getAll(collections.reading_question, page, limit, new Object({"part": part}))
                             .then(result => {
                                 result = result.map(item=>{
                                     return {
@@ -151,7 +176,7 @@ export default class ReadingQuestion {
                             })
                 return d.promise;
         }else{
-            dbController.getAll(collections.reading_question, page, limit)
+            this.mongoModels.getAll(collections.reading_question, page, limit)
                             .then(result => {
                                 result = result.map(item=>{
                                     return {
@@ -178,7 +203,7 @@ export default class ReadingQuestion {
         id = ObjectId(id);
         const d = q.defer();
     
-        dbController.find(collections.reading_question, id)
+        this.mongoModels.find(collections.reading_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })
@@ -232,7 +257,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.update(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -264,7 +289,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.update(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -296,7 +321,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                dbController.update(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.update(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
