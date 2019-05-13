@@ -3,9 +3,9 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-# host: 139.59.190.205:8000
 
 host: localhost:8000
+# host: 103.114.107.16:8005
 # basePath prefixes all resource paths 
 basePath: /api
 # 
@@ -232,6 +232,31 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - readingQuestionPart5
+      description: admin has logged in, and delete question by id.
+      operationId: deleteQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Return a question object has updated in DB
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /questionsPart6:
     x-swagger-router-controller: reading_question
     post:
@@ -278,7 +303,7 @@ paths:
                 - id: 5cb05fef3c34db1f9b6e7736
                   level: 1
                 - id: 5cb05fef3c34db1f9b6e7734
-                  level: 2
+                  level: 1
                 - id: 5cb05fef3c34db1f9b6e7736
                   level: 1
         "401":
@@ -817,6 +842,31 @@ paths:
           description: Import Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - listeningQuestionPart1
+      description: admin has logged in, and delete question by id.
+      operationId: deleteQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Return a question object has updated in DB
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /questionsPart2:
     x-swagger-router-controller: listening_question
     post:
@@ -975,6 +1025,31 @@ paths:
               explain: No Explain
               level: 1
               part: 2
+        "401":
+          description: Import Fail
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Import Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      tags:
+        - listeningQuestionPart2
+      description: admin has logged in, and delete question by id.
+      operationId: deleteQuestion
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: questionId
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Return a question object has updated in DB
+          schema:
+            $ref: "#/definitions/SuccessResponse"
         "401":
           description: Import Fail
           schema:
@@ -1725,17 +1800,13 @@ definitions:
     properties:
       messageError:
         type: string
-  # MessageResp:
-    # type: object
-    # required: 
-    #   - success
-    # properties:
-    #   success:
-    #     type: boolean
-    #   message:
-    #     type: string
-    #   value:
-    #     type: object
+  SuccessResponse:
+    type: object
+    required: 
+      - message
+    properties:
+      message:
+        type: string
   ImportBlankQuestion:
     type: object
     required:
@@ -1803,9 +1874,9 @@ definitions:
               type: string
             explain:
               type: string      
-            level: 
-              type: integer
       part: 
+        type: integer
+      level:
         type: integer
     example: #sample object
       questions:
@@ -1834,7 +1905,6 @@ definitions:
           explain: Choice A is a noun.
                     Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
                     Choice D is a verb.
-          level: 1
         - paragraph: "As per tradition at Sid's Stationery, we will be having a Christmas raffle.
                       This year the grand prize is a 2-night stay for two at the Meridian Inn _______ Toronto Island.
                       The winner will receive a free double occupancy stay in the penthouse suite as well as a free dinner on the moonlit patio."
@@ -1847,7 +1917,6 @@ definitions:
           explain: Choice A is a preposition that indicates going from one end to another. (I went through a tunnel.)
                     Choice C is a preposition used when one is passing something to reach another thing. (I went over the bridge.)
                     Choice D is a preposition used with times or specific venues. (I went at ten o'clock. We met at the mall.)
-          level: 2
         - paragraph: "Money from ticket sales will be _______ to The Family Foundation, a local organization that provides food and clothing to those who need it most this Christmas."
           answers:
               optA: purchased
@@ -1857,13 +1926,13 @@ definitions:
           right_answer: optB
           explain: Choices A and C are incorrect because you can't "purchase" or "fund" money.
                     Choice D is incorrect because "collected" is followed by the word "from" not "to".
-          level: 2
         - paragraph: We look forward to seeing you this Christmas season.
 
                       Yours truly,
 
                       Sid and Sandy Chester
       part: 6
+      level: 1
   ImportParagraphPart7:
     type: object
     required:

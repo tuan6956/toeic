@@ -35,25 +35,25 @@ export default class ReadingQuestion {
             case 6:{
                 let questions = _.get(data, "questions");
                 let paragraph = [];
-                let avg_level = 0;
+                // let avg_level = 0;
                 questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
                     item.pos_in_paragraphs = index+1;
-                    if(item.level){
-                        avg_level+= item.level;
-                    }
+                    // if(item.level){
+                    //     avg_level+= item.level;
+                    // }
                     return item;
                 })
                 questions.pop();
-                avg_level = Math.round(avg_level/3);
-                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": avg_level}))
+                // avg_level = Math.round(avg_level/3);
+                let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": level}))
                             .then(result => {
                                 delete result.paragraphs;
                                 return result;
                             })
                             .catch(err => {
-                                console.log(err, "erro loi m oi")
+                                console.log(err, "error")
                                 d.reject({
                                     status: 500,
                                     message: err.toString()
@@ -63,6 +63,7 @@ export default class ReadingQuestion {
                 questions = questions.map(item=>{
                     item.id_paragraph = result_insert_paragraph._id;
                     item.part = part;
+                    item.level = level;
                     return item;
                 })
 
