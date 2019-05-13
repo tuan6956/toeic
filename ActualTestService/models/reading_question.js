@@ -40,13 +40,9 @@ export default class ReadingQuestion {
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
                     item.pos_in_paragraphs = index+1;
-                    // if(item.level){
-                    //     avg_level+= item.level;
-                    // }
                     return item;
                 })
                 questions.pop();
-                // avg_level = Math.round(avg_level/3);
                 let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": level}))
                             .then(result => {
                                 delete result.paragraphs;
@@ -78,7 +74,9 @@ export default class ReadingQuestion {
                 })
                 d.resolve({
                     paragraphs: result_insert_paragraph,
-                    questions: result_insert_question
+                    questions: result_insert_question,
+                    level: result_insert_paragraph.level,
+                    part: result_insert_paragraph.part
                 })
                 return d.promise;
             }
@@ -101,7 +99,7 @@ export default class ReadingQuestion {
                     }
                 }
                 else {
-                    if(questionObjects.length !== 2) {
+                    if(questionObjects.length !== 5) {
                         d.reject({
                                 status: 500,
                                 message: "you need to check quantity of questions. Just 5 questions"
