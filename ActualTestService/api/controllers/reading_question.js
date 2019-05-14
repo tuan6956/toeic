@@ -8,12 +8,10 @@ const { handleSuccess, handleError } = require('../../middlewares/request');
 
 function importQuestion(req, res){
 
-
   req.app.models.readingModels.importQuestion(req.body)
   .then(result => {
-    console.log(result.level)
     req.app.models.testModels.generateTestToLevel(result.level);
-
+    req.app.models.testModels.generateMiniTest();
     handleSuccess(res, 200, result);
   })
   .catch(error => {
@@ -61,9 +59,20 @@ function updateQuestion(req, res){
   });
 }
 
+function deleteQuestion(req, res){
+  // req.app.models.listeningModels.updateQuestionById(_id, data)
+  // .then(result => {
+    handleSuccess(res, 200, result);
+  // })
+  // .catch(error => {
+  //   handleError(res, error.status, error.message);
+  // });
+}
+
 module.exports = {
     importQuestion: importQuestion,
     getAll: getAll,
     getQuestionById,
-    updateQuestion
+    updateQuestion,
+    deleteQuestion
   };
