@@ -72,7 +72,7 @@ function getChoiceQuestion(req, res) {
     const db = req.app.db;
     const choiceQuestionId = ObjectId(req.swagger.params.choice_question_id.value);
     questionFunction.findOneDB(db, helpers.NAME_DB_CHOICEQUESTION_EXERCISE, {_id: ObjectId(choiceQuestionId)}).then((result) => {
-        console.log(result);
+        // console.log(result);
         res.status(200);
         res.json({
             question: result
