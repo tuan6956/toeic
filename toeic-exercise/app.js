@@ -30,7 +30,7 @@ var config = {
           } else {
             req.email = decode.email;
             req.role = decode.role;
-            next();
+            next(); 
           }
 
         });

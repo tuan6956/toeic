@@ -16,7 +16,7 @@ module.exports = {
     removeAllSession: removeAllSession,
     getChoiceQuestion: getChoiceQuestion,
     getFillQuestion: getFillQuestion,
-    getAllQuestion
+    getAllQuestion: getAllQuestion
 };
 
 function getAllQuestion(req, res) {
