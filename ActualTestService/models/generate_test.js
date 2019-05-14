@@ -9,7 +9,6 @@ export default class GenerateTest {
 
     async get_latest_test(skip_records, level){
         if(skip_records === 0){
-            console.log(result)
             return null;
         }
         if(skip_records === 1){
@@ -57,7 +56,7 @@ export default class GenerateTest {
                 
                 while(current_quantity_question <= quantity_questions_of_part && questions.length !== 0){
                     
-                    //insert the question to test
+                    //insert the question to testfindOneAndUpdate
                     let insert_to_part = 'questions.part_' + part;
                     let insert_question = {};
                     // questions[0].test_id = id_test;
@@ -66,19 +65,20 @@ export default class GenerateTest {
                                 .findOneAndUpdate({_id: ObjectId(id_test)}, 
                                     {$push: insert_question})
 
-                    //update question add to id_test.
+                    //update paragraph or dialogue add to id_test.
                     await this.app.db.collection(collection_get_questions)
                                 .findOneAndUpdate({_id: questions[0]._id}, {
                                     $set: {test_id: id_test}
                                 })
+                    //update question of paragraph or dialogue
                     if(collection_get_questions === collections.collections.dialogues){
                         await this.app.db.collection(collections.collections.listening_question)
-                                .findOneAndUpdate({id_dialogue: questions[0]._id}, {
+                                .updateMany({id_dialogue: questions[0]._id}, {
                                     $set: {test_id: id_test}
                                 })
                     }else{
                         await this.app.db.collection(collections.collections.reading_question)
-                                .findOneAndUpdate({id_paragraph: questions[0]._id}, {
+                                .updateMany({id_paragraph: questions[0]._id}, {
                                     $set: {test_id: id_test}
                                 })
                     }
@@ -86,35 +86,37 @@ export default class GenerateTest {
                     questions.shift();
 
                 } 
-            }
+                break;
+            }{part: index}
             case 7:{
-                if(type_for_part7 === 1){
-                    // let questions = await this.app.db.collection(collection_get_questions).find({part: part, level: level, type: type_for_part7}).sort({time: -1}).skip(skip_records).limit(limit_records).toArray();
-            
-                    // while(current_quantity_question <= quantity_questions_of_part && questions.length !== 0){
-                        
-                    //     //insert the question to test
-                    //     let insert_to_part = 'questions.part_' + part+'.type_'+ type;
-                    //     let insert_question = {};
-                    //     // questions[0].test_id = id_test;
-                    //     insert_question[insert_to_part] = questions[0]._id;
-                    //     this.app.db.collection(collections.collections.test)
-                    //                 .findOneAndUpdate({_id: ObjectId(id_test)}, 
-                    //                     {$push: insert_question})
-            
-                    //     //update question add to id_test.
-                    //     this.app.db.collection(collection_get_questions)
-                    //                 .findOneAndUpdate({_id: questions[0]._id}, {
-                    //                     $set: {test_id: id_test}
-                    //                 })
-                    //     //remove question have inserted.
-                    //     questions.shift();
-            
-                    // }
-                }
-                else{
+                    
+                let questions = await this.app.db.collection(collection_get_questions).find({part: part, level: level, type: type_for_part7}).sort({time: -1}).skip(skip_records).limit(limit_records).toArray();
+                while(current_quantity_question <= quantity_questions_of_part && questions.length !== 0){
+                    
+                    //insert the paragraph to test
+                    let insert_to_part = 'questions.part_' + part+'.type_'+ type_for_part7;
+                    console.log(insert_to_part)
+                    let insert_question = {};
+                    insert_question[insert_to_part] = questions[0]._id;
+                    this.app.db.collection(collections.collections.test)
+                                .findOneAndUpdate({_id: ObjectId(id_test)}, 
+                                    {$push: insert_question})
 
-                }
+                    //update paragraph add to id_test.
+                    await this.app.db.collection(collection_get_questions)
+                                .findOneAndUpdate({_id: questions[0]._id}, {
+                                    $set: {test_id: id_test}
+                                })
+                    //update question of paragraph add to id_test.
+                    await this.app.db.collection(collections.collections.reading_question)
+                            .updateMany({id_paragraph: questions[0]._id}, {
+                                $set: {test_id: id_test}
+                            })
+                    //remove question have inserted.
+                    questions.shift();
+
+                } 
+                break;
             }
             default:
                 break;
@@ -141,9 +143,7 @@ export default class GenerateTest {
         let id_insert = await this.app.db.collection('test').insertOne(data_insert).then(result=>{
             return result.ops[0]._id
         })
-        .catch(err=>{
-            console.log(err)
-        })
+        
         for (let index = 1; index <= 7; index++){
             switch (index) {
                 //generate part 1
@@ -173,8 +173,11 @@ export default class GenerateTest {
                 }
                 case 7: {
                     //with type 1: single paragraph
+                    await this.insertQuestionToTest(collections.collections.paragraphs, 7, level, count_test*10, 10, id_insert, 0, 10, 1);
                     
                     //with type 2: double paragraph
+                    await this.insertQuestionToTest(collections.collections.paragraphs, 7, level, count_test*5, 5, id_insert, 0, 5, 2);
+
                     break;
                 }
                 default:
@@ -208,11 +211,12 @@ export default class GenerateTest {
                 if(test_pending[index].questions.part_6.length < 4){
                     await this.insertQuestionToTest(collections.collections.paragraphs, 6, level, (count_test-test_pending.length + index)*4 + test_pending[index].questions.part_6.length, 4-test_pending[index].questions.part_6.length,test_pending[index]._id, test_pending[index].questions.part_6.length, 4);
                 }
-                if(test_pending[index].questions.part_7.type_1 < 29){
-                    // await this.insertQuestionToTest(collections.collections.reading_question, 7, level, (count_test-test_pending.length + index-1)*30 + test_pending[index].questions.part_.length, 30-test_pending[index].questions.part_5.length,test_pending[index]._id, test_pending[index].questions.part_5.length, 30, 1);
+                if(test_pending[index].questions.part_7.type_1.length < 10){
+                    await this.insertQuestionToTest(collections.collections.paragraphs, 7, level, (count_test-test_pending.length + index)*10 + test_pending[index].questions.part_7.type_1.length, 10-test_pending[index].questions.part_7.type_1.length,test_pending[index]._id, test_pending[index].questions.part_7.type_1.length, 10, 1);
 
                 }
-                if(test_pending[index].questions.part_7.type_2 < 5){
+                if(test_pending[index].questions.part_7.type_2.length < 5){
+                    await this.insertQuestionToTest(collections.collections.paragraphs,7, level, (count_test-test_pending.length + index)*5 + test_pending[index].questions.part_7.type_2.length, 5- test_pending[index].questions.part_7.type_2.length, test_pending[index]._id, test_pending[index].questions.part_7.type_2.length, 5, 2)
                 }
             }
         }
@@ -294,13 +298,6 @@ export default class GenerateTest {
                         break;
                     }
                     case 7:{
-                        // for(let i = 0; i < result[0].questions.part_7.length; i++){
-                        //     let id = result[0].questions.part_7[i];
-                        //     let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
-                        //     let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
-                        //     get_paragraph.questionObjects = questionObjects;
-                        //     questions.part_7.push(get_paragraph);
-                        // }
                         for(let i = 0; i < result[0].questions.part_7.type_1.length;i++){
                             let id = result[0].questions.part_7.type_1[i];
                             let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
@@ -331,7 +328,31 @@ export default class GenerateTest {
     }
 
     async generateMiniTest(){
-        //2 2 3 3 2 3 5
+        let count_test = await this.app.db.collection('test').find().count();
+        let mini_test = await this.app.db.collection(collections.collections.mini_test).find().count();
+        if(count_test < 3){
+            return;
+        }
+        if(mini_test === 10){
+            return;
+        }
+
+        let data_insert = {
+            questions: {
+                part_1: [],
+                part_2: [],
+                part_3: [],
+                part_4: [],
+                part_5: [],
+                part_6: [],
+                part_7: {
+                    type_1: [],
+                    type_2: []
+                }
+            },
+        }
+        
+        //2 2 3-3 3-3 2 6-3 7.1-1 7.2-1
         
         for (let index = 1; index <= 7; index++) {
             switch (index) {
@@ -340,12 +361,19 @@ export default class GenerateTest {
                     while (temp < 2) {
                         let n = this.app.db.collection(collections.collections.listening_question).find({part: index}).count();
                         let r = Math.floor(Math.random() * n);
-                        let randomElement = this.app.db.collection(collections.collections.listening_question).find().limit(1).skip(r);
+                        let randomElement = this.app.db.collection(collections.collections.listening_question).find({part: index}).limit(1).skip(r).toArray();
+                        let part = 'part_'+index;
+                        data_insert.questions[part].push(randomElement[0]._id);
                         temp++;
                     }
                     break;
                 }
                 case 3: case 4:{
+                    let n = this.app.db.collection(collections.collections.dialogues).find({part: index}).count();
+                    let r = Math.floor(Math.random() * n);
+                    let randomElement = this.app.db.collection(collections.collections.dialogues).find({part: index}).limit(1).skip(r).toArray();
+                    let part = 'part_'+index;
+                    data_insert.questions[part].push(randomElement[0]._id);
                     break;
                 }
                 case 5:{
@@ -353,18 +381,145 @@ export default class GenerateTest {
                     while (temp < 2) {
                         let n = this.app.db.collection(collections.collections.reading_question).find({part: index}).count();
                         let r = Math.floor(Math.random() * n);
-                        let randomElement = this.app.db.collection(collections.collections.reading_question).find().limit(1).skip(r);
+                        let randomElement = this.app.db.collection(collections.collections.reading_question).find({part: index}).limit(1).skip(r).toArray();
+                        let part = 'part_'+index;
+                        data_insert.questions[part].push(randomElement[0]._id);
                         temp++;
                     }
+                    break;
+                }
+                case 6: {
+                    let n = this.app.db.collection(collections.collections.paragraphs).find({part: index}).count();
+                    let r = Math.floor(Math.random() * n);
+                    let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index}).limit(1).skip(r).toArray();
+                    let part = 'part_'+index;
+                    data_insert.questions[part].push(randomElement[0]._id);
+                    break;
+                }
+                case 7:{
+                    //with type =1 ;
+                    let n = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).count();
+                    let r = Math.floor(Math.random() * n);
+                    let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).limit(1).skip(r).toArray();
+                    let part = 'part_'+index+'.type_1';
+                    data_insert.questions[part].push(randomElement[0]._id);
+                    //with type = 2;
+                    let n_2 = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).count();
+                    let r_2 = Math.floor(Math.random() * n_2);
+                    let randomElement_2 = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).limit(1).skip(r_2).toArray();
+                    let part_ = 'part_'+index+'.type_2';
+                    data_insert.questions[part_].push(randomElement_2[0]._id);
                 }
                 default:
                     break;
             }            
         }
+        data_insert.createAt = new Date();
+        await this.app.db.collection(collections.collections.mini_test).insertOne(data_insert);
     }
 
     async getMiniTest(){
-        // return await this.app.db.collection(collections.collections.mini_test).find({}).toArray();
+        let n_test = this.app.db.collection(collections.collections.mini_test).find().count();
+        let r = Math.floor(Math.random() * n_test);
+        let result =  await this.app.db.collection(collections.collections.mini_test).find().skip(r).toArray();
+        let questions = {
+            part_1: [],
+            part_2: [],
+            part_3: [],
+            part_4: [],
+            part_5: [],
+            part_6: [],
+            part_7: {
+                type_1: [],
+                type_2: []
+            }
+        }
+        if(result[0]){
+            for (let index = 1; index <= 7; index++) {
+                switch (index) {
+                    case 1:{
+                        for(let i = 0; i < result[0].questions.part_1.length; i++){
+                        let id = result[0].questions.part_1[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
+                            questions.part_1.push(getQuestion)
+                        }
+                        break;
+                    }
+
+                    case 2: {
+                        for(let i = 0; i < result[0].questions.part_2.length; i++){
+                            let id = result[0].questions.part_2[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
+                            questions.part_2.push(getQuestion)
+                        }
+                        break;
+                    }
+                    case 3: {
+                        for(let i = 0; i < result[0].questions.part_3.length; i++){
+                            let id = result[0].questions.part_3[i];
+                            let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id})
+                            let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
+                            get_dialogue.questionObjects = questionObjects;
+                            questions.part_3.push(get_dialogue);
+                        }
+                        break;
+                    }
+                    case 4: {
+                        for(let i = 0; i < result[0].questions.part_4.length; i++){
+                            let id = result[0].questions.part_4[i];
+                            let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
+                            get_dialogue.questionObjects = questionObjects;
+                            questions.part_4.push(get_dialogue);
+                        }
+                        break;
+                    }
+                    case 5: {
+                        for(let i = 0; i < result[0].questions.part_5.length; i++){
+                            let id = result[0].questions.part_5[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.reading_question).findOne({_id: id})
+                            questions.part_5.push(getQuestion)
+                        }
+                        break;
+                    }
+                    case 6: {
+                        for(let i = 0; i < result[0].questions.part_6.length; i++){
+                            let id = result[0].questions.part_6[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.part_6.push(get_paragraph);
+                        }
+                        break;
+                    }
+                    case 7:{
+                        for(let i = 0; i < result[0].questions.part_7.type_1.length;i++){
+                            let id = result[0].questions.part_7.type_1[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.part_7.type_1.push(get_paragraph);
+                        }
+                        for(let i = 0; i < result[0].questions.part_7.type_2.length;i++){
+                            let id = result[0].questions.part_7.type_2[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.part_7.type_2.push(get_paragraph);
+                        }
+                        break;
+                    }
+                    
+                    default:
+                        break;
+                }
+                
+            }
+            result[0].questions = questions;
+
+            return result[0];
+        }
+        return {};
     }
     
     async getAll(level, page = 0, limit = 1){
