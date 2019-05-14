@@ -15,8 +15,46 @@ module.exports = {
     getResultExerciseOfLesson: getResultExerciseOfLesson,
     removeAllSession: removeAllSession,
     getChoiceQuestion: getChoiceQuestion,
-    getFillQuestion: getFillQuestion
+    getFillQuestion: getFillQuestion,
+    getAllQuestion
 };
+
+function getAllQuestion(req, res) {
+    const db = req.app.db;
+    var listChoiceQuestions = [];
+    var listFillQuestions = [];
+    Promise.all([
+        questionFunction.findAll(db, helpers.NAME_DB_CHOICEQUESTION_EXERCISE, {}).then((result) => {
+            // console.log('choice question')
+            // console.log(result)
+            for(var i = 0; i < result.length; i++){
+                result[i].type = helpers.TYPE_CHOICE_QUESTION;
+            }
+            listChoiceQuestions = result;
+        }).catch((err) => {
+             console.log(err)
+        }),
+        questionFunction.findAll(db, helpers.NAME_DB_FILLQUESTION_EXERCISE, {}).then((result) => {
+            // console('fill question')
+            for(var i = 0; i < result.length; i++){
+                result[i].type = helpers.TYPE_FILL_QUESTION;
+            }
+            listFillQuestions = result;;
+        }).catch((err) => {
+            console.log(err);
+        })]
+    ).then((result) => {
+        var listQuestion = listChoiceQuestions.concat(listFillQuestions);
+        listQuestion = listQuestion.sort(()=>{
+            return Math.random() - 0.5;
+        })
+        res.status(200);
+        res.json({
+            listQuestion: listQuestion
+        });
+        return;
+    })
+}
 
 function insertUser(users, userId, session, object){
     var mapSession = users.getUser(userId);
@@ -36,18 +74,9 @@ function getChoiceQuestion(req, res) {
     questionFunction.findOneDB(db, helpers.NAME_DB_CHOICEQUESTION_EXERCISE, {_id: ObjectId(choiceQuestionId)}).then((result) => {
         console.log(result);
         res.status(200);
-            res.json({
-                question: result
-            });
-        // var listQuestion = listChoiceQuestions.concat(listFillQuestions);
-        // listQuestion = listQuestion.sort(()=>{
-        //     return Math.random() - 0.5;
-        // })
-        // res.status(200);
-        // res.json({
-        //     session: session,
-        //     listQuestion: listQuestion
-        // });
+        res.json({
+            question: result
+        });
         return;
     }).catch((err) => {
         console.log(err);
@@ -86,6 +115,7 @@ function getFillQuestion(req, res) {
         return;
     })
 }
+
 function getListQuestionsOfLesson(req, res){
     const lessonId = ObjectId(req.swagger.params.lessonId.value);
     var numberQuestion = req.swagger.params.numberQuestion.value;
@@ -509,7 +539,7 @@ function removeAllSession(req, res){
 }
 
 function checkAnswerOfChoiceQuestionRequest(answers){
-    if(answers.ansA.length === 0 || answers.ansB.length === 0 || answers.ansC.length === 0 || answers.ansD.length === 0){
+    if(answers.optA.length === 0 || answers.optB.length === 0 || answers.optC.length === 0 || answers.optD.length === 0){
         return false;
     }
     return true;
@@ -521,10 +551,10 @@ function handlerDataChoiceQuestion(data){
 
     body.lessonId = ObjectId(data.lessonId.trim());
     body.content = data.content.trim();
-    body.answers.ansA = data.answers.ansA.trim();
-    body.answers.ansB = data.answers.ansB.trim();
-    body.answers.ansC = data.answers.ansC.trim();
-    body.answers.ansD = data.answers.ansD.trim();
+    body.answers.optA = data.answers.optA.trim();
+    body.answers.optB = data.answers.optB.trim();
+    body.answers.optC = data.answers.optC.trim();
+    body.answers.optD = data.answers.optD.trim();
     body.answerRight = data.answerRight.trim();
     body.explainRight = data.explainRight.trim();
     body.suggest = data.suggest.trim();

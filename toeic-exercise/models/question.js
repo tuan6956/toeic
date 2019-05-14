@@ -39,10 +39,20 @@ const countDocument = (db, collectionName, query, option={}) => {
         })
     })
 }
+
+const findAll = (db, collectionName, query, option={}) => {
+    return new Promise((resolve, reject) => {
+        db.collection(collectionName).find(query).toArray((err, result) => {
+            return err ? reject(err) : resolve(result);
+        })
+    })
+}
+
 module.exports = {
     insertOneDB,
     findOneDB,
     findOneAndUpdateDB,
     aggregateDB,
-    countDocument
+    countDocument,
+    findAll
 }

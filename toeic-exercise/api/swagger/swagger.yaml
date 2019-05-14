@@ -3,8 +3,8 @@ info:
   version: "0.0.1"
   title: Exercise Service
 # during dev, should point to your local machine
-host: 103.114.107.16:8004
-#host: 127.0.0.1:8004
+#host: 103.114.107.16:8004
+host: 127.0.0.1:8004
 # basePath prefixes all resource paths 
 basePath: /api/exercise
 
@@ -78,10 +78,10 @@ paths:
             question:
               _id:  "5cd68826bb40a005a05275fb"
               answers:
-                ansA:  "123"
-                ansB:  "123"
-                ansC:  "a"
-                ansD:  "12"
+                optA:  "123"
+                optB:  "123"
+                optC:  "a"
+                optD:  "12"
               lessonId:  "5cd304c8396de30e8833ab4e"
               content:  "His students ________ (not, speak) German in classroom"
               answerRight:  "optA"
@@ -119,6 +119,24 @@ paths:
               answerRight:  "is"
               explainRight:  "is"
               suggest:  "to be"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /questions:
+    x-swagger-router-controller: question
+    get:
+      description: Returns all questions
+      operationId: getAllQuestion
+      security:
+      - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/ListQuestion"
         # responses may fall through to errors
         default:
           description: Error
@@ -316,8 +334,15 @@ definitions:
         type: array
         items:
           type: object
-          description: if choice question, object have properties (_id, content, answer (ansA, ansB, ansC, ansD), type = 'choice'). if fill question, object have properties (_id, content, type = 'fill')
-
+          description: if choice question, object have properties (_id, content, answer (optA, optB, optC, optD), type = 'choice'). if fill question, object have properties (_id, content, type = 'fill')
+  ListQuestion:
+    type: object
+    properties:
+      listQuestions:
+        type: array
+        items:
+          type: object
+          description: if choice question, object have properties (_id, content, answer (optA, optB, optC, optD), type = 'choice'). if fill question, object have properties (_id, content, type = 'fill')
   QuestionResponse:
     type: object
     properties:
@@ -335,13 +360,13 @@ definitions:
       answers:
         type: object
         properties:
-          ansA:
+          optA:
             type: string
-          ansB:
+          optB:
             type: string
-          ansC:
+          optC:
             type: string
-          ansD:
+          optD:
             type: string
       answerRight:
         type: string
@@ -362,13 +387,13 @@ definitions:
       answers:
         type: object
         properties:
-          ansA:
+          optA:
             type: string
-          ansB:
+          optB:
             type: string
-          ansC:
+          optC:
             type: string
-          ansD:
+          optD:
             type: string
       answerRight:
         type: string
@@ -434,7 +459,7 @@ definitions:
         description: choice or fill
         type: string
       answer:
-        description: if choice question, answer ansA, ansB, ansC, ansD. if fill answer, answer any thing
+        description: if choice question, answer optA, optB, optC, optD. if fill answer, answer any thing
         type: string
         
   AnswerResponse:
