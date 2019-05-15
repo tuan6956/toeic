@@ -2023,13 +2023,15 @@ definitions:
     type: object
     required:
       - image_link
-      - answers
+      - audio_link
       - right_answer
       - explain
       - level
       - part
     properties:
       image_link:
+        type: string  
+      audio_link:
         type: string
       answers:
         type: object
@@ -2052,6 +2054,7 @@ definitions:
         type: integer
     example: #sample object
       image_link: public/image/part1/question_image1
+      audio_link: public/image/part1/question_image1
       answers:
           optA: public/audio/part1/question_audio1
           optB: public/audio/part1/question_audio2
@@ -2079,7 +2082,6 @@ definitions:
     type: object
     required:
       - audio_link
-      - answers
       - right_answer
       - level
       - part
