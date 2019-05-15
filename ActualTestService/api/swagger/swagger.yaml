@@ -1813,7 +1813,6 @@ definitions:
       - question_content
       - answers
       - right_answer
-      - explain
       - level
       - part
     properties:
@@ -2025,7 +2024,6 @@ definitions:
       - image_link
       - audio_link
       - right_answer
-      - explain
       - level
       - part
     properties:
