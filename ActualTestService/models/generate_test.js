@@ -2,10 +2,18 @@ import _ from 'lodash';
 import collections from '../configs/db';
 var ObjectId = require('mongodb').ObjectID;
 
+        const scores = [ 5, 5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70,
+                 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155,
+                 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240,
+                 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325,
+                 330, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405, 410,
+                 415, 420, 425, 430, 435, 440, 445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495 ];
 export default class GenerateTest {
     constructor(app){
         this.app = app;
+
     }
+
 
     async get_latest_test(skip_records, level){
         if(skip_records === 0){
@@ -124,6 +132,28 @@ export default class GenerateTest {
     }
 
     async createNewTest(level, count_test){
+        let name_test ;
+        switch(level){
+            case 1:{
+                name_test = "Elementary " + count_test + 1;
+                break;
+            }
+            case 2:{
+                name_test = "Intermediate " + count_test + 1;
+                break;
+            }
+            case 3:{
+                name_test = "Upper intermediate " + count_test + 1;
+                break;
+            }
+            case 4:{
+                name_test = "Advanced " + count_test + 1;
+                break;
+            }
+
+            default:
+                break;
+        }
         let data_insert = {
             questions: {
                 part_1: [],
@@ -137,8 +167,12 @@ export default class GenerateTest {
                     type_2: []
                 }
             },
+            name: name_test,
             status: 'pending',
-            level: level
+            user_complete: 0,
+            level: level,
+            createAt: new Date()
+
         }
         let id_insert = await this.app.db.collection('test').insertOne(data_insert).then(result=>{
             return result.ops[0]._id
@@ -523,7 +557,9 @@ export default class GenerateTest {
     }
     
     async getAll(level, page = 0, limit = 1){
-        let result = await this.app.db.collection('test').find({level: level},{projection: {questions: 0}}).toArray();
+        let querry = {};
+        (level) ? querry['level'] = level : null;
+        let result = await this.app.db.collection('test').find(querry,{projection: {questions: 0}}).toArray();
         return result;
     }
 
@@ -553,6 +589,22 @@ export default class GenerateTest {
                 this.generateTestToLevel(index);
             }
         }
+    }
+
+    async getResultTest(correct_listening, correct_reading, test_id, user_id){
+        console.log(typeof(correct_reading))
+        let result = {
+            listening_scores: scores[correct_listening],
+            reading_scores: scores[correct_reading],
+            total: scores[correct_listening] + scores[correct_reading]
+        }
+        // await this.app.db.collection('test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+
+        return new Promise((resolve, reject) =>{
+            resolve({
+                result: result
+            })
+        });
     }
 }
 

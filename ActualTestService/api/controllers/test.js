@@ -48,8 +48,25 @@ function getAll(req, res){
 
 }
 
+function getResultTest(req, res){
+
+  let correct_listening = _.get(req.body, 'correct_listening');
+  let correct_reading = _.get(req.body, 'correct_reading');
+  let test_id = _.get(req.body, 'test_id');
+  let user_id = _.get(req.body, 'user_id');
+
+  let result = req.app.models.testModels.getResultTest(correct_listening, correct_reading, test_id, user_id)
+  result.then(result => {
+    handleSuccess(res, 200, result);
+  })
+  .catch(error => {
+    handleError(res, error.status, error.message);
+  });
+}
+
 module.exports = {
     getTheTestByLevelAndOrdinalTest: getTheTestByLevelAndOrdinalTest,
     getMiniTest: getMiniTest,
-    getAll: getAll
+    getAll: getAll,
+    getResultTest
 }

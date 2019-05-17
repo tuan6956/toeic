@@ -60,10 +60,10 @@ export default class MongoModel {
         return d.promise;
     }
     
-    getAll(collection, page, limit){
+    getAll(collection, page, limit, querry){
         const d = q.defer();
         this.app.db.collection(collection)
-                .find()
+                .find(querry ? querry : {})
                 .sort({time:-1})
                 .skip(+page).limit(+limit)
                 .toArray((error, result) => {
