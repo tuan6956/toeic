@@ -10,6 +10,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use('/public/audio/uploads',express.static(__dirname + '/public/audio/uploads'));
 app.use('/public/image/uploads',express.static(__dirname + '/public/image/uploads'));
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 var storageImage = multer.diskStorage({ //multers disk storage settings
     destination: function (req, file, cb) {
         cb(null, './public/image/uploads/')
@@ -51,11 +57,13 @@ var uploadSingleAudio = multer({ //multer settings
 
 /** API for single file image upload */
 app.post('/api/uploadPhoto', function(req, res) {
+    console.log("here", req.file)
     uploadSingleImage(req,res,function(err){
         if(err){
              res.json({status:-1,message:err});
              return;
         }
+        console.log(req.file)
         res.json({'status': 1, 'message': req.file});
     })
 });
