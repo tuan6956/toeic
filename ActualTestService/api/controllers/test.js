@@ -80,10 +80,23 @@ function getResultMiniTest(req, res){
   });
 }
 
+function getTheTestById(req, res){
+  let testId = req.swagger.params.testId.value;
+
+    req.app.models.testModels.getTheTestById(testId)
+    .then(result => {
+        handleSuccess(res, 200, result);
+      })
+      .catch(error => {
+        handleError(res, error.status, error.message);
+      });
+}
+
 module.exports = {
     getTheTestByLevelAndOrdinalTest: getTheTestByLevelAndOrdinalTest,
     getMiniTest: getMiniTest,
     getAll: getAll,
     getResultTest,
+    getTheTestById,
     getResultMiniTest
 }

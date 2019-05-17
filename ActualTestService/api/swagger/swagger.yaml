@@ -1714,6 +1714,84 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /test{testId}:
+    x-swagger-router-controller: test
+    get:
+      description: Returns the test by level of user and ordinal of the test.
+      operationId: getTheTestById
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: testId
+          type: string
+          required: true
+          description: id of test
+      responses:
+        "200":
+          description: Return the test
+          schema:
+            properties:
+              questions:
+                type: object
+                properties:
+                  part_1:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_2:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_3:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_4:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_5:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_6:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_7:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /miniTest:
     x-swagger-router-controller: test
     get:
