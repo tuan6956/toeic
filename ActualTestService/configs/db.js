@@ -12,6 +12,7 @@ module.exports = {
         manage_question_quantity: "manage_question_quantity",
         test: "test",
         mini_test: "mini_test",
+        manage_scores_of_users: 'manage_scores_of_users',
     },
     option : {
         useNewUrlParser: true,

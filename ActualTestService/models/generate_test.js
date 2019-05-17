@@ -2,12 +2,14 @@ import _ from 'lodash';
 import collections from '../configs/db';
 var ObjectId = require('mongodb').ObjectID;
 
-        const scores = [ 5, 5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70,
-                 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155,
-                 160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240,
-                 245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325,
-                 330, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405, 410,
-                 415, 420, 425, 430, 435, 440, 445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495 ];
+const scores_Test = [ 5, 5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70,
+     75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155,
+     160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240,
+     245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325,
+     330, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405, 410,
+     415, 420, 425, 430, 435, 440, 445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495 ];
+const scores_MiniTest = [ 5, 45, 95, 145, 195, 270, 295, 345, 395, 445, 495]
+
 export default class GenerateTest {
     constructor(app){
         this.app = app;
@@ -592,13 +594,29 @@ export default class GenerateTest {
     }
 
     async getResultTest(correct_listening, correct_reading, test_id, user_id){
-        console.log(typeof(correct_reading))
-        let result = {
-            listening_scores: scores[correct_listening],
-            reading_scores: scores[correct_reading],
-            total: scores[correct_listening] + scores[correct_reading]
+
+        if(correct_reading > 100 || correct_listening > 100 || correct_reading < 0 || correct_listening < 0){
+            return new Promise((resolve, reject)=>{
+                reject({
+                    err: {
+                        message:"double check value of correct answer is greater than 0 and smaller than 100",
+                        status: 500
+                    }
+                })
+            })
         }
-        // await this.app.db.collection('test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+
+        let result = {
+            listening_scores: scores_Test[correct_listening],
+            reading_scores: scores_Test[correct_reading],
+            total: scores_Test[correct_listening] + scores_Test[correct_reading]
+        }
+        let scores_test = {
+            test_id: new ObjectId(test_id),
+            result: result
+        }
+        await this.app.db.collection('test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+        await this.app.db.collection('manage_scores_of_users').findOneAndUpdate({user_id: user_id}, {$push: {'scores_test': scores_test}}, {upsert: true})
 
         return new Promise((resolve, reject) =>{
             resolve({
@@ -606,6 +624,38 @@ export default class GenerateTest {
             })
         });
     }
+
+    async getResultMiniTest(correct_listening, correct_reading, test_id, user_id){
+        if(correct_reading > 10 || correct_listening > 10 || correct_reading < 0 || correct_listening < 0){
+            return new Promise((resolve, reject)=>{
+                reject({
+                    err: {
+                        message:"double check value of correct answer is greater than 0 and smaller than 10",
+                        status: 500
+                    }
+                })
+            })
+        }
+
+        let result = {
+            listening_scores: scores_MiniTest[correct_listening],
+            reading_scores: scores_MiniTest[correct_reading],
+            total: scores_MiniTest[correct_listening] + scores_MiniTest[correct_reading]
+        }
+        let scores_test = {
+            test_id: new ObjectId(test_id),
+            result: result
+        }
+        await this.app.db.collection('mini_test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+        await this.app.db.collection('manage_scores_of_users').findOneAndUpdate({user_id: user_id}, {$push: {'scores_mini_test': scores_test}}, {upsert: true})
+
+        return new Promise((resolve, reject) =>{
+            resolve({
+                result: result
+            })
+        });
+    }
+
 }
 
 // user: Adminstrator
