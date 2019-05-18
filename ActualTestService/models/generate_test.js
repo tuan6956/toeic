@@ -2,10 +2,20 @@ import _ from 'lodash';
 import collections from '../configs/db';
 var ObjectId = require('mongodb').ObjectID;
 
+const scores_Test = [ 5, 5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70,
+     75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155,
+     160, 165, 170, 175, 180, 185, 190, 195, 200, 205, 210, 215, 220, 225, 230, 235, 240,
+     245, 250, 255, 260, 265, 270, 275, 280, 285, 290, 295, 300, 305, 310, 315, 320, 325,
+     330, 335, 340, 345, 350, 355, 360, 365, 370, 375, 380, 385, 390, 395, 400, 405, 410,
+     415, 420, 425, 430, 435, 440, 445, 450, 455, 460, 465, 470, 475, 480, 485, 490, 495 ];
+const scores_MiniTest = [ 5, 45, 95, 145, 195, 270, 295, 345, 395, 445, 495]
+
 export default class GenerateTest {
     constructor(app){
         this.app = app;
+
     }
+
 
     async get_latest_test(skip_records, level){
         if(skip_records === 0){
@@ -124,6 +134,28 @@ export default class GenerateTest {
     }
 
     async createNewTest(level, count_test){
+        let name_test ;
+        switch(level){
+            case 1:{
+                name_test = "Elementary " + count_test + 1;
+                break;
+            }
+            case 2:{
+                name_test = "Intermediate " + count_test + 1;
+                break;
+            }
+            case 3:{
+                name_test = "Upper intermediate " + count_test + 1;
+                break;
+            }
+            case 4:{
+                name_test = "Advanced " + count_test + 1;
+                break;
+            }
+
+            default:
+                break;
+        }
         let data_insert = {
             questions: {
                 part_1: [],
@@ -137,8 +169,12 @@ export default class GenerateTest {
                     type_2: []
                 }
             },
+            name: name_test,
             status: 'pending',
-            level: level
+            user_complete: 0,
+            level: level,
+            createAt: new Date()
+
         }
         let id_insert = await this.app.db.collection('test').insertOne(data_insert).then(result=>{
             return result.ops[0]._id
@@ -327,15 +363,123 @@ export default class GenerateTest {
         return {};
     }
 
+    async getTheTestById(id_test){
+
+        let result = await this.app.db.collection('test').find({_id: id_test}).toArray();
+        let questions = {
+            part_1: [],
+            part_2: [],
+            part_3: [],
+            part_4: [],
+            part_5: [],
+            part_6: [],
+            part_7: {
+                type_1: [],
+                type_2: []
+            }
+        }
+        if(result[0]){
+            for (let index = 1; index <= 7; index++) {
+                switch (index) {
+                    case 1:{
+                        for(let i = 0; i < result[0].questions.part_1.length; i++){
+                        let id = result[0].questions.part_1[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
+                            questions.part_1.push(getQuestion)
+                        }
+                        break;
+                    }
+
+                    case 2: {
+                        for(let i = 0; i < result[0].questions.part_2.length; i++){
+                            let id = result[0].questions.part_2[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
+                            questions.part_2.push(getQuestion)
+                        }
+                        break;
+                    }
+                    case 3: {
+                        for(let i = 0; i < result[0].questions.part_3.length; i++){
+                            let id = result[0].questions.part_3[i];
+                            let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id})
+                            let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
+                            get_dialogue.questionObjects = questionObjects;
+                            questions.part_3.push(get_dialogue);
+                        }
+                        break;
+                    }
+                    case 4: {
+                        for(let i = 0; i < result[0].questions.part_4.length; i++){
+                            let id = result[0].questions.part_4[i];
+                            let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
+                            get_dialogue.questionObjects = questionObjects;
+                            questions.part_4.push(get_dialogue);
+                        }
+                        break;
+                    }
+                    case 5: {
+                        for(let i = 0; i < result[0].questions.part_5.length; i++){
+                            let id = result[0].questions.part_5[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.reading_question).findOne({_id: id})
+                            questions.part_5.push(getQuestion)
+                        }
+                        break;
+                    }
+                    case 6: {
+                        for(let i = 0; i < result[0].questions.part_6.length; i++){
+                            let id = result[0].questions.part_6[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.part_6.push(get_paragraph);
+                        }
+                        break;
+                    }
+                    case 7:{
+                        for(let i = 0; i < result[0].questions.part_7.type_1.length;i++){
+                            let id = result[0].questions.part_7.type_1[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.part_7.type_1.push(get_paragraph);
+                        }
+                        for(let i = 0; i < result[0].questions.part_7.type_2.length;i++){
+                            let id = result[0].questions.part_7.type_2[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.part_7.type_2.push(get_paragraph);
+                        }
+                        break;
+                    }
+                    
+                    default:
+                        break;
+                }
+                
+            }
+            result[0].questions = questions;
+
+            return result[0];
+        }
+        return {};
+    }
+
+    // async abc(){
+    //     let n = await this.app.db.collection('reading_question').aggregate( [{ $group: { '_id': { 'id_paragraph': "$id_paragraph", 'type': "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}])
+
+    // }
+
     async generateMiniTest(){
         let count_test = await this.app.db.collection('test').find().count();
         let mini_test = await this.app.db.collection(collections.collections.mini_test).find().count();
-        if(count_test < 3){
-            return;
-        }
-        if(mini_test === 10){
-            return;
-        }
+        // if(count_test < 3){
+        //     return;
+        // }
+        // if(mini_test === 10){
+        //     return;
+        // }
 
         let data_insert = {
             questions: {
@@ -359,56 +503,79 @@ export default class GenerateTest {
                 case 1: case 2:{
                     let temp = 0;
                     while (temp < 2) {
-                        let n = this.app.db.collection(collections.collections.listening_question).find({part: index}).count();
+                        let n = await this.app.db.collection(collections.collections.listening_question).find({part: index}).count();
                         let r = Math.floor(Math.random() * n);
-                        let randomElement = this.app.db.collection(collections.collections.listening_question).find({part: index}).limit(1).skip(r).toArray();
+                        let randomElement = await this.app.db.collection(collections.collections.listening_question).find({part: index}).limit(1).skip(r).toArray();
                         let part = 'part_'+index;
-                        data_insert.questions[part].push(randomElement[0]._id);
+                        if(randomElement.length !== 0){
+                            data_insert.questions[part].push(randomElement[0]._id);
+                        }
                         temp++;
                     }
                     break;
                 }
                 case 3: case 4:{
-                    let n = this.app.db.collection(collections.collections.dialogues).find({part: index}).count();
+                    let n = await this.app.db.collection(collections.collections.dialogues).find({part: index}).count();
                     let r = Math.floor(Math.random() * n);
-                    let randomElement = this.app.db.collection(collections.collections.dialogues).find({part: index}).limit(1).skip(r).toArray();
+                    let randomElement = await this.app.db.collection(collections.collections.dialogues).find({part: index}).limit(1).skip(r).toArray();
                     let part = 'part_'+index;
-                    data_insert.questions[part].push(randomElement[0]._id);
+                    if(randomElement.length !== 0){
+                        data_insert.questions[part].push(randomElement[0]._id);
+                    }
+
                     break;
                 }
                 case 5:{
                     let temp = 0;
                     while (temp < 2) {
-                        let n = this.app.db.collection(collections.collections.reading_question).find({part: index}).count();
+                        let n = await this.app.db.collection(collections.collections.reading_question).find({part: index}).count();
                         let r = Math.floor(Math.random() * n);
-                        let randomElement = this.app.db.collection(collections.collections.reading_question).find({part: index}).limit(1).skip(r).toArray();
+                        let randomElement = await this.app.db.collection(collections.collections.reading_question).find({part: index}).limit(1).skip(r).toArray();
                         let part = 'part_'+index;
-                        data_insert.questions[part].push(randomElement[0]._id);
+                        if(randomElement.length !== 0){
+                            data_insert.questions[part].push(randomElement[0]._id);
+                        }
                         temp++;
                     }
                     break;
                 }
                 case 6: {
-                    let n = this.app.db.collection(collections.collections.paragraphs).find({part: index}).count();
+                    let n = await this.app.db.collection(collections.collections.paragraphs).find({part: index}).count();
                     let r = Math.floor(Math.random() * n);
-                    let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index}).limit(1).skip(r).toArray();
+                    let randomElement = await this.app.db.collection(collections.collections.paragraphs).find({part: index}).limit(1).skip(r).toArray();
                     let part = 'part_'+index;
-                    data_insert.questions[part].push(randomElement[0]._id);
+                    if(randomElement.length !== 0){
+                        data_insert.questions[part].push(randomElement[0]._id);
+                    }
                     break;
                 }
                 case 7:{
+                    let n = await this.app.db.collection('reading_question').aggregate( [{ $group: { '_id': { 'id_paragraph': "$id_paragraph", 'type': "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}]).toArray();
+                    if(n.length !== 0){
+                        let r = Math.floor(Math.random() * n.length);
+
+                        let randomElement =  await this.app.db.collection('reading_question').aggregate( [{ $group: { _id: { id_paragraph: "$id_paragraph", type: "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}, {$skip: 1}, {$limit: 1}]).toArray()
+                    
+                        if(randomElement.length !== 0){
+                            data_insert.questions.part_7.type_1.push(randomElement[0]._id)
+                        }
+                    }
+
                     //with type =1 ;
-                    let n = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).count();
-                    let r = Math.floor(Math.random() * n);
-                    let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).limit(1).skip(r).toArray();
-                    let part = 'part_'+index+'.type_1';
-                    data_insert.questions[part].push(randomElement[0]._id);
+                    // let n = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).count();
+                    // let r = Math.floor(Math.random() * n);
+                    // let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).limit(1).skip(r).toArray();
+                    // let part = 'part_'+index+'.type_1';
+                    // data_insert.questions[part].push(randomElement[0]._id);
                     //with type = 2;
-                    let n_2 = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).count();
+                    let n_2 = await this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).count();
                     let r_2 = Math.floor(Math.random() * n_2);
-                    let randomElement_2 = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).limit(1).skip(r_2).toArray();
-                    let part_ = 'part_'+index+'.type_2';
-                    data_insert.questions[part_].push(randomElement_2[0]._id);
+                    let randomElement_2 = await this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).limit(1).skip(r_2).toArray();
+                    if(randomElement_2.length !== 0){
+                            data_insert.questions.part_7.type_2.push(randomElement_2[0]._id)
+                       
+                    }
+                    break;
                 }
                 default:
                     break;
@@ -523,7 +690,9 @@ export default class GenerateTest {
     }
     
     async getAll(level, page = 0, limit = 1){
-        let result = await this.app.db.collection('test').find({level: level},{projection: {questions: 0}}).toArray();
+        let querry = {};
+        (level) ? querry['level'] = level : null;
+        let result = await this.app.db.collection('test').find(querry,{projection: {questions: 0}}).toArray();
         return result;
     }
 
@@ -554,6 +723,70 @@ export default class GenerateTest {
             }
         }
     }
+
+    async getResultTest(correct_listening, correct_reading, test_id, user_id){
+
+        if(correct_reading > 100 || correct_listening > 100 || correct_reading < 0 || correct_listening < 0){
+            return new Promise((resolve, reject)=>{
+                reject({
+                    err: {
+                        message:"double check value of correct answer is greater than 0 and smaller than 100",
+                        status: 500
+                    }
+                })
+            })
+        }
+
+        let result = {
+            listening_scores: scores_Test[correct_listening],
+            reading_scores: scores_Test[correct_reading],
+            total: scores_Test[correct_listening] + scores_Test[correct_reading]
+        }
+        let scores_test = {
+            test_id: new ObjectId(test_id),
+            result: result
+        }
+        await this.app.db.collection('test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+        await this.app.db.collection('manage_scores_of_users').findOneAndUpdate({user_id: user_id}, {$push: {'scores_test': scores_test}}, {upsert: true})
+
+        return new Promise((resolve, reject) =>{
+            resolve({
+                result: result
+            })
+        });
+    }
+
+    async getResultMiniTest(correct_listening, correct_reading, test_id, user_id){
+        if(correct_reading > 10 || correct_listening > 10 || correct_reading < 0 || correct_listening < 0){
+            return new Promise((resolve, reject)=>{
+                reject({
+                    err: {
+                        message:"double check value of correct answer is greater than 0 and smaller than 10",
+                        status: 500
+                    }
+                })
+            })
+        }
+
+        let result = {
+            listening_scores: scores_MiniTest[correct_listening],
+            reading_scores: scores_MiniTest[correct_reading],
+            total: scores_MiniTest[correct_listening] + scores_MiniTest[correct_reading]
+        }
+        let scores_test = {
+            test_id: new ObjectId(test_id),
+            result: result
+        }
+        await this.app.db.collection('mini_test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+        await this.app.db.collection('manage_scores_of_users').findOneAndUpdate({user_id: user_id}, {$push: {'scores_mini_test': scores_test}}, {upsert: true})
+
+        return new Promise((resolve, reject) =>{
+            resolve({
+                result: result
+            })
+        });
+    }
+
 }
 
 // user: Adminstrator

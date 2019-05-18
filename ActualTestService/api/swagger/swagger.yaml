@@ -1623,8 +1623,10 @@ paths:
             properties:
               _id:
                 type: integer
-              percent_of_user_finish:
+              user_complete:
                 type: number 
+              createAt:
+                type: string
               level: 
                 type: integer
         default:
@@ -1652,6 +1654,84 @@ paths:
       responses:
         "200":
           description: Return all records you request by paging
+          schema:
+            properties:
+              questions:
+                type: object
+                properties:
+                  part_1:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_2:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_3:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_4:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_5:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_6:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_7:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /test{testId}:
+    x-swagger-router-controller: test
+    get:
+      description: Returns the test by level of user and ordinal of the test.
+      operationId: getTheTestById
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: testId
+          type: string
+          required: true
+          description: id of test
+      responses:
+        "200":
+          description: Return the test
           schema:
             properties:
               questions:
@@ -1793,6 +1873,75 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /submitTheTest:
+    x-swagger-router-controller: test
+    post:
+      description: submit result of the test, server return your scores
+      operationId: getResultTest
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: post listening_scores and reading_scores
+          schema:
+            properties:
+              correct_listening:
+                type: integer
+              correct_reading: 
+                type: integer
+              user_id:
+                type: string
+              test_id:
+                type: string
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              result:
+                type: object
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /submitMiniTest:
+    x-swagger-router-controller: test
+    post:
+      description: submit result of the test, server return your scores
+      operationId: getResultMiniTest
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: post listening_scores and reading_scores
+          schema:
+            properties:
+              correct_listening:
+                type: integer
+              correct_reading: 
+                type: integer
+              user_id:
+                type: string
+              test_id:
+                type: string
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              result:
+                type: object
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
 definitions:
   ErrorResponse:
     required:
