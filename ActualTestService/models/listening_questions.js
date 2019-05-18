@@ -213,7 +213,7 @@ export default class ListeningQuestion {
         id = ObjectId(id);
         const d = q.defer();
     
-        this.mongoModels.find(collections.listening_question, id)
+        this.mongoModels.findRecord(collections.listening_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })
@@ -267,7 +267,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -299,7 +299,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -331,7 +331,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -363,7 +363,7 @@ export default class ListeningQuestion {
                 }
                 else{data_update = data}
             
-                    this.mongoModels.update(collections.listening_question,{_id: _id}, data_update)
+                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -380,7 +380,3 @@ export default class ListeningQuestion {
         }
     }
 }
-
-// https://viblo.asia/q/asyncawait-foreach-for-o754DoEJ5M6
-// https://medium.com/@bluepnume/even-with-async-await-you-probably-still-need-promises-9b259854c161
-// https://ehkoo.com/bai-viet/tat-tan-tat-ve-promise-va-async-await
