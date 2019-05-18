@@ -257,7 +257,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                this.mongoModels.update(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -289,7 +289,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                this.mongoModels.update(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -321,7 +321,7 @@ export default class ReadingQuestion {
                 }
                 else{data_update = data}
             
-                this.mongoModels.update(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {
                                 d.resolve(result);
                             })
