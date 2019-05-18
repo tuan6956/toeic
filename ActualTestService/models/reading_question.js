@@ -125,6 +125,7 @@ export default class ReadingQuestion {
                     item.id_paragraph = result_insert_paragraph._id;
                     item.part = part;
                     item.level = level;
+                    item.type = data.type;
                     return item;
                 })
                 let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.reading_question, item)))
@@ -202,7 +203,7 @@ export default class ReadingQuestion {
         id = ObjectId(id);
         const d = q.defer();
     
-        this.mongoModels.find(collections.reading_question, id)
+        this.mongoModels.findRecord(collections.reading_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })

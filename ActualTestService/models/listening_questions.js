@@ -213,7 +213,7 @@ export default class ListeningQuestion {
         id = ObjectId(id);
         const d = q.defer();
     
-        this.mongoModels.find(collections.listening_question, id)
+        this.mongoModels.findRecord(collections.listening_question, id)
                     .then(result => {
                         d.resolve(result[0]);
                     })

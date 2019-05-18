@@ -466,15 +466,20 @@ export default class GenerateTest {
         return {};
     }
 
+    // async abc(){
+    //     let n = await this.app.db.collection('reading_question').aggregate( [{ $group: { '_id': { 'id_paragraph': "$id_paragraph", 'type': "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}])
+
+    // }
+
     async generateMiniTest(){
         let count_test = await this.app.db.collection('test').find().count();
         let mini_test = await this.app.db.collection(collections.collections.mini_test).find().count();
-        if(count_test < 3){
-            return;
-        }
-        if(mini_test === 10){
-            return;
-        }
+        // if(count_test < 3){
+        //     return;
+        // }
+        // if(mini_test === 10){
+        //     return;
+        // }
 
         let data_insert = {
             questions: {
@@ -498,56 +503,79 @@ export default class GenerateTest {
                 case 1: case 2:{
                     let temp = 0;
                     while (temp < 2) {
-                        let n = this.app.db.collection(collections.collections.listening_question).find({part: index}).count();
+                        let n = await this.app.db.collection(collections.collections.listening_question).find({part: index}).count();
                         let r = Math.floor(Math.random() * n);
-                        let randomElement = this.app.db.collection(collections.collections.listening_question).find({part: index}).limit(1).skip(r).toArray();
+                        let randomElement = await this.app.db.collection(collections.collections.listening_question).find({part: index}).limit(1).skip(r).toArray();
                         let part = 'part_'+index;
-                        data_insert.questions[part].push(randomElement[0]._id);
+                        if(randomElement.length !== 0){
+                            data_insert.questions[part].push(randomElement[0]._id);
+                        }
                         temp++;
                     }
                     break;
                 }
                 case 3: case 4:{
-                    let n = this.app.db.collection(collections.collections.dialogues).find({part: index}).count();
+                    let n = await this.app.db.collection(collections.collections.dialogues).find({part: index}).count();
                     let r = Math.floor(Math.random() * n);
-                    let randomElement = this.app.db.collection(collections.collections.dialogues).find({part: index}).limit(1).skip(r).toArray();
+                    let randomElement = await this.app.db.collection(collections.collections.dialogues).find({part: index}).limit(1).skip(r).toArray();
                     let part = 'part_'+index;
-                    data_insert.questions[part].push(randomElement[0]._id);
+                    if(randomElement.length !== 0){
+                        data_insert.questions[part].push(randomElement[0]._id);
+                    }
+
                     break;
                 }
                 case 5:{
                     let temp = 0;
                     while (temp < 2) {
-                        let n = this.app.db.collection(collections.collections.reading_question).find({part: index}).count();
+                        let n = await this.app.db.collection(collections.collections.reading_question).find({part: index}).count();
                         let r = Math.floor(Math.random() * n);
-                        let randomElement = this.app.db.collection(collections.collections.reading_question).find({part: index}).limit(1).skip(r).toArray();
+                        let randomElement = await this.app.db.collection(collections.collections.reading_question).find({part: index}).limit(1).skip(r).toArray();
                         let part = 'part_'+index;
-                        data_insert.questions[part].push(randomElement[0]._id);
+                        if(randomElement.length !== 0){
+                            data_insert.questions[part].push(randomElement[0]._id);
+                        }
                         temp++;
                     }
                     break;
                 }
                 case 6: {
-                    let n = this.app.db.collection(collections.collections.paragraphs).find({part: index}).count();
+                    let n = await this.app.db.collection(collections.collections.paragraphs).find({part: index}).count();
                     let r = Math.floor(Math.random() * n);
-                    let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index}).limit(1).skip(r).toArray();
+                    let randomElement = await this.app.db.collection(collections.collections.paragraphs).find({part: index}).limit(1).skip(r).toArray();
                     let part = 'part_'+index;
-                    data_insert.questions[part].push(randomElement[0]._id);
+                    if(randomElement.length !== 0){
+                        data_insert.questions[part].push(randomElement[0]._id);
+                    }
                     break;
                 }
                 case 7:{
+                    let n = await this.app.db.collection('reading_question').aggregate( [{ $group: { '_id': { 'id_paragraph': "$id_paragraph", 'type': "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}]).toArray();
+                    if(n.length !== 0){
+                        let r = Math.floor(Math.random() * n.length);
+
+                        let randomElement =  await this.app.db.collection('reading_question').aggregate( [{ $group: { _id: { id_paragraph: "$id_paragraph", type: "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}, {$skip: 1}, {$limit: 1}]).toArray()
+                    
+                        if(randomElement.length !== 0){
+                            data_insert.questions.part_7.type_1.push(randomElement[0]._id)
+                        }
+                    }
+
                     //with type =1 ;
-                    let n = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).count();
-                    let r = Math.floor(Math.random() * n);
-                    let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).limit(1).skip(r).toArray();
-                    let part = 'part_'+index+'.type_1';
-                    data_insert.questions[part].push(randomElement[0]._id);
+                    // let n = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).count();
+                    // let r = Math.floor(Math.random() * n);
+                    // let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).limit(1).skip(r).toArray();
+                    // let part = 'part_'+index+'.type_1';
+                    // data_insert.questions[part].push(randomElement[0]._id);
                     //with type = 2;
-                    let n_2 = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).count();
+                    let n_2 = await this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).count();
                     let r_2 = Math.floor(Math.random() * n_2);
-                    let randomElement_2 = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).limit(1).skip(r_2).toArray();
-                    let part_ = 'part_'+index+'.type_2';
-                    data_insert.questions[part_].push(randomElement_2[0]._id);
+                    let randomElement_2 = await this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).limit(1).skip(r_2).toArray();
+                    if(randomElement_2.length !== 0){
+                            data_insert.questions.part_7.type_2.push(randomElement_2[0]._id)
+                       
+                    }
+                    break;
                 }
                 default:
                     break;
