@@ -159,7 +159,7 @@ paths:
       description: Update lesson info
       operationId: addVocabulary
       tags:
-        - lesson
+        - vocabulary
       security:
         - auth0: []
       parameters:
