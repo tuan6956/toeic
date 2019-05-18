@@ -155,3 +155,25 @@ exports.delete = (query) => {
     }); 
 }
 
+exports.aggregate = (query, collectionMG) => { 
+    return new Promise((resolve, reject) => {
+        MongoClient.connect(url, function(err, db) {
+            if (err) {
+                console.log("Unable to connect to the mongoDB server. Error:");
+                reject(err);
+            } else {
+                console.log("Connection established to", url);
+            
+                const collection = db.db(dbName).collection(collectionMG);
+                collection.aggregate(query).toArray(function(err, result) {
+                    db.close();
+                    if(err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            }
+        });
+    });
+}

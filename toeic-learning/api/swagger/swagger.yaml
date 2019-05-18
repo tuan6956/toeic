@@ -3,8 +3,8 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-host: 103.114.107.16:8003
-#host: localhost:8003
+#host: 103.114.107.16:8003
+host: localhost:8003
 
 # basePath prefixes all resource paths 
 basePath: /api/learning
@@ -124,6 +124,50 @@ paths:
           description: parameters with content, topic, category, title in new lesson.
           schema:
             $ref: '#/definitions/LessonReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /vocabulary:
+    x-swagger-router-controller: vocabulary
+    get:
+      description: Returns lesson info with parameters lessonId
+      operationId: getVocabularyByDay
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update lesson info
+      operationId: addVocabulary
+      tags:
+        - lesson
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with type, vocabulary, mean.
+          schema:
+            $ref: '#/definitions/VocabularyReq'
       responses:
         "200":
           description: Success
@@ -344,6 +388,113 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /milestones:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: milestone
+    get:
+      description: Returns all topic
+      operationId: getAllMilestone
+      tags:
+        - milestone
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit value return
+        - in: query
+          name: page
+          type: integer
+          description: page get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Add new topic
+      operationId: addMilestone
+      tags:
+        - milestone
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with name
+          schema:
+            $ref: '#/definitions/MilestoneReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /milestone/{milestoneId}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: milestone
+    get:
+      description: Returns category info with parameters by milestoneId
+      operationId: getOneMiletone
+      tags:
+        - milestone
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: milestoneId
+          type: string
+          required: true
+          description: Id milestone
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update milestone info 
+      operationId: updateMilestone
+      tags:
+        - milestone
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: milestoneId
+          type: string
+          required: true
+          description: description of paramete
+        - in: body
+          name: body
+          description: parameters with name.
+          schema:
+            $ref: '#/definitions/MilestoneUpdate'
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -368,7 +519,17 @@ definitions:
         type: integer
         minimum: 1
         maximum: 3
-        
+  VocabularyReq:
+    required:
+      - type
+      - vocabulary
+    properties:
+      type:
+        type: string
+      vocabulary:
+        type: string
+      mean:
+        type: string
   TopicReq:
     required:
       - name
@@ -383,6 +544,22 @@ definitions:
       - name
     properties:
       name:
+        type: string
+  MilestoneReq:
+    required:
+      - name
+    properties:
+      name:
+        type: string
+  MilestoneUpdate:
+    properties:
+      name:
+        type: string
+      categoryId:
+        type: string
+      lessonId:
+        type: string
+      testId:
         type: string
   MessageResp:
     type: object

@@ -25,7 +25,7 @@ function get(req, res) {
       limit = params.limit.value;
     }
     topicRepo.getAll(limit, page).then(value => {
-        console.log(util.inspect(value, {showHidden: false, depth: null}))
+        // console.log(util.inspect(value, {showHidden: false, depth: null}))
         if (!value)
             value = [];
         res.status(200);
