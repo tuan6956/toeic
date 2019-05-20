@@ -105,7 +105,6 @@ export default class GenerateTest {
                     
                     //insert the paragraph to test
                     let insert_to_part = 'questions.part_' + part+'.type_'+ type_for_part7;
-                    console.log(insert_to_part)
                     let insert_question = {};
                     insert_question[insert_to_part] = questions[0]._id;
                     this.app.db.collection(collections.collections.test)
@@ -466,20 +465,16 @@ export default class GenerateTest {
         return {};
     }
 
-    // async abc(){
-    //     let n = await this.app.db.collection('reading_question').aggregate( [{ $group: { '_id': { 'id_paragraph': "$id_paragraph", 'type': "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}])
-
-    // }
 
     async generateMiniTest(){
         let count_test = await this.app.db.collection('test').find().count();
         let mini_test = await this.app.db.collection(collections.collections.mini_test).find().count();
-        // if(count_test < 3){
-        //     return;
-        // }
-        // if(mini_test === 10){
-        //     return;
-        // }
+        if(count_test < 2){
+            return;
+        }
+        if(mini_test === 10){
+            return;
+        }
 
         let data_insert = {
             questions: {

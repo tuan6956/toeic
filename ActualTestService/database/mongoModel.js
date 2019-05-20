@@ -68,9 +68,18 @@ export default class MongoModel {
                 .skip(+page).limit(+limit)
                 .toArray((error, result) => {
                     error ? d.reject(error) : d.resolve(result);
-                    // client.close();
                 });
     
         return d.promise;
+    }
+
+    aggregate_func(collection, querry) {
+     const d = q.defer();
+        this.app.db.collection(collection).aggregate(querry)
+                .toArray((error, result) => {
+                    error ? d.reject(error) : d.resolve(result);
+                });
+    
+        return d.promise;   
     }
 }

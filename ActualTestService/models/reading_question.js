@@ -215,6 +215,36 @@ export default class ReadingQuestion {
                     })
         return d.promise;
     }
+
+    getParagraphById(id){
+        id = ObjectId(id);
+        const d = q.defer();
+    
+        let querry = [
+            {$lookup:
+               {
+                 localField: "_id",
+                 from: "reading_question",
+                 foreignField: "id_paragraph",
+                 as: "questions"
+               }
+            },
+            {$match:{ _id: ObjectId(id)}},
+            { $project: { questions: {level: 0, part: 0} } },
+            
+        ]
+        this.mongoModels.aggregate_func(collections.paragraphs, querry)
+                    .then(result => {
+                        d.resolve(result[0]);
+                    })
+                    .catch(err => {
+                        d.reject({
+                            status: 500,
+                            message: err.toString()
+                        });
+                    })
+        return d.promise;
+    }
     
     async updateQuestionById(_id, data){
         _id = ObjectId(_id);
