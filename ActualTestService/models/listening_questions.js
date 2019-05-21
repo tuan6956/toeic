@@ -163,49 +163,46 @@ export default class ListeningQuestion {
           }
     }
     
-    getAll(page, limit, part){
+    async getAll(page, limit, part){
         const d = q.defer();
-        if(part) {
-            this.mongoModels.getAll(collections.listening_question, page, limit, new Object({"part": part}))
-                            .then(result => {
-                                result = result.map(item=>{
-                                    return {
-                                        id: item._id,
-                                        test_id: item.test_id ? item.test_id : null,
-                                        level: item.level ? item.level : null,
-                                        part: item.part
-                                    }
-                                })
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString(),
-                                });
-                            })
-                return d.promise;
-        }else{
-            this.mongoModels.getAll(collections.listening_question, page, limit)
-                            .then(result => {
-                                result = result.map(item=>{
-                                    return {
-                                        id: item._id,
-                                        test_id: item.test_id ? item.test_id : null,
-                                        level: item.level ? item.level : null,
-                                        part: item.part
-                                    }
-                                })
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: "Can not get all question into database"
-                                });
-                            })
-                return d.promise;
+        let options = {
+            projection: { test_id: 1, level: 1, part: 1}
         }
+
+        let question_part1 = await this.mongoModels.getAll(collections.listening_question, page, limit, {part: 1}, options).then(result=>{
+            return result;
+        })
+
+        let question_part2 = await this.mongoModels.getAll(collections.listening_question, page, limit, {part: 2}, options).then(result=>{
+            return result;
+        })
+
+       if(!_.isUndefined(part)){
+           if (part === 1) {
+               d.resolve(question_part1)
+               return d.promise;
+           }
+
+           if (part === 2) {
+               d.resolve(question_part2)
+               return d.promise;
+           }
+
+           if (part === 3 || part === 4) {
+               let questions = await this.mongoModels.getAll(collections.dialogues, page, limit, {part: part}, options).then(result =>{
+                    return result;
+                })
+               d.resolve(questions);
+               return d.promise;
+           }
+       }
+        let questions = await this.mongoModels.getAll(collections.dialogues, page, limit,{}, options).then(result =>{
+            return result;
+        })
+        
+        let question_result = [...question_part1, ...question_part2, ...questions];
+        d.resolve(question_result);
+        return d.promise;
         
     }
     
@@ -226,7 +223,7 @@ export default class ListeningQuestion {
         return d.promise;
     }
 
-        getParagraphById(id){
+    getDialogueById(id){
         id = ObjectId(id);
         const d = q.defer();
     
@@ -278,99 +275,45 @@ export default class ListeningQuestion {
     
         switch(part){
             case 1:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
-                            .then(result => {
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString()
-                                });
-                            })
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+                        .then(result => {
+                            d.resolve(result);
+                        })
+                        .catch(err => {
+                            d.reject({
+                                status: 500,
+                                message: err.toString()
+                            });
+                        })
                 return d.promise;
             }
             case 2: {
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
-                            .then(result => {
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString()
-                                });
-                            })
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+                        .then(result => {
+                            d.resolve(result);
+                        })
+                        .catch(err => {
+                            d.reject({
+                                status: 500,
+                                message: err.toString()
+                            });
+                        })
                 return d.promise;
             }
             case 3:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
-                            .then(result => {
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString()
-                                });
-                            })
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+                        .then(result => {
+                            d.resolve(result);
+                        })
+                        .catch(err => {
+                            d.reject({
+                                status: 500,
+                                message: err.toString()
+                            });
+                        })
                 return d.promise;
             }
             case 4:{

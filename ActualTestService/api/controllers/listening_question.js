@@ -70,10 +70,10 @@ function deleteQuestion(req, res){
   // });
 }
 
-function getParagraphById(req, res){
+function getDialogueById(req, res){
   let questionId = req.swagger.params.questionId.value.trim();
 
-  req.app.models.readingModels.getParagraphById(questionId)
+  req.app.models.listeningModels.getDialogueById(questionId)
   .then(result => {
     handleSuccess(res, 200, result);
   })
@@ -89,5 +89,5 @@ module.exports = {
     getQuestionById,
     updateQuestion,
     deleteQuestion,
-    getParagraphById
+    getDialogueById
   };

@@ -35,7 +35,6 @@ export default class ReadingQuestion {
             case 6:{
                 let questions = _.get(data, "questions");
                 let paragraph = [];
-                // let avg_level = 0;
                 questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
                     delete item.paragraph;
@@ -45,7 +44,7 @@ export default class ReadingQuestion {
                 questions.pop();
                 let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": level}))
                             .then(result => {
-                                delete result.paragraphs;
+                                // delete result.paragraphs;
                                 return result;
                             })
                             .catch(err => {
@@ -153,49 +152,37 @@ export default class ReadingQuestion {
           }
     }
     
-    getAll(page = 1, limit = 5, part){
+    async getAll(page = 0, limit = 0, part){
         const d = q.defer();
-        if(part) {
-            this.mongoModels.getAll(collections.reading_question, page, limit, new Object({"part": part}))
-                            .then(result => {
-                                result = result.map(item=>{
-                                    return {
-                                        id: item._id,
-                                        test_id: item.test_id ? item.test_id : null,
-                                        level: item.level ? item.level : null,
-                                        part: item.part
-                                    }
-                                })
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString(),
-                                });
-                            })
-                return d.promise;
-        }else{
-            this.mongoModels.getAll(collections.reading_question, page, limit)
-                            .then(result => {
-                                result = result.map(item=>{
-                                    return {
-                                        id: item._id,
-                                        test_id: item.test_id ? item.test_id : null,
-                                        level: item.level ? item.level : null,
-                                        part: item.part
-                                    }
-                                })
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: "Can not get all question into database"
-                                });
-                            })
-                return d.promise;
+
+        let options = {
+            projection: { test_id: 1, level: 1, part: 1}
         }
+
+        let question_part5 = await this.mongoModels.getAll(collections.reading_question, page, limit, {part: 5}, options).then(result=>{
+            return result;
+        })
+
+       if(!_.isUndefined(part)){
+           if (part === 5) {
+               d.resolve(question_part5)
+               return d.promise;
+           }
+           if (part === 6 || part === 7) {
+               let questions = await this.mongoModels.getAll(collections.paragraphs, page, limit, {part: part}, options).then(result =>{
+                    return result;
+                })
+               d.resolve(questions);
+               return d.promise;
+           }
+       }
+        let questions = await this.mongoModels.getAll(collections.paragraphs, page, limit,{}, options).then(result =>{
+            return result;
+        })
+        
+        let question_result = [...question_part5, ...questions];
+        d.resolve(question_result);
+        return d.promise;
         
     }
     
@@ -230,7 +217,7 @@ export default class ReadingQuestion {
                }
             },
             {$match:{ _id: ObjectId(id)}},
-            { $project: { questions: {level: 0, part: 0} } },
+            { $project: { questions: {level: 0, part: 0, id_paragraph: 0} } },
             
         ]
         this.mongoModels.aggregate_func(collections.paragraphs, querry)
@@ -265,29 +252,10 @@ export default class ReadingQuestion {
             })
             return d.promise;
         }
-    
         switch(part){
             case 5:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
-                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
+                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data)
                             .then(result => {
                                 d.resolve(result);
                             })
@@ -300,24 +268,6 @@ export default class ReadingQuestion {
                 return d.promise;
             }
             case 6:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
                 this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
                             .then(result => {

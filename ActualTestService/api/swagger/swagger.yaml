@@ -1121,7 +1121,7 @@ paths:
     x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
-      operationId: getParagraphById
+      operationId: getDialogueById
       tags:
         - listeningQuestionPart3
       security:
@@ -1139,42 +1139,62 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
+              dialogue_link:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_dialogue:
-                type: string   
               level: 
                 type: integer
               part: 
                 type: integer
+              test_id:
+                type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_dialogue:
+                      type: string   
             example: #sample object 
               id: 5cb490df7a69701a2e53b161 
-              question_content: Who most likely is Mr. Metts?_update
-              answers: 
-                optA: Emily's boss
-                optB: Emily's colleague
-                optC: Emily's teacher
-                optD: Emily's lawyer
-              right_answer: optA
-              explain: Can be null
-              id_dialogue: 5cb490de7a69701a2e53b160
               part: 3,
-              level: 1
+              level: 1,
+              test_id: 5cb490df7a69701a2e53b161,
+              questions: 
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
         default:
           description: Error
           schema:
@@ -1202,8 +1222,6 @@ paths:
           schema:
             type: object
             properties:
-              _id:
-                type: integer
               image_link:
                 type: string
               answers:
@@ -1308,7 +1326,7 @@ paths:
     x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
-      operationId: getParagraphById
+      operationId: getDialogueById
       tags:
         - listeningQuestionPart4
       security:
@@ -1326,42 +1344,62 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
+              dialogue_link:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_dialogue:
-                type: string   
               level: 
                 type: integer
               part: 
                 type: integer
-            example: #sample object
-              _id: 5cb15f643e61721ec8402e5c
-              question_content: Who most likely is Mr. Metts?
-              answers:
-                optA: Emily's boss
-                optB: Emily's colleague
-                optC: Emily's teacher
-                optD: Emily's lawyer
-              right_answer: optA
-              explain: Can be null
-              id_dialogue: 5cb15f643e61721ec8402e5a
-              part: 4
-              level: 1
+              test_id:
+                type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_dialogue:
+                      type: string   
+            example: #sample object 
+              id: 5cb490df7a69701a2e53b161 
+              part: 4,
+              level: 1,
+              test_id: 5cb490df7a69701a2e53b161,
+              questions: 
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
         default:
           description: Error
           schema:
@@ -1461,54 +1499,21 @@ paths:
             properties:
               _id:
                 type: integer
-              audio_link:
-                type: string
-              dialogue_id:
-                type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
+              test_id:
+                type: integer
             example: #sample object
               - _id: 5ca5cf9625b3a91485d29ef9
-                audio_link: public/audio/part2/question_audio2
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
                 part: 3
+                test_id: 5ca5cfd621a34914ef9a2f38
               - _id: 5ca5cfd621a34914ef9a2f38
-                audio_link: public/audio/part2/question_audio3
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
                 part: 3
+                test_id: 5ca5cfd621a34914ef9a2f38
         default:
           description: Error
           schema:
@@ -1542,54 +1547,21 @@ paths:
             properties:
               _id:
                 type: integer
-              audio_link:
-                type: string
-              dialogue_id:
-                type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
+              test_id:
+                type: integer
             example: #sample object
               - _id: 5ca5cf9625b3a91485d29ef9
-                audio_link: public/audio/part2/question_audio2
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
-                part: 3
+                part: 5
+                test_id: 5ca5cfd621a34914ef9a2f38
               - _id: 5ca5cfd621a34914ef9a2f38
-                audio_link: public/audio/part2/question_audio3
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
-                part: 3
+                part: 6
+                test_id: 5ca5cfd621a34914ef9a2f38
         default:
           description: Error
           schema:

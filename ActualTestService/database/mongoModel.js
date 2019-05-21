@@ -42,10 +42,19 @@ export default class MongoModel {
                     { returnOriginal:false },
                     (error, result) => {
                         error ? d.reject(error) : d.resolve(result.value);
-                        // client.close();
                     }
                 );
-    
+
+        // this.app.db.collection(collection)
+        //             .updateOne(query, 
+        //             { $set: data }, 
+        //             { returnOriginal:false },
+        //             (error, result) => {
+        //                 console.log(result.result)
+        //                 error ? d.reject(error) : d.resolve(result.value);
+        //             }
+        //         );
+
         return d.promise;
     }
     
@@ -60,10 +69,16 @@ export default class MongoModel {
         return d.promise;
     }
     
-    getAll(collection, page, limit, querry){
+    getAll(collection, page, limit, querry = {}, option = {}){
         const d = q.defer();
+        // this.app.db.collection(collection).aggregate(querry)
+        //         .sort({time:-1})
+        //         .skip(+page).limit(+limit)
+        //         .toArray((error, result) => {
+        //             error ? d.reject(error) : d.resolve(result);
+        //         });
         this.app.db.collection(collection)
-                .find(querry ? querry : {})
+                .find(querry, option)
                 .sort({time:-1})
                 .skip(+page).limit(+limit)
                 .toArray((error, result) => {
