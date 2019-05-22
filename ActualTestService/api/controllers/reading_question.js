@@ -46,6 +46,19 @@ function getQuestionById(req, res){
 
 }
 
+function getParagraphById(req, res){
+  let questionId = req.swagger.params.questionId.value.trim();
+
+  req.app.models.readingModels.getParagraphById(questionId)
+  .then(result => {
+    handleSuccess(res, 200, result);
+  })
+  .catch(error => {
+    handleError(res, error.status, error.message);
+  });
+
+}
+
 function updateQuestion(req, res){
   let data = req.body;
   let _id = req.swagger.params.questionId.value.trim()
@@ -74,5 +87,6 @@ module.exports = {
     getAll: getAll,
     getQuestionById,
     updateQuestion,
-    deleteQuestion
+    deleteQuestion,
+    getParagraphById
   };

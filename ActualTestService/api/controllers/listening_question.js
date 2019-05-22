@@ -70,10 +70,24 @@ function deleteQuestion(req, res){
   // });
 }
 
+function getDialogueById(req, res){
+  let questionId = req.swagger.params.questionId.value.trim();
+
+  req.app.models.listeningModels.getDialogueById(questionId)
+  .then(result => {
+    handleSuccess(res, 200, result);
+  })
+  .catch(error => {
+    handleError(res, error.status, error.message);
+  });
+
+}
+
 module.exports = {
     importQuestion: importQuestion,
     getAll: getAll,
     getQuestionById,
     updateQuestion,
-    deleteQuestion
+    deleteQuestion,
+    getDialogueById
   };

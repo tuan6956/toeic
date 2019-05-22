@@ -163,49 +163,46 @@ export default class ListeningQuestion {
           }
     }
     
-    getAll(page, limit, part){
+    async getAll(page, limit, part){
         const d = q.defer();
-        if(part) {
-            this.mongoModels.getAll(collections.listening_question, page, limit, new Object({"part": part}))
-                            .then(result => {
-                                result = result.map(item=>{
-                                    return {
-                                        id: item._id,
-                                        test_id: item.test_id ? item.test_id : null,
-                                        level: item.level ? item.level : null,
-                                        part: item.part
-                                    }
-                                })
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString(),
-                                });
-                            })
-                return d.promise;
-        }else{
-            this.mongoModels.getAll(collections.listening_question, page, limit)
-                            .then(result => {
-                                result = result.map(item=>{
-                                    return {
-                                        id: item._id,
-                                        test_id: item.test_id ? item.test_id : null,
-                                        level: item.level ? item.level : null,
-                                        part: item.part
-                                    }
-                                })
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: "Can not get all question into database"
-                                });
-                            })
-                return d.promise;
+        let options = {
+            projection: { test_id: 1, level: 1, part: 1}
         }
+
+        let question_part1 = await this.mongoModels.getAll(collections.listening_question, page, limit, {part: 1}, options).then(result=>{
+            return result;
+        })
+
+        let question_part2 = await this.mongoModels.getAll(collections.listening_question, page, limit, {part: 2}, options).then(result=>{
+            return result;
+        })
+
+       if(!_.isUndefined(part)){
+           if (part === 1) {
+               d.resolve(question_part1)
+               return d.promise;
+           }
+
+           if (part === 2) {
+               d.resolve(question_part2)
+               return d.promise;
+           }
+
+           if (part === 3 || part === 4) {
+               let questions = await this.mongoModels.getAll(collections.dialogues, page, limit, {part: part}, options).then(result =>{
+                    return result;
+                })
+               d.resolve(questions);
+               return d.promise;
+           }
+       }
+        let questions = await this.mongoModels.getAll(collections.dialogues, page, limit,{}, options).then(result =>{
+            return result;
+        })
+        
+        let question_result = [...question_part1, ...question_part2, ...questions];
+        d.resolve(question_result);
+        return d.promise;
         
     }
     
@@ -225,155 +222,272 @@ export default class ListeningQuestion {
                     })
         return d.promise;
     }
+
+    getDialogueById(id){
+        id = ObjectId(id);
+        const d = q.defer();
+    
+        let querry = [
+            {$lookup:
+               {
+                 localField: "_id",
+                 from: "listening_question",
+                 foreignField: "id_dialogue",
+                 as: "questions"
+               }
+            },
+            {$match:{ _id: ObjectId(id)}},
+            { $project: { questions: {level: 0, part: 0} } },
+            
+        ]
+        this.mongoModels.aggregate_func(collections.dialogues, querry)
+                    .then(result => {
+                        d.resolve(result[0]);
+                    })
+                    .catch(err => {
+                        d.reject({
+                            status: 500,
+                            message: err.toString()
+                        });
+                    })
+        return d.promise;
+    }
+
+    async updateWithDialogue(_id, data){
+        const d = q.defer();
+
+        /// check record existed
+        await this.mongoModels.findRecord(collections.dialogues).then(res=>{
+            if(!res){
+                d.reject({
+                    status: 500,
+                    message: "the id is not existed"
+                })
+                d.promise;
+            }
+        })
+
+        let dialogue = {
+            dialogue_link: data.dialogue_link,
+            level: data.level,
+            part: data.part
+        }
+
+        let questionObjects = _.get(data, "questionObjects")
+
+        if(questionObjects.length < 3) {
+            d.reject({
+                    status: 500,
+                    message: "you need to import at least 3 questions"
+                });
+            return d.promise;
+        }
+        
+        let result_update_dialogue = await this.mongoModels.updateRecord(collections.dialogues, {_id: _id}, dialogue)
+                    .then(result => {
+                        return result;
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        d.reject({
+                            status: 500,
+                            message: "Can not update dialogue into database",
+                            err: err
+                        });
+                        return d.promise;
+                    })
+
+        questionObjects = questionObjects.map(item=>{
+            item.part = data.part;
+            item.level = data.level;
+            return item;
+        })
+
+
+        let result_update_question = await Promise.all(questionObjects.map(item => {
+            let item_update = item;
+            delete item_update._id;
+
+            this.mongoModels.updateRecord(collections.listening_question,{_id: ObjectId(item._id)}, item_update);
+        }));
+
+        
+        d.resolve({
+            dialogue: result_insert_dialogue,
+            questionObjects: result_update_question
+        })
+
+        return d.promise;
+    }
     
     async updateQuestionById(_id, data){
         _id = ObjectId(_id);
         const d = q.defer();
 
-        let part = await this.getQuestionById(_id).then(res=>{
-            return res.part;
-        })
-        .catch(err=>{
-            return err.toString();
-            console.log(err)
-        })
-        if(!_.isInteger(part)){
-            console.log(_.isInteger(part))
-            d.reject({
-                status: 500,
-                message: part
-            })
-            return d.promise;
-        }
-    
+        let part = _.get(data, 'part')
+
         switch(part){
             case 1:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
-                            .then(result => {
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString()
-                                });
-                            })
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data)
+                        .then(result => {
+                            d.resolve(result);
+                        })
+                        .catch(err => {
+                            d.reject({
+                                status: 500,
+                                message: err.toString()
+                            });
+                        })
                 return d.promise;
+                break;
             }
             case 2: {
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
-                }
-                else{data_update = data}
             
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
-                            .then(result => {
-                                d.resolve(result);
-                            })
-                            .catch(err => {
-                                d.reject({
-                                    status: 500,
-                                    message: err.toString()
-                                });
-                            })
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data)
+                        .then(result => {
+                            d.resolve(result);
+                        })
+                        .catch(err => {
+                            d.reject({
+                                status: 500,
+                                message: err.toString()
+                            });
+                        })
                 return d.promise;
+                break;
             }
             case 3:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
+
+                // this.updateWithDialogue(_id, data)
+
+                await this.mongoModels.findRecord(collections.dialogues).then(res=>{
+                    if(!res){
+                        d.reject({
+                            status: 500,
+                            message: "the id is not existed"
+                        })
+                        d.promise;
                     }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
+                })
+
+                let dialogue = {
+                    dialogue_link: data.dialogue_link,
+                    level: data.level,
+                    part: data.part
                 }
-                else{data_update = data}
-            
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+
+                let questionObjects = _.get(data, "questionObjects")
+
+                if(questionObjects.length < 3) {
+                    d.reject({
+                            status: 500,
+                            message: "you need to import at least 3 questions"
+                        });
+                    return d.promise;
+                }
+                
+                let result_update_dialogue = await this.mongoModels.updateRecord(collections.dialogues, {_id: _id}, dialogue)
                             .then(result => {
-                                d.resolve(result);
+                                return result;
                             })
                             .catch(err => {
                                 d.reject({
                                     status: 500,
-                                    message: err.toString()
+                                    message: "Can not update dialogue into database",
+                                    err: err
                                 });
+                                return d.promise;
                             })
+
+                questionObjects = questionObjects.map(item=>{
+                    item.part = data.part;
+                    item.level = data.level;
+                    return item;
+                })
+
+                let result_update_question = await Promise.all(questionObjects.map((item) => {
+                    let item_id = item._id;
+                    delete item._id;
+
+                    return  this.mongoModels.updateRecord(collections.listening_question,{_id: ObjectId(item_id)}, item)
+                    .then(res=> {
+                        return res
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                }));
+
+                result_update_dialogue.questionObjects = result_update_question;
+                d.resolve(result_update_dialogue)
+
                 return d.promise;
+                break;
+                
             }
             case 4:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
+                await this.mongoModels.findRecord(collections.dialogues).then(res=>{
+                    if(!res){
+                        d.reject({
+                            status: 500,
+                            message: "the id is not existed"
+                        })
+                        d.promise;
                     }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
+                })
+
+                let dialogue = {
+                    dialogue_link: data.dialogue_link,
+                    level: data.level,
+                    part: data.part
                 }
-                else{data_update = data}
-            
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+
+                let questionObjects = _.get(data, "questionObjects")
+
+                if(questionObjects.length < 3) {
+                    d.reject({
+                            status: 500,
+                            message: "you need to import at least 3 questions"
+                        });
+                    return d.promise;
+                }
+                
+                let result_update_dialogue = await this.mongoModels.updateRecord(collections.dialogues, {_id: _id}, dialogue)
                             .then(result => {
-                                d.resolve(result);
+                                return result;
                             })
                             .catch(err => {
                                 d.reject({
                                     status: 500,
-                                    message: err.toString()
+                                    message: "Can not update dialogue into database",
+                                    err: err
                                 });
+                                return d.promise;
                             })
+
+                questionObjects = questionObjects.map(item=>{
+                    item.part = data.part;
+                    item.level = data.level;
+                    return item;
+                })
+
+                let result_update_question = await Promise.all(questionObjects.map((item) => {
+                    let item_id = item._id;
+                    delete item._id;
+
+                    return  this.mongoModels.updateRecord(collections.listening_question,{_id: ObjectId(item_id)}, item)
+                    .then(res=> {
+                        return res
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                }));
+
+                result_update_dialogue.questionObjects = result_update_question;
+                d.resolve(result_update_dialogue)
+
                 return d.promise;
+                break;
             }
             default:
                 break;
