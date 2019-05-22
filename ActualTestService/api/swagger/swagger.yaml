@@ -481,51 +481,55 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            $ref: '#/definitions/updatePart6'     # <----------
       responses:
         "200":
           description: Return a question object has updated in DB
           schema:
             type: object
-            properties:
-              _id:
-                type: integer
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_paragraph:
-                type: string
-              pos_in_paragraphs:
-                type: integer
-              level: 
-                type: integer
-              part: 
-                type: integer
             example: #sample object
-              _id: 5cb21291725335380159e938
-              answers:
-                optA: Protests in Sydney
-                optB: Racial unrest
-                optC: Severely injured police officers
-                optD: Fair treatment by police
-              right_answer: optA
-              explain: Can be null
-              id_paragraph: 5cb21291725335380159e937
-              pos_in_paragraphs: 2
-              level: 1
+              _id: 5ce563e0682cf36ed17d6729
+              paragraphs: 
+                - donate
+                - adjective
+                - description
+                - allowed
               part: 6
+              level: 1
+              questions: 
+                - _id: 5ce563e0682cf36ed17d672a
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  pos_in_paragraphs: 3
+                - _id: 5ce563e0682cf36ed17d672b
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  pos_in_paragraphs: 3
+                - _id: 5ce563e0682cf36ed17d672c
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  pos_in_paragraphs: 3
         "401":
           description: Import Fail
           schema:
@@ -2541,20 +2545,20 @@ definitions:
       explain: No Explain
       level: 1
       part: 1
-  updateListeningQuestionPart1:
-    type: object
-    properties:
-      answers:
-        type: object
-        properties:
-          optA:
-            type: string
-          optC:
-            type: string
-    example: #sample object
-      answers:
-          optA: public/audio/part1/updated
-          optC: public/audio/part1/updated
+  # updateListeningQuestionPart1:
+  #   type: object
+  #   properties:
+  #     answers:
+  #       type: object
+  #       properties:
+  #         optA:
+  #           type: string
+  #         optC:
+  #           type: string
+  #   example: #sample object
+  #     answers:
+  #         optA: public/audio/part1/updated
+  #         optC: public/audio/part1/updated
   ImportListeningQuestionPart2:
     type: object
     required:
@@ -2724,3 +2728,81 @@ definitions:
           explain: Can be null
       level: 1
       part: 3
+
+  updatePart6:
+    type: object
+    # properties:
+    #   paragraphs:
+    #     type: array
+    #     items:
+    #       type: string
+    #   part:
+    #     type: integer
+    #   level:
+    #     type: integer
+    #   questions:
+    #     type: array
+    #     items:
+    #       type: object
+    #       properties:
+    #         _id:
+    #           type: integer
+    #         answers:
+    #           type: object
+    #           properties:
+    #             optA:
+    #               type: string
+    #             optB:
+    #               type: string
+    #             optC:
+    #               type: string
+    #             optD:
+    #               type: string
+    #         right_answer: 
+    #           type: string
+    #         explain:
+    #           type: string
+    #         pos_in_paragraphs:
+    #           type: integer
+    example: #sample object
+      paragraphs: 
+        - donate
+        - adjective
+        - description
+        - allowed
+      part: 6
+      level: 1
+      questions: 
+        - _id: 5ce563e0682cf36ed17d672a
+          answers:
+            optA: value
+            optB: valued
+            optC: valid
+            optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
+          pos_in_paragraphs: 3
+        - _id: 5ce563e0682cf36ed17d672b
+          answers:
+            optA: value
+            optB: valued
+            optC: valid
+            optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
+          pos_in_paragraphs: 3
+        - _id: 5ce563e0682cf36ed17d672c
+          answers:
+            optA: value
+            optB: valued
+            optC: valid
+            optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
+          pos_in_paragraphs: 3
