@@ -34,6 +34,12 @@ export default class ReadingQuestion {
             }
             case 6:{
                 let questions = _.get(data, "questions");
+                if(_.isUndefined(questions)){
+                    d.reject({
+                        status: 500,
+                        message: "questions is required"
+                    })
+                }
                 let paragraph = [];
                 questions = questions.map((item, index)=>{
                     paragraph.push(item.paragraph);
@@ -71,12 +77,9 @@ export default class ReadingQuestion {
                         level: item.level
                     }
                 })
-                d.resolve({
-                    paragraphs: result_insert_paragraph,
-                    questions: result_insert_question,
-                    level: result_insert_paragraph.level,
-                    part: result_insert_paragraph.part
-                })
+                result_insert_paragraph.questions = result_insert_question;
+                d.resolve(result_insert_paragraph)
+               
                 return d.promise;
             }
             case 7:{
@@ -88,6 +91,12 @@ export default class ReadingQuestion {
                 }
 
                 let questionObjects = _.get(data, "questionObjects")
+                if(_.isUndefined(questionObjects)){
+                    d.reject({
+                        status: 500,
+                        message: "questionObjects is required"
+                    })
+                }
                 if(data.type === 1) {
                     if(questionObjects.length < 2 || questionObjects.length > 5) {
                         d.reject({
@@ -109,7 +118,6 @@ export default class ReadingQuestion {
                 
                 let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, paragraph)
                             .then(result => {
-                                delete result.paragraph;
                                 return result;
                             })
                             .catch(err => {
@@ -128,19 +136,9 @@ export default class ReadingQuestion {
                     return item;
                 })
                 let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.reading_question, item)))
-                result_insert_question = result_insert_question.map(item=>{
-                    return {
-                        id: item._id,
-                        question: item.question_content
-
-                    }
-                })
-                d.resolve({
-                    paragraph: result_insert_paragraph,
-                    questionObjects: result_insert_question,
-                    part: result_insert_paragraph.part,
-                    level: result_insert_paragraph.level
-                })
+                result_insert_paragraph.questions = result_insert_question;
+                d.resolve(result_insert_paragraph)
+               
                 return d.promise;
             }
             default:
@@ -237,21 +235,8 @@ export default class ReadingQuestion {
         _id = ObjectId(_id);
         const d = q.defer();
 
-        let part = await this.getQuestionById(_id).then(res=>{
-            return res.part;
-        })
-        .catch(err=>{
-            return err.toString();
-            console.log(err)
-        })
-        if(!_.isInteger(part)){
-            console.log(_.isInteger(part))
-            d.reject({
-                status: 500,
-                message: part
-            })
-            return d.promise;
-        }
+        let part = _.get(data, 'part');
+
         switch(part){
             case 5:{
             
@@ -268,49 +253,127 @@ export default class ReadingQuestion {
                 return d.promise;
             }
             case 6:{
-            
-                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
+                let questions = _.get(data, "questions");
+                let paragraph = {
+                    paragraphs: data.paragraphs,
+                    level: data.level,
+                    part: data.part
+                }
+
+                if(_.isUndefined(questions)){
+                    d.reject({
+                        status: 500,
+                        message: "questions is required"
+                    })
+                }
+
+
+                let result_update_paragraph = await this.mongoModels.updateRecord(collections.paragraphs, {_id: _id}, paragraph)
                             .then(result => {
-                                d.resolve(result);
+                                return result;
                             })
                             .catch(err => {
+                                console.log(err, "error")
                                 d.reject({
                                     status: 500,
                                     message: err.toString()
                                 });
+                                return d.promise;
                             })
+
+                questions = questions.map(item=>{
+                    item.part = data.part;
+                    item.level = data.level;
+                    return item;
+                })
+
+                let result_update_question = await Promise.all(questions.map(item => {
+                        let item_id = item._id;
+                        delete item._id;
+                       return this.mongoModels.updateRecord(collections.reading_question, {_id: ObjectId(item_id)},item).then(res=>{
+                            return res;
+                        }).catch(err=>{
+                            console.log(err)
+                            d.reject({
+                                status: 500,
+                                message: err.toString()
+                            });
+                        })
+                    }))
+                result_update_paragraph.questions = result_update_question;
+                d.resolve(result_update_paragraph)
                 return d.promise;
             }
             case 7:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
-                    }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
+
+                let paragraph = {
+                    paragraph: data.paragraph,
+                    level: data.level,
+                    part: data.part,
+                    type: data.type
                 }
-                else{data_update = data}
-            
-                this.mongoModels.updateRecord(collections.reading_question,{_id: _id}, data_update)
+
+                let questionObjects = _.get(data, "questionObjects")
+                if(_.isUndefined(questionObjects)){
+                    d.reject({
+                        status: 500,
+                        message: "questionObjects is required"
+                    })
+                }
+                if(data.type === 1) {
+                    if(questionObjects.length < 2 || questionObjects.length > 5) {
+                        d.reject({
+                                status: 500,
+                                message: "you need to check quantity of question at least 2 questions and at most 5 questions"
+                            });
+                        return d.promise;
+                    }
+                }
+                else {
+                    if(questionObjects.length !== 5) {
+                        d.reject({
+                                status: 500,
+                                message: "you need to check quantity of questions. Just 5 questions"
+                            });
+                        return d.promise;
+                    }
+                }
+                
+                let result_update_paragraph = await this.mongoModels.updateRecord(collections.paragraphs, {_id: _id},paragraph)
                             .then(result => {
-                                d.resolve(result);
+                                return result;
                             })
                             .catch(err => {
+                                console.log(err)
                                 d.reject({
                                     status: 500,
-                                    message: err.toString()
+                                    message: err
                                 });
+                                return d.promise;
                             })
+
+                questionObjects = questionObjects.map(item=>{
+                    item.part = data.part;
+                    item.level = data.level;
+                    item.type = data.type;
+                    return item;
+                })
+
+                let result_update_question = await Promise.all(questionObjects.map(item => {
+                    let item_id = item._id;
+                    delete item._id;
+                    return this.mongoModels.updateRecord(collections.reading_question, {_id: ObjectId(item_id)},item)
+                    .then(res =>{
+                        return res
+                    })
+                    .catch(err =>{
+                        console.log(err)
+                    })
+                }))
+
+                result_update_paragraph.questionObjects = result_update_question;
+                
+                d.resolve(result_update_paragraph)
                 return d.promise;
             }
             

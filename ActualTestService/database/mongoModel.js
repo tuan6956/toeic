@@ -33,27 +33,17 @@ export default class MongoModel {
         return d.promise;
     };
     
-    updateRecord(collection, query, data){
+    updateRecord(collection, querry, data){
         const d = q.defer();
         this.app.db.collection(collection)
                 .findOneAndUpdate(
-                    query, 
+                    querry, 
                     { $set: data }, 
                     { returnOriginal:false },
                     (error, result) => {
                         error ? d.reject(error) : d.resolve(result.value);
                     }
                 );
-
-        // this.app.db.collection(collection)
-        //             .updateOne(query, 
-        //             { $set: data }, 
-        //             { returnOriginal:false },
-        //             (error, result) => {
-        //                 console.log(result.result)
-        //                 error ? d.reject(error) : d.resolve(result.value);
-        //             }
-        //         );
 
         return d.promise;
     }

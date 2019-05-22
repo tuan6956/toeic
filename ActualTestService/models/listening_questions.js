@@ -252,31 +252,84 @@ export default class ListeningQuestion {
                     })
         return d.promise;
     }
+
+    async updateWithDialogue(_id, data){
+        const d = q.defer();
+
+        /// check record existed
+        await this.mongoModels.findRecord(collections.dialogues).then(res=>{
+            if(!res){
+                d.reject({
+                    status: 500,
+                    message: "the id is not existed"
+                })
+                d.promise;
+            }
+        })
+
+        let dialogue = {
+            dialogue_link: data.dialogue_link,
+            level: data.level,
+            part: data.part
+        }
+
+        let questionObjects = _.get(data, "questionObjects")
+
+        if(questionObjects.length < 3) {
+            d.reject({
+                    status: 500,
+                    message: "you need to import at least 3 questions"
+                });
+            return d.promise;
+        }
+        
+        let result_update_dialogue = await this.mongoModels.updateRecord(collections.dialogues, {_id: _id}, dialogue)
+                    .then(result => {
+                        return result;
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        d.reject({
+                            status: 500,
+                            message: "Can not update dialogue into database",
+                            err: err
+                        });
+                        return d.promise;
+                    })
+
+        questionObjects = questionObjects.map(item=>{
+            item.part = data.part;
+            item.level = data.level;
+            return item;
+        })
+
+
+        let result_update_question = await Promise.all(questionObjects.map(item => {
+            let item_update = item;
+            delete item_update._id;
+
+            this.mongoModels.updateRecord(collections.listening_question,{_id: ObjectId(item._id)}, item_update);
+        }));
+
+        
+        d.resolve({
+            dialogue: result_insert_dialogue,
+            questionObjects: result_update_question
+        })
+
+        return d.promise;
+    }
     
     async updateQuestionById(_id, data){
         _id = ObjectId(_id);
         const d = q.defer();
 
-        let part = await this.getQuestionById(_id).then(res=>{
-            return res.part;
-        })
-        .catch(err=>{
-            return err.toString();
-            console.log(err)
-        })
-        if(!_.isInteger(part)){
-            console.log(_.isInteger(part))
-            d.reject({
-                status: 500,
-                message: part
-            })
-            return d.promise;
-        }
-    
+        let part = _.get(data, 'part')
+
         switch(part){
             case 1:{
             
-                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data)
                         .then(result => {
                             d.resolve(result);
                         })
@@ -287,10 +340,11 @@ export default class ListeningQuestion {
                             });
                         })
                 return d.promise;
+                break;
             }
             case 2: {
             
-                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data)
                         .then(result => {
                             d.resolve(result);
                         })
@@ -301,52 +355,139 @@ export default class ListeningQuestion {
                             });
                         })
                 return d.promise;
+                break;
             }
             case 3:{
-            
-                this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
-                        .then(result => {
-                            d.resolve(result);
+
+                // this.updateWithDialogue(_id, data)
+
+                await this.mongoModels.findRecord(collections.dialogues).then(res=>{
+                    if(!res){
+                        d.reject({
+                            status: 500,
+                            message: "the id is not existed"
                         })
-                        .catch(err => {
-                            d.reject({
-                                status: 500,
-                                message: err.toString()
-                            });
-                        })
-                return d.promise;
-            }
-            case 4:{
-                let data_update = new Object();
-                let answers = _.get(data, 'answers')
-                if(answers){
-                    if(answers.optA){
-                        data_update['answers.optA'] = answers.optA;
+                        d.promise;
                     }
-                    if(answers.optB){
-                        data_update['answers.optB'] = answers.optB;
-                    }
-                    if(answers.optC){
-                        data_update['answers.optC'] = answers.optC;
-                    }
-                    if(answers.optD){
-                        data_update['answers.optD'] = answers.optD;
-                    }
-                    
+                })
+
+                let dialogue = {
+                    dialogue_link: data.dialogue_link,
+                    level: data.level,
+                    part: data.part
                 }
-                else{data_update = data}
-            
-                    this.mongoModels.updateRecord(collections.listening_question,{_id: _id}, data_update)
+
+                let questionObjects = _.get(data, "questionObjects")
+
+                if(questionObjects.length < 3) {
+                    d.reject({
+                            status: 500,
+                            message: "you need to import at least 3 questions"
+                        });
+                    return d.promise;
+                }
+                
+                let result_update_dialogue = await this.mongoModels.updateRecord(collections.dialogues, {_id: _id}, dialogue)
                             .then(result => {
-                                d.resolve(result);
+                                return result;
                             })
                             .catch(err => {
                                 d.reject({
                                     status: 500,
-                                    message: err.toString()
+                                    message: "Can not update dialogue into database",
+                                    err: err
                                 });
+                                return d.promise;
                             })
+
+                questionObjects = questionObjects.map(item=>{
+                    item.part = data.part;
+                    item.level = data.level;
+                    return item;
+                })
+
+                let result_update_question = await Promise.all(questionObjects.map((item) => {
+                    let item_id = item._id;
+                    delete item._id;
+
+                    return  this.mongoModels.updateRecord(collections.listening_question,{_id: ObjectId(item_id)}, item)
+                    .then(res=> {
+                        return res
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                }));
+
+                result_update_dialogue.questionObjects = result_update_question;
+                d.resolve(result_update_dialogue)
+
                 return d.promise;
+                break;
+                
+            }
+            case 4:{
+                await this.mongoModels.findRecord(collections.dialogues).then(res=>{
+                    if(!res){
+                        d.reject({
+                            status: 500,
+                            message: "the id is not existed"
+                        })
+                        d.promise;
+                    }
+                })
+
+                let dialogue = {
+                    dialogue_link: data.dialogue_link,
+                    level: data.level,
+                    part: data.part
+                }
+
+                let questionObjects = _.get(data, "questionObjects")
+
+                if(questionObjects.length < 3) {
+                    d.reject({
+                            status: 500,
+                            message: "you need to import at least 3 questions"
+                        });
+                    return d.promise;
+                }
+                
+                let result_update_dialogue = await this.mongoModels.updateRecord(collections.dialogues, {_id: _id}, dialogue)
+                            .then(result => {
+                                return result;
+                            })
+                            .catch(err => {
+                                d.reject({
+                                    status: 500,
+                                    message: "Can not update dialogue into database",
+                                    err: err
+                                });
+                                return d.promise;
+                            })
+
+                questionObjects = questionObjects.map(item=>{
+                    item.part = data.part;
+                    item.level = data.level;
+                    return item;
+                })
+
+                let result_update_question = await Promise.all(questionObjects.map((item) => {
+                    let item_id = item._id;
+                    delete item._id;
+
+                    return  this.mongoModels.updateRecord(collections.listening_question,{_id: ObjectId(item_id)}, item)
+                    .then(res=> {
+                        return res
+                    }).catch(err=>{
+                        console.log(err)
+                    })
+                }));
+
+                result_update_dialogue.questionObjects = result_update_question;
+                d.resolve(result_update_dialogue)
+
+                return d.promise;
+                break;
             }
             default:
                 break;
