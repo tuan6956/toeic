@@ -95,8 +95,8 @@ var config = {
                     }
                 });
             } else {
-                next();
-                // next(new Error('access denied!'));
+                // next();
+                next(new Error('access denied!'));
             }
         }
     }
