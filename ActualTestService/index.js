@@ -45,17 +45,18 @@ new MongoConector().connectDB()
         app.db.collection('manage_question_quantity').find().toArray().then(res=>{
             if(_.isEmpty(res)){
                 let object = {
-                    part_1: 0, 
-                    part_2: 0,
-                    part_3: 0,
-                    part_4: 0,
-                    part_5: 0,
-                    part_6: 0,
-                    part_7: 0,
+                    part_1: false, 
+                    part_2: false,
+                    part_3: false,
+                    part_4: false,
+                    part_5: false,
+                    part_6: false,
+                    part_7_1: false,
+                    part_7_2: false,
                 }
                 for(let i = 0; i < 3; i++){
-                    object['level'] = i+1
-                    app.db.collection('manage_question_quantity').insertOne({object})
+                    let level = i+1;
+                    app.db.collection('manage_question_quantity').insertOne({quantity_question: object, level: level})
                 }
             }
         });
@@ -95,8 +96,8 @@ var config = {
                     }
                 });
             } else {
-                // next();
-                next(new Error('access denied!'));
+                next();
+                // next(new Error('access denied!'));
             }
         }
     }

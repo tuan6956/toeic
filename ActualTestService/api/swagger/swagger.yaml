@@ -4,8 +4,8 @@ info:
   title: Toeic
 # during dev, should point to your local machine
 
-# host: localhost:8000
-host: 103.114.107.16:8005
+host: localhost:8000
+# host: 103.114.107.16:8005
 # basePath prefixes all resource paths 
 basePath: /api
 # 
@@ -2048,7 +2048,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /test{testId}:
+  /test/{testId}:
     x-swagger-router-controller: test
     get:
       description: Returns the test by level of user and ordinal of the test.
