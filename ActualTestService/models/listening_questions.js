@@ -119,7 +119,6 @@ export default class ListeningQuestion {
                         });
                     return d.promise;
                 }
-                
                 let result_insert_dialogue = await this.mongoModels.insertRecord(collections.dialogues, dialogue)
                             .then(result => {
                                 delete result.dialogue_link;
@@ -140,7 +139,7 @@ export default class ListeningQuestion {
                     item.level = level;
                     return item;
                 })
-                let result_insert_question = await Promise.all(questionObjects.map(item => dbController.insert(collections.listening_question, item)))
+                let result_insert_question = await Promise.all(questionObjects.map(item => this.mongoModels.insertRecord(collections.listening_question, item)))
                 result_insert_question = result_insert_question.map(item=>{
                     return {
                         id: item._id,
