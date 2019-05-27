@@ -182,7 +182,39 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            properties:
+              question_content:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              question_content: This is __ new app for practise toeic.
+              answers:
+                  optA: a
+                  optB: an
+                  optC: one
+                  optD: two
+              right_answer: optA
+              explain: We need a article in front of Noun
+              level: 1
+              part: 5
       responses:
         "200":
           description: Return a question object has updated in DB
@@ -299,7 +331,7 @@ paths:
               paragraphs:
                 part: 6
                 _id: 5ca263d039b6666db8e6e4a0
-              questionObjects:
+              questions:
                 - id: 5cb05fef3c34db1f9b6e7736
                   level: 1
                 - id: 5cb05fef3c34db1f9b6e7734
@@ -318,7 +350,7 @@ paths:
     x-swagger-router-controller: reading_question
     get:
       description: Returns this question by id record
-      operationId: getQuestionById
+      operationId: getParagraphById
       tags:
         - readingQuestionPart6
       security:
@@ -336,44 +368,99 @@ paths:
             properties:
               _id:
                 type: integer
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_paragraph:
-                type: string
-              pos_in_paragraphs:
+              paragraphs:
+                type: array
+                items:
+                  type: string
+              part:
                 type: integer
-              level: 
+              level:
                 type: integer
-              part: 
+              test_id:
                 type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: integer
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_paragraph:
+                      type: string
+                    pos_in_paragraphs:
+                      type: integer
+                    level: 
+                      type: integer
+                    part: 
+                      type: integer
             example: #sample object
               _id: 5cb21291725335380159e938
-              answers:
-                optA: value
-                optB: valued
-                optC: valid
-                optD: validate
-              right_answer: optB
-              explain: Choice A is a noun.
-                        Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
-                        Choice D is a verb.
-              id_paragraph: 5cb21291725335380159e937
-              pos_in_paragraphs: 3
+              paragraphs: 
+                - "Sid's Stationery\n2 Smythe St, Toronto, Canada M1B 5T6\nTel:(416) 295-1725\n\nDecember 1st, 20--\n\nKerry Michaels\n1 Stevens Rd.\nScarborough, Ontario, Canada M1E 4H7\n\nDear Ms. Michaels:\n\nHoliday Sale\n\nSeasons Greetings. As a _______ customer, we wanted you to be among the first to know about our upcoming holiday sale.\nAll craft paper, specialty printer paper, and decorative envelopes will be reduced by 50% for the month of December."
+                - "As per tradition at Sid's Stationery, we will be having a Christmas raffle.\nThis year the grand prize is a 2-night stay for two at the Meridian Inn _______ Toronto Island.\nThe winner will receive a free double occupancy stay in the penthouse suite as well as a free dinner on the moonlit patio."
+                - "Money from ticket sales will be _______ to The Family Foundation, a local organization that provides food and clothing to those who need it most this Christmas."
+                - "We look forward to seeing you this Christmas season.\nYours truly,\n\nSid and Sandy Chester"
               level: 1
               part: 6
+              test_id: 5cb21291725335380159e938
+              questions: 
+                - _id: 5cb21291725335380159e938
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  id_paragraph: 5cb21291725335380159e937
+                  pos_in_paragraphs: 3
+                  level: 1
+                  part: 6
+                - _id: 5cb21291725335380159e938
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  id_paragraph: 5cb21291725335380159e937
+                  pos_in_paragraphs: 3
+                  level: 1
+                  part: 6
+                - _id: 5cb21291725335380159e938
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  id_paragraph: 5cb21291725335380159e937
+                  pos_in_paragraphs: 3
+                  level: 1
+                  part: 6 
         default:
           description: Error
           schema:
@@ -394,51 +481,55 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            $ref: '#/definitions/updatePart6'     # <----------
       responses:
         "200":
           description: Return a question object has updated in DB
           schema:
             type: object
-            properties:
-              _id:
-                type: integer
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_paragraph:
-                type: string
-              pos_in_paragraphs:
-                type: integer
-              level: 
-                type: integer
-              part: 
-                type: integer
             example: #sample object
-              _id: 5cb21291725335380159e938
-              answers:
-                optA: Protests in Sydney
-                optB: Racial unrest
-                optC: Severely injured police officers
-                optD: Fair treatment by police
-              right_answer: optA
-              explain: Can be null
-              id_paragraph: 5cb21291725335380159e937
-              pos_in_paragraphs: 2
-              level: 1
+              _id: 5ce563e0682cf36ed17d6729
+              paragraphs: 
+                - donate
+                - adjective
+                - description
+                - allowed
               part: 6
+              level: 1
+              questions: 
+                - _id: 5ce563e0682cf36ed17d672a
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  pos_in_paragraphs: 3
+                - _id: 5ce563e0682cf36ed17d672b
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  pos_in_paragraphs: 3
+                - _id: 5ce563e0682cf36ed17d672c
+                  answers:
+                    optA: value
+                    optB: valued
+                    optC: valid
+                    optD: validate
+                  right_answer: optB
+                  explain: Choice A is a noun.
+                            Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                            Choice D is a verb.
+                  pos_in_paragraphs: 3
         "401":
           description: Import Fail
           schema:
@@ -492,7 +583,7 @@ paths:
     post:
       tags:
         - readingQuestionPart7
-      description: admin has logged in, and use import question of the paragraph have imported in part 7, with type paragraph blank or double paragraph
+      description: admin has logged in, and use import question of the paragraph have imported in part 7, with type paragraph blank or double paragraph. Notice depend on type of part 7, the quantity of questions is 2~5.
       operationId: importQuestion
       security:
         - auth0: []
@@ -508,35 +599,66 @@ paths:
           schema:
             type: object
             properties:
+              _id:
+                type: integer
               paragraph:
-                type: object
-                properties:
-                  _id:
-                    type: integer
-                    description: The record ID.
-                  level: 
-                    type: integer
-                  part: 
-                    type: integer
+                type: string
+              type:
+                type: integer
               questionObjects:
                 type: array
                 items:
                   type: object
                   properties:
-                    id:
+                    _id:
+                      type: integer
+                    question_content:
                       type: string
-                    question: 
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
                       type: string
+                    explain:
+                      type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
             example: #sample object
-              paragraph:
-                level: 1
-                part: 7
-                _id: 5cb21291725335380159e937
-              questionObjects:
-                - id: 5cb21291725335380159e938
-                  question: What is the main topic of the article?
-                - id: 5cb21291725335380159e939
-                  question: What do police officials fear might happen?
+              _id: 5cb21291725335380159e938
+              paragraph: Melbourne - There has been an increase in racial unrest in this city, as hundreds of Australian Aboriginal people have protested what they say is unfair treatment by police.
+                        Some of these protests have turned violent, and while no major injuries have been reported, police officials say that the situation has been increasing in severity over the last week, and they fear that there may be more severe injuries among both police and protestors if the trend continues.
+              type: 1
+              level: 1
+              part: 7
+              questions:
+                - question_content: What is the main topic of the article?
+                  answers: 
+                    optA: Protests in Sydney
+                    optB: Racial unrest
+                    optC: Severely injured police officers
+                    optD: Fair treatment by police
+                  right_answer: optA,
+                  explain: Can be null
+                  _id: 5cb21291725335380159e938
+                - question_content: What do police officials fear might happen?
+                  answers: 
+                    optA: The protests may not continue.
+                    optB: The protestors may claim they are being treated unfairly.
+                    optC: There may be fatal injuries in the future.
+                    optD: The protestors may become better.
+                  right_answer: optA,
+                  explain: Can be null
+                  _id: 5cb21291725335380159e938
         "401":
           description: Import Fail
           schema:
@@ -549,7 +671,7 @@ paths:
     x-swagger-router-controller: reading_question
     get:
       description: Returns this question by id record
-      operationId: getQuestionById
+      operationId: getParagraphById
       tags:
         - readingQuestionPart7
       security:
@@ -567,42 +689,64 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
+              paragraph:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_paragraph:
-                type: string    
+              type:
+                type: integer
+              questionObjects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: integer
+                    question_content:
+                      type: string
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string      
               level: 
                 type: integer
               part: 
                 type: integer
             example: #sample object
               _id: 5cb21291725335380159e938
-              question_content: What is the main topic of the article?
-              answers:
-                optA: Protests in Sydney
-                optB: Racial unrest
-                optC: Severely injured police officers
-                optD: Fair treatment by police
-              right_answer: optA
-              explain: Can be null
-              id_paragraph: 5cb21291725335380159e937
+              paragraph: Melbourne - There has been an increase in racial unrest in this city, as hundreds of Australian Aboriginal people have protested what they say is unfair treatment by police.
+                        Some of these protests have turned violent, and while no major injuries have been reported, police officials say that the situation has been increasing in severity over the last week, and they fear that there may be more severe injuries among both police and protestors if the trend continues.
+              type: 1
               level: 1
               part: 7
+              questions:
+                - _id: 5cb21291725335380159e938
+                  question_content: What is the main topic of the article?
+                  answers: 
+                    optA: Protests in Sydney
+                    optB: Racial unrest
+                    optC: Severely injured police officers
+                    optD: Fair treatment by police
+                  right_answer: optA,
+                  explain: Can be null
+                - _id: 5cb21291725335380159e938
+                  question_content: What do police officials fear might happen?
+                  answers: 
+                    optA: The protests may not continue.
+                    optB: The protestors may claim they are being treated unfairly.
+                    optC: There may be fatal injuries in the future.
+                    optD: The protestors may become better.
+                  right_answer: optA,
+                  explain: Can be null
         default:
           description: Error
           schema:
@@ -610,7 +754,7 @@ paths:
     put:
       tags:
         - readingQuestionPart7
-      description: admin has logged in, and update content of question.
+      description: admin has logged in, and update content of question. Notice depend on type of part 7, the quantity of questions is 2~5.
       operationId: updateQuestion
       security:
         - auth0: []
@@ -623,7 +767,60 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            properties:
+              paragraph:
+                type: string
+              type:
+                type: integer
+              questionObjects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    question_content:
+                      type: string
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              paragraph: Melbourne - There has been an increase in racial unrest in this city, as hundreds of Australian Aboriginal people have protested what they say is unfair treatment by police.
+                        Some of these protests have turned violent, and while no major injuries have been reported, police officials say that the situation has been increasing in severity over the last week, and they fear that there may be more severe injuries among both police and protestors if the trend continues.
+              type: 1
+              level: 1
+              part: 7
+              questionObjects:
+                - question_content: What is the main topic of the article?
+                  answers: 
+                    optA: Protests in Sydney
+                    optB: Racial unrest
+                    optC: Severely injured police officers
+                    optD: Fair treatment by police
+                  right_answer: optA,
+                  explain: Can be null
+                - question_content: What do police officials fear might happen?
+                  answers: 
+                    optA: The protests may not continue.
+                    optB: The protestors may claim they are being treated unfairly.
+                    optC: There may be fatal injuries in the future.
+                    optD: The protestors may become better.
+                  right_answer: optA,
+                  explain: Can be null
       responses:
         "200":
           description: Return a question object has updated in DB
@@ -632,42 +829,64 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
+              paragraph:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_paragraph:
-                type: string    
+              type:
+                type: integer
+              questionObjects:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: integer
+                    question_content:
+                      type: string
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string      
               level: 
                 type: integer
               part: 
                 type: integer
             example: #sample object
               _id: 5cb21291725335380159e938
-              question_content: What is the main topic of the article?
-              answers:
-                optA: Protests in Sydney
-                optB: Racial unrest
-                optC: Severely injured police officers
-                optD: Fair treatment by police
-              right_answer: optA
-              explain: Can be null
-              id_paragraph: 5cb21291725335380159e937
+              paragraph: Melbourne - There has been an increase in racial unrest in this city, as hundreds of Australian Aboriginal people have protested what they say is unfair treatment by police.
+                        Some of these protests have turned violent, and while no major injuries have been reported, police officials say that the situation has been increasing in severity over the last week, and they fear that there may be more severe injuries among both police and protestors if the trend continues.
+              type: 1
               level: 1
               part: 7
+              questions:
+                - _id: 5cb21291725335380159e938
+                  question_content: What is the main topic of the article?
+                  answers: 
+                    optA: Protests in Sydney
+                    optB: Racial unrest
+                    optC: Severely injured police officers
+                    optD: Fair treatment by police
+                  right_answer: optA,
+                  explain: Can be null
+                - _id: 5cb21291725335380159e938
+                  question_content: What do police officials fear might happen?
+                  answers: 
+                    optA: The protests may not continue.
+                    optB: The protestors may claim they are being treated unfairly.
+                    optC: There may be fatal injuries in the future.
+                    optD: The protestors may become better.
+                  right_answer: optA,
+                  explain: Can be null
         "401":
           description: Import Fail
           schema:
@@ -792,7 +1011,40 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            type: object
+            properties:
+              image_link:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              image_link: public/image/part1/question_image1
+              answers: 
+                optA: public/audio/part1/question_audio1
+                optB: public/audio/part1/question_audio2
+                optC: public/audio/part1/question_audio3
+                optD: public/audio/part1/question_audio4
+              right_answer: optA
+              explain: No Explain
+              level: 1
+              part: 1
       responses:
         "200":
           description: Return a question object has updated in DB
@@ -983,7 +1235,39 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            properties:
+              audio_link:
+                type: string
+              answers:
+                type: object
+                properties:
+                  optA:
+                    type: string
+                  optB:
+                    type: string
+                  optC:
+                    type: string
+                  optD:
+                    type: string
+              right_answer: 
+                type: string
+              explain:
+                type: string      
+              level: 
+                type: integer
+              part: 
+                type: integer
+            example: #sample object
+              image_link: public/audio/part2/question_audio2
+              answers: 
+                optA: public/audio/part1/answer_audio1
+                optB: public/audio/part1/answer_audio2
+                optC: public/audio/part1/answer_audio3
+                optD: public/audio/part1/answer_audio4
+              right_answer: optA
+              explain: Can be null
+              level: 1
+              part: 2           
       responses:
         "200":
           description: Return a question object has updated in DB
@@ -1121,7 +1405,7 @@ paths:
     x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
-      operationId: getQuestionById
+      operationId: getDialogueById
       tags:
         - listeningQuestionPart3
       security:
@@ -1139,42 +1423,72 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
+              dialogue_link:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_dialogue:
-                type: string   
               level: 
                 type: integer
               part: 
                 type: integer
+              test_id:
+                type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_dialogue:
+                      type: string   
             example: #sample object 
               id: 5cb490df7a69701a2e53b161 
-              question_content: Who most likely is Mr. Metts?_update
-              answers: 
-                optA: Emily's boss
-                optB: Emily's colleague
-                optC: Emily's teacher
-                optD: Emily's lawyer
-              right_answer: optA
-              explain: Can be null
-              id_dialogue: 5cb490de7a69701a2e53b160
               part: 3,
-              level: 1
+              level: 1,
+              test_id: 5cb490df7a69701a2e53b161,
+              questions: 
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
         default:
           description: Error
           schema:
@@ -1195,7 +1509,7 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            $ref: '#/definitions/updateListeningQuestionPart3'     # <----------
       responses:
         "200":
           description: Return a question object has updated in DB
@@ -1204,39 +1518,72 @@ paths:
             properties:
               _id:
                 type: integer
-              image_link:
+              dialogue_link:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
-            example: #sample object
-              id: 5ca37b32d7e9b81653ad1dc9
-              image_link: public/audio/part2/question_image1
-              answers: 
-                optA: public/audio/part2/question_audio1
-                optB: public/audio/part2/question_audio2
-                optC: public/audio/part2/question_audio3
-                optD: public/audio/part2/question_audio4
-              right_answer: optA
-              explain: No Explain
-              level: 1
-              part: 1
+              test_id:
+                type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_dialogue:
+                      type: string   
+            example: #sample object 
+              id: 5cb490df7a69701a2e53b161 
+              part: 3,
+              level: 1,
+              test_id: 5cb490df7a69701a2e53b161,
+              questions: 
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
         "401":
           description: Import Fail
           schema:
@@ -1308,7 +1655,7 @@ paths:
     x-swagger-router-controller: listening_question
     get:
       description: Returns this question by id record
-      operationId: getQuestionById
+      operationId: getDialogueById
       tags:
         - listeningQuestionPart4
       security:
@@ -1326,42 +1673,62 @@ paths:
             properties:
               _id:
                 type: integer
-              question_content:
+              dialogue_link:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string
-              id_dialogue:
-                type: string   
               level: 
                 type: integer
               part: 
                 type: integer
-            example: #sample object
-              _id: 5cb15f643e61721ec8402e5c
-              question_content: Who most likely is Mr. Metts?
-              answers:
-                optA: Emily's boss
-                optB: Emily's colleague
-                optC: Emily's teacher
-                optD: Emily's lawyer
-              right_answer: optA
-              explain: Can be null
-              id_dialogue: 5cb15f643e61721ec8402e5a
-              part: 4
-              level: 1
+              test_id:
+                type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_dialogue:
+                      type: string   
+            example: #sample object 
+              id: 5cb490df7a69701a2e53b161 
+              part: 4,
+              level: 1,
+              test_id: 5cb490df7a69701a2e53b161,
+              questions: 
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
         default:
           description: Error
           schema:
@@ -1382,7 +1749,7 @@ paths:
           name: body
           description: Add field you need update in this question.
           schema:
-            $ref: '#/definitions/updateListeningQuestionPart1'     # <----------
+            $ref: '#/definitions/updateListeningQuestionPart3'     # <----------
       responses:
         "200":
           description: Return a question object has updated in DB
@@ -1391,39 +1758,72 @@ paths:
             properties:
               _id:
                 type: integer
-              image_link:
+              dialogue_link:
                 type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
-            example: #sample object
-              id: 5ca37b32d7e9b81653ad1dc9
-              image_link: public/audio/part2/question_image1
-              answers: 
-                optA: public/audio/part2/question_audio1
-                optB: public/audio/part2/question_audio2
-                optC: public/audio/part2/question_audio3
-                optD: public/audio/part2/question_audio4
-              right_answer: optA
-              explain: No Explain
-              level: 1
-              part: 1
+              test_id:
+                type: integer
+              questions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    answers:
+                      type: object
+                      properties:
+                        optA:
+                          type: string
+                        optB:
+                          type: string
+                        optC:
+                          type: string
+                        optD:
+                          type: string
+                    right_answer: 
+                      type: string
+                    explain:
+                      type: string
+                    id_dialogue:
+                      type: string   
+            example: #sample object 
+              id: 5cb490df7a69701a2e53b161 
+              part: 3,
+              level: 1,
+              test_id: 5cb490df7a69701a2e53b161,
+              questions: 
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
+                - _id: 5cdef92373312e2cd272991a
+                  question_content: Who most likely is Mr. Metts?
+                  answers: 
+                    optA: Emily's boss
+                    optB: Emily's colleague
+                    optC: Emily's teacher
+                    optD: Emily's lawyer
+                  right_answer: optA
+                  explain: Can be null
+                  id_dialogue: 5cb490de7a69701a2e53b160
         "401":
           description: Import Fail
           schema:
@@ -1461,54 +1861,21 @@ paths:
             properties:
               _id:
                 type: integer
-              audio_link:
-                type: string
-              dialogue_id:
-                type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
+              test_id:
+                type: integer
             example: #sample object
               - _id: 5ca5cf9625b3a91485d29ef9
-                audio_link: public/audio/part2/question_audio2
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
                 part: 3
+                test_id: 5ca5cfd621a34914ef9a2f38
               - _id: 5ca5cfd621a34914ef9a2f38
-                audio_link: public/audio/part2/question_audio3
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
                 part: 3
+                test_id: 5ca5cfd621a34914ef9a2f38
         default:
           description: Error
           schema:
@@ -1542,54 +1909,21 @@ paths:
             properties:
               _id:
                 type: integer
-              audio_link:
-                type: string
-              dialogue_id:
-                type: string
-              answers:
-                type: object
-                properties:
-                  optA:
-                    type: string
-                  optB:
-                    type: string
-                  optC:
-                    type: string
-                  optD:
-                    type: string
-              right_answer: 
-                type: string
-              explain:
-                type: string      
               level: 
                 type: integer
               part: 
                 type: integer
+              test_id:
+                type: integer
             example: #sample object
               - _id: 5ca5cf9625b3a91485d29ef9
-                audio_link: public/audio/part2/question_audio2
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
-                part: 3
+                part: 5
+                test_id: 5ca5cfd621a34914ef9a2f38
               - _id: 5ca5cfd621a34914ef9a2f38
-                audio_link: public/audio/part2/question_audio3
-                dialogue_id: 5ca263d039b6666db8e6e4a0
-                answers:
-                    optA: public/audio/part2/question_audio1
-                    optB: public/audio/part2/question_audio2
-                    optC: public/audio/part2/question_audio3
-                    optD: public/audio/part2/question_audio4
-                right_answer: optA
-                explain: Can be null
                 level: 1
-                part: 3
+                part: 6
+                test_id: 5ca5cfd621a34914ef9a2f38
         default:
           description: Error
           schema:
@@ -1714,7 +2048,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /test{testId}:
+  /test/{testId}:
     x-swagger-router-controller: test
     get:
       description: Returns the test by level of user and ordinal of the test.
@@ -2148,6 +2482,8 @@ definitions:
       paragraph: Melbourne - There has been an increase in racial unrest in this city, as hundreds of Australian Aboriginal people have protested what they say is unfair treatment by police.
                 Some of these protests have turned violent, and while no major injuries have been reported, police officials say that the situation has been increasing in severity over the last week, and they fear that there may be more severe injuries among both police and protestors if the trend continues.
       type: 1
+      level: 1
+      part: 7
       questionObjects:
         - question_content: What is the main topic of the article?
           answers: 
@@ -2165,8 +2501,6 @@ definitions:
             optD: The protestors may become better.
           right_answer: optA,
           explain: Can be null
-      level: 1
-      part: 7
   ImportListeningQuestionPart1:
     type: object
     required:
@@ -2211,20 +2545,20 @@ definitions:
       explain: No Explain
       level: 1
       part: 1
-  updateListeningQuestionPart1:
-    type: object
-    properties:
-      answers:
-        type: object
-        properties:
-          optA:
-            type: string
-          optC:
-            type: string
-    example: #sample object
-      answers:
-          optA: public/audio/part1/updated
-          optC: public/audio/part1/updated
+  # updateListeningQuestionPart1:
+  #   type: object
+  #   properties:
+  #     answers:
+  #       type: object
+  #       properties:
+  #         optA:
+  #           type: string
+  #         optC:
+  #           type: string
+  #   example: #sample object
+  #     answers:
+  #         optA: public/audio/part1/updated
+  #         optC: public/audio/part1/updated
   ImportListeningQuestionPart2:
     type: object
     required:
@@ -2330,3 +2664,145 @@ definitions:
           explain: Can be null
       level: 1
       part: 3
+
+  updateListeningQuestionPart3:
+    type: object
+    properties:
+      dialogue_link:
+        type: string
+      questionObjects:
+        type: array
+        items:
+          type: object
+          properties:
+            question_content:
+              type: string
+            answers:
+              type: object
+              properties:
+                optA:
+                  type: string
+                optB:
+                  type: string
+                optC:
+                  type: string
+                optD:
+                  type: string
+            right_answer: 
+              type: string
+            explain:
+              type: string      
+      level: 
+        type: integer
+      part: 
+        type: integer
+    example: #sample object
+      dialogue_link: public/audio/part3/dialogue_01
+      questionObjects:
+        - _id: 5ca263d039b6666db8e6e4a0
+          question_content: Who most likely is Mr. Metts?
+          answers: 
+            optA: Emily's boss
+            optB: Emily's colleague
+            optC: Emily's teacher
+            optD: Emily's lawyer
+          right_answer: optA,
+          explain: Can be null
+        - _id: 5ca263d039b6666db8e6e4a0
+          question_content: Who most likely is Mr. Metts?
+          answers: 
+            optA: Emily's boss
+            optB: Emily's colleague
+            optC: Emily's teacher
+            optD: Emily's lawyer
+          right_answer: optA,
+          explain: Can be null
+        - _id: 5ca263d039b6666db8e6e4a0
+          question_content: Who most likely is Mr. Metts?
+          answers: 
+            optA: Emily's boss
+            optB: Emily's colleague
+            optC: Emily's teacher
+            optD: Emily's lawyer
+          right_answer: optA,
+          explain: Can be null
+      level: 1
+      part: 3
+
+  updatePart6:
+    type: object
+    # properties:
+    #   paragraphs:
+    #     type: array
+    #     items:
+    #       type: string
+    #   part:
+    #     type: integer
+    #   level:
+    #     type: integer
+    #   questions:
+    #     type: array
+    #     items:
+    #       type: object
+    #       properties:
+    #         _id:
+    #           type: integer
+    #         answers:
+    #           type: object
+    #           properties:
+    #             optA:
+    #               type: string
+    #             optB:
+    #               type: string
+    #             optC:
+    #               type: string
+    #             optD:
+    #               type: string
+    #         right_answer: 
+    #           type: string
+    #         explain:
+    #           type: string
+    #         pos_in_paragraphs:
+    #           type: integer
+    example: #sample object
+      paragraphs: 
+        - donate
+        - adjective
+        - description
+        - allowed
+      part: 6
+      level: 1
+      questions: 
+        - _id: 5ce563e0682cf36ed17d672a
+          answers:
+            optA: value
+            optB: valued
+            optC: valid
+            optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
+          pos_in_paragraphs: 3
+        - _id: 5ce563e0682cf36ed17d672b
+          answers:
+            optA: value
+            optB: valued
+            optC: valid
+            optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
+          pos_in_paragraphs: 3
+        - _id: 5ce563e0682cf36ed17d672c
+          answers:
+            optA: value
+            optB: valued
+            optC: valid
+            optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
+          pos_in_paragraphs: 3
