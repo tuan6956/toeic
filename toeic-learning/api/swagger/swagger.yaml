@@ -174,30 +174,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-    post:
-      description: Update lesson info
-      operationId: addVocabulary
-      tags:
-        - vocabulary
-      security:
-        - auth0: []
-      parameters:
-        - in: body
-          name: body
-          description: parameters with type, vocabulary, mean.
-          schema:
-            $ref: '#/definitions/VocabularyReq'
-      responses:
-        "200":
-          description: Success
-          schema:
-            # a pointer to a definition
-            $ref: "#/definitions/MessageResp"
-        # responses may fall through to errors
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
+    
   /vocabularies/type/{vocabularyType}:
     x-swagger-router-controller: vocabulary
     get:
@@ -303,7 +280,30 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-
+    post:
+      description: Update lesson info
+      operationId: addVocabulary
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with type, vocabulary, mean.
+          schema:
+            $ref: '#/definitions/VocabularyReq'
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /topics:
     x-swagger-router-controller: topic
     get:
