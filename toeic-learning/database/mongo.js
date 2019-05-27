@@ -131,7 +131,7 @@ exports.getExclude = (query, exclude, collectionMG, limit, skip) => {
     });
 }
 
-exports.delete = (query) => {
+exports.delete = (query, collectionMG) => {
     return new Promise((resolve, reject) => {
         MongoClient.connect(url, function(err, db) {
             if (err) {

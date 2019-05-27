@@ -43,12 +43,6 @@ paths:
           name: page
           type: integer
           description: page get
-        - in: query
-          name: level
-          type: integer
-          minimum: 1
-          maximum: 3
-          description: level lesson  
       responses:
         "200":
           description: Success
@@ -135,7 +129,32 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /vocabulary:
+    delete:
+      description: delete lesson with id
+      operationId: deleteLesson
+      tags:
+        - lesson
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: lessonId
+          type: string
+          required: true
+          description: id lesson
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /vocabularyByDay:
     x-swagger-router-controller: vocabulary
     get:
       description: Returns lesson info with parameters lessonId
@@ -179,6 +198,112 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /vocabularies/type/{vocabularyType}:
+    x-swagger-router-controller: vocabulary
+    get:
+      description: Returns vocabular by type
+      operationId: getVocabularyByType
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: vocabularyType
+          type: string
+          required: true
+          description: vocabulary type
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /vocabularies/{vocabularyId}:
+    x-swagger-router-controller: vocabulary
+    get:
+      description: Returns vocabular by type
+      operationId: getVocabularyById
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: vocabularyId
+          type: string
+          required: true
+          description: vocabulary type
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    delete:
+      description: Returns vocabular by type
+      operationId: deleteVocabulary
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: vocabularyId
+          type: string
+          required: true
+          description: vocabulary type
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /vocabularies:
+    x-swagger-router-controller: vocabulary
+    get:
+      description: Returns all vocabulary
+      operationId: getAllVocabulary
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit value return
+        - in: query
+          name: page
+          type: integer
+          description: page get
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
   /topics:
     x-swagger-router-controller: topic
     get:
@@ -505,7 +630,6 @@ definitions:
       - content
       - topicId
       - categoryId
-      - level
     properties:
       content:
         type: string
@@ -515,10 +639,7 @@ definitions:
         type: string
       title:
         type: string
-      level:
-        type: integer
-        minimum: 1
-        maximum: 3
+
   VocabularyReq:
     required:
       - type

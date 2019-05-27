@@ -6,14 +6,18 @@ const vocabularyRepo = require('../../repository/vocabularyRepo')
 
 
 var ObjectId = require('mongodb').ObjectID;
+const limit = 5;
 
 module.exports = {
     getVocabularyByDay,
     addVocabulary: add,
+    getVocabularyByType: getVocabularyByType,
+    getAllVocabulary,
+    deleteVocabulary: deleteVoc,
+    getVocabularyById: getVocById,
 };
 
 function getVocabularyByDay(req, res) {
-    var limit = 5;
     vocabularyRepo.getType(1).then(value => {
         var type = value[0];
         vocabularyRepo.getRandomByType(type._id, limit).then(result => {
@@ -46,10 +50,18 @@ function add(req, res) {
     var vocabulary = body.vocabulary.trim();
     var mean = body.mean.trim();
     var type = body.type.trim().toUpperCase();
-    vocabularyRepo.findVocType({type: type}).then(result => {
-        if(!result || result.length == 0) {
-            vocabularyRepo.addVocType({type: type}).then(resultAddVoc => {
-                vocabularyRepo.insert({type: resultAddVoc.ops[0]._id, vocabulary: vocabulary, mean: mean}).then(value => {
+    vocabularyRepo.findVocType({
+        type: type
+    }).then(result => {
+        if (!result || result.length == 0) {
+            vocabularyRepo.addVocType({
+                type: type
+            }).then(resultAddVoc => {
+                vocabularyRepo.insert({
+                    type: resultAddVoc.ops[0]._id,
+                    vocabulary: vocabulary,
+                    mean: mean
+                }).then(value => {
                     res.status(200);
                     res.json({
                         success: true,
@@ -70,7 +82,11 @@ function add(req, res) {
                 });
             });
         } else {
-            vocabularyRepo.insert({type: result._id, vocabulary: vocabulary, mean: mean}).then(value => {
+            vocabularyRepo.insert({
+                type: result._id,
+                vocabulary: vocabulary,
+                mean: mean
+            }).then(value => {
                 res.status(200);
                 res.json({
                     success: true,
@@ -93,6 +109,63 @@ function add(req, res) {
     });
 }
 
+function getVocabularyByType(req, res) {
+    var type = req.swagger.params.vocabularyType.value.trim();
+    vocabularyRepo.findVocType({
+        type: type.toUpperCase()
+    }).then(value => {
+        var type = value;
+        vocabularyRepo.getRandomByType(type._id, limit).then(result => {
+            res.status(200);
+            res.json({
+                success: true,
+                value: {
+                    vocabulary: result
+                }
+            });
+        }).catch(err => {
+            res.status(400);
+            res.json({
+                success: false,
+                message: err.err
+            });
+        })
+    }).catch(err => {
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    })
+}
+
+function getAllVocabulary(req, res) {
+    var limit = 10;
+    var page = 0;
+    var params = req.swagger.params;
+
+    if (params.page) {
+        page = params.page.value;
+    }
+    if (params.limit) {
+        limit = params.limit.value;
+    }
+    vocabularyRepo.getAll(limit, page).then(result => {
+        res.status(200);
+        res.json({
+            success: true,
+            value: {
+                vocabulary: result
+            }
+        });
+    }).catch(err => {
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    })
+}
 // function update(req, res) {
 
 //     var lessonId = req.swagger.params.lessonId.value;
@@ -265,5 +338,39 @@ function add(req, res) {
 // }
 
 function deleteVoc(req, res) {
-    return;
+    var vocabularyId = req.swagger.params.vocabularyId.value.trim();
+
+    vocabularyRepo.delete({_id: new ObjectId(vocabularyId)}).then(result => {
+        res.status(200);
+        res.json({
+            success: true,
+            message: 'Deleted successfully'
+        });
+    }).catch(err => {
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    })
+}
+
+function getVocById(req, res) {
+    var vocabularyId = req.swagger.params.vocabularyId.value.trim();
+
+    vocabularyRepo.findOne({_id: new ObjectId(vocabularyId)}).then(result => {
+        res.status(200);
+        res.json({
+            success: true,
+            value: {
+                vocabulary: result
+            }        
+        });
+    }).catch(err => {
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    })
 }

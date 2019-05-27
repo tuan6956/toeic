@@ -16,7 +16,7 @@ exports.findOne = data => {
 }
 
 exports.getAll = (limit, skip) => {
-    return db.get({}, collection);
+    return db.get({}, collection, limit, skip);
 }
 
 exports.delete = query => {

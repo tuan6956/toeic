@@ -117,9 +117,7 @@ function addMilestone(req, res) {
 function updateMilestone(req, res) {
 
     var body = req.swagger.params.body.value;
-    console.log(body)
     var milestoneId = req.swagger.params.milestoneId.value.trim();
-    console.log(milestoneId);
     var milestoneName = '',
         categoryId = '',
         lessonId = '',
@@ -155,7 +153,6 @@ function updateMilestone(req, res) {
     Promise.all([milestoneFound, categoryFound, lessonFound]).then(([milestone_rs, category, lesson]) => {
         // var milestone = [...milestone];
         var milestone = Object.assign(milestone_rs);
-        console.log(lesson);
         delete milestone._id;
         if (!milestone) {
             res.status(400);
@@ -177,7 +174,6 @@ function updateMilestone(req, res) {
         } else if(lesson && lessonId !== '') {
             lesson_get = lesson;
         }
-        console.log('1', milestone);
 
         if (!category && categoryId !== '') {
             res.status(400);
@@ -187,7 +183,6 @@ function updateMilestone(req, res) {
             });
             return;
         } else if (milestone.category  && categoryId !== category._id) {
-            console.log('123123123123')
         } else if(category && categoryId !== '') {
             milestone.category = {
                 _id: new ObjectId(category._id),
