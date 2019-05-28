@@ -55,6 +55,7 @@ export default class ListeningQuestion {
             case 3:{
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
+                    dialogue_content: data.dialogue_content,
                     level: data.level,
                     part: data.part
                 }
@@ -106,6 +107,7 @@ export default class ListeningQuestion {
             case 4:{
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
+                    dialogue_content: data.dialogue_content,
                     level: data.level,
                     part: data.part
                 }
@@ -268,6 +270,7 @@ export default class ListeningQuestion {
 
         let dialogue = {
             dialogue_link: data.dialogue_link,
+            dialogue_content: data.dialogue_content,
             level: data.level,
             part: data.part
         }
@@ -372,6 +375,7 @@ export default class ListeningQuestion {
 
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
+                    dialogue_content: data.dialogue_content,
                     level: data.level,
                     part: data.part
                 }
@@ -437,6 +441,7 @@ export default class ListeningQuestion {
 
                 let dialogue = {
                     dialogue_link: data.dialogue_link,
+                    dialogue_content: data.dialogue_content,
                     level: data.level,
                     part: data.part
                 }

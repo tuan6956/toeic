@@ -73,7 +73,8 @@ function getResultMiniTest(req, res){
 
   let result = req.app.models.testModels.getResultMiniTest(correct_listening, correct_reading, test_id, user_id)
   result.then(result => {
-    handleSuccess(res, 200, result);
+      res.redirect('http://'+ req.headers.host +'/api/miniTest?listening='+ result.result.listening_scores +'&reading='+result.result.reading_scores+'&total='+result.result.total)
+    // handleSuccess(res, 200, result);
   })
   .catch(error => {
     handleError(res, error.status, error.message);
@@ -92,11 +93,50 @@ function getTheTestById(req, res){
       });
 }
 
+function requestGenerateMiniTest(req, res){
+  // let level = _.get(req.body, 'level');
+  // if(!level || level < 0 || level > 4){
+  //   handleError(res, 500, "level is greater than 0 and smaller then 5");
+  // }
+    req.app.models.testModels.generateMiniTest()
+    
+    handleSuccess(res, 200, "success");
+}
+
+function getAllMiniTest(req, res){
+   // let level = req.swagger.params.level.value;
+  let page = req.swagger.params.page.value;
+  let limit = req.swagger.params.limit.value;
+
+  req.app.models.testModels.getAllMiniTest(page, limit)
+    .then(result => {
+        handleSuccess(res, 200, result);
+      })
+    .catch(error => {
+      handleError(res, error.status, error.message);
+    });
+}
+
+function getMiniTestById(req, res){
+  let testId = req.swagger.params.testId.value;
+
+    req.app.models.testModels.getMiniTestById(testId)
+    .then(result => {
+        handleSuccess(res, 200, result);
+      })
+      .catch(error => {
+        handleError(res, error.status, error.message);
+      });
+}
+
 module.exports = {
     getTheTestByLevelAndOrdinalTest: getTheTestByLevelAndOrdinalTest,
     getMiniTest: getMiniTest,
     getAll: getAll,
     getResultTest,
     getTheTestById,
-    getResultMiniTest
+    getResultMiniTest,
+    requestGenerateMiniTest,
+    getAllMiniTest,
+    getMiniTestById
 }

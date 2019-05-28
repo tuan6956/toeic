@@ -96,8 +96,8 @@ var config = {
                     }
                 });
             } else {
-                // next();
-                next(new Error('access denied!'));
+                next();
+                // next(new Error('access denied!'));
             }
         }
     }
@@ -121,6 +121,3 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
 
 
 });
-
-// https://dzone.com/articles/upload-files-or-images-to-server-using-nodejs
-// https://kipalog.com/posts/Express---Upload-file---form---multipart-form-data

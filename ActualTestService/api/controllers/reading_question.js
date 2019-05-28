@@ -11,7 +11,7 @@ function importQuestion(req, res){
   req.app.models.readingModels.importQuestion(req.body)
   .then(result => {
     req.app.models.testModels.generateTestToLevel(result.level);
-    req.app.models.testModels.generateMiniTest();
+    // req.app.models.testModels.generateMiniTest();
     handleSuccess(res, 200, result);
   })
   .catch(error => {
