@@ -73,8 +73,8 @@ function getResultMiniTest(req, res){
 
   let result = req.app.models.testModels.getResultMiniTest(correct_listening, correct_reading, test_id, user_id)
   result.then(result => {
-      res.redirect('http://'+ req.headers.host +'/api/miniTest?listening='+ result.result.listening_scores +'&reading='+result.result.reading_scores+'&total='+result.result.total)
-    // handleSuccess(res, 200, result);
+      // res.redirect('http://'+ req.headers.host +'/api/miniTest?listening='+ result.result.listening_scores +'&reading='+result.result.reading_scores+'&total='+result.result.total)
+    handleSuccess(res, 200, result);
   })
   .catch(error => {
     handleError(res, error.status, error.message);
