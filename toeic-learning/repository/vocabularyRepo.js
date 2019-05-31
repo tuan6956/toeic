@@ -24,6 +24,10 @@ exports.delete = query => {
     return db.delete(query, collection);
 }
 
+exports.getAllType = (limit, skip) => {
+    return db.get({}, config.DATABASE_COLLECTION_VOCABULARY_TYPE, limit, skip);
+}
+
 exports.findVocType = (type) => {
     return db.findOne(type, config.DATABASE_COLLECTION_VOCABULARY_TYPE);
 }

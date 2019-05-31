@@ -118,7 +118,6 @@ exports.getExclude = (query, exclude, collectionMG, limit, skip) => {
             
                 const collection = db.db(dbName).collection(collectionMG);
                 collection.find(query,{fields: exclude}).limit(+limit).skip(+limit*+skip).toArray(function(err, result) {
-                    console.log(result);
                     db.close();
                     if(err) {
                         reject(err);

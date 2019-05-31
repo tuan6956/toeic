@@ -201,6 +201,56 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /vocabularies/type:
+    x-swagger-router-controller: vocabulary
+    get:
+      description: Returns vocabular by type
+      operationId: getAllType
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    post:
+      description: Update lesson info
+      operationId: addType
+      tags:
+        - vocabulary
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with type, vocabulary, mean.
+          schema:
+            type: object
+            required:
+              - type
+            properties:
+              type:
+                type: string
+
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /vocabularies/{vocabularyId}:
     x-swagger-router-controller: vocabulary
     get:
@@ -619,7 +669,51 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-
+  /route:
+    x-swagger-router-controller: route
+    get:
+      description: Returns all topic
+      operationId: getRoute
+      tags:
+        - route
+      security:
+        - auth0: []
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /history:
+    x-swagger-router-controller: history
+    get:
+      description: Returns all topic
+      operationId: getHistory
+      tags:
+        - history
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit value return
+        - in: query
+          name: page
+          type: integer
+          description: page get
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"         
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions

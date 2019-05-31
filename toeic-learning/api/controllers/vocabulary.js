@@ -15,6 +15,8 @@ module.exports = {
     getAllVocabulary,
     deleteVocabulary: deleteVoc,
     getVocabularyById: getVocById,
+    addType,
+    getAllType,
 };
 
 function getVocabularyByDay(req, res) {
@@ -165,6 +167,75 @@ function getAllVocabulary(req, res) {
             message: err.err
         });
     })
+}
+
+function getAllType(req, res) {
+    var limit = 10;
+    var page = 0;
+    var params = req.swagger.params;
+
+    if (params.page) {
+        page = params.page.value;
+    }
+    if (params.limit) {
+        limit = params.limit.value;
+    }
+    console.log('123123123');
+    vocabularyRepo.getAllType(limit, page).then(result => {
+        res.status(200);
+        res.json({
+            success: true,
+            value: {
+                type: result
+            }
+        });
+    }).catch(err => {
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    })
+}
+
+function addType(req, res) {
+    var body = req.swagger.params.body.value;
+    var type = body.type.trim().toUpperCase();
+
+    vocabularyRepo.findVocType({
+        type: type
+    }).then(result => {
+        if (!result || result.length == 0) {
+            vocabularyRepo.addVocType({
+                type: type
+            }).then(resultAddVoc => {
+                res.status(200);
+                    res.json({
+                        success: true,
+                        message: 'Add type successful',
+                        value: resultAddVoc.ops[0]
+                    });
+            }).catch(err => {
+                res.status(400);
+                res.json({
+                    success: false,
+                    message: err.err
+                });
+            });
+        } else {
+            res.json({
+                success: true,
+                message: 'Add type successful',
+                value: result
+            });
+        }
+    }).catch(err => {
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    });
 }
 // function update(req, res) {
 

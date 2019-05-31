@@ -94,13 +94,21 @@ function add(req, res) {
   var categoryId = body.categoryId;
   var topicId = body.topicId;
   var title = body.title;
+  var milestone = body.milestone;
+  var estTime = body.estTime;
+  var unit = body.unit;
+
 
   var data = {
     content: content,
     categoryId: categoryId,
     topicId: topicId,
     title: title,
+    milestone: milestone,
+    estTime: estTime,
+    unit: unit
   };
+
   var queryTopic = {
     "_id": new ObjectId(topicId)
   };
@@ -178,11 +186,18 @@ function update(req, res) {
   var categoryIdNew = body.categoryId;
   var topicIdNew = body.topicId;
   var titleNew = body.title;
+  var milestone = body.milestone;
+  var estTime = body.estTime;
+  var unit = body.unit;
+  
   var data = {
     content: content,
     categoryId: categoryIdNew,
     topicId: topicIdNew,
     title: titleNew,
+    milestone: milestone,
+    estTime: estTime,
+    unit: unit
   }
   //console.log(util.inspect(data, {showHidden: false, depth: null}))
   var query = {
