@@ -47,7 +47,7 @@ export default class ReadingQuestion {
                     item.pos_in_paragraphs = index+1;
                     return item;
                 })
-                questions.pop();
+                // questions.pop();
                 let result_insert_paragraph = await this.mongoModels.insertRecord(collections.paragraphs, new Object({"paragraphs":paragraph, "part": part, "level": level}))
                             .then(result => {
                                 // delete result.paragraphs;
