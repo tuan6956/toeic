@@ -129,6 +129,21 @@ function getMiniTestById(req, res){
       });
 }
 
+function getAllTestForApp(req, res){
+  let level = req.swagger.params.level.value;
+  let page = req.swagger.params.page.value;
+  let limit = req.swagger.params.limit.value;
+
+  req.app.models.testModels.getAllTestForApp(level, page, limit)
+    .then(result => {
+        handleSuccess(res, 200, result);
+      })
+    .catch(error => {
+      handleError(res, error.status, error.message);
+    });
+
+}
+
 module.exports = {
     getTheTestByLevelAndOrdinalTest: getTheTestByLevelAndOrdinalTest,
     getMiniTest: getMiniTest,
@@ -138,5 +153,6 @@ module.exports = {
     getResultMiniTest,
     requestGenerateMiniTest,
     getAllMiniTest,
-    getMiniTestById
+    getMiniTestById,
+    getAllTestForApp
 }

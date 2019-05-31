@@ -778,10 +778,22 @@ export default class GenerateTest {
         return result;
     }
 
-    async getAllMiniTest(page = 0, limit = 1){
+    async getAllTestForApp(level, page = 0, limit = 5){
+        let querry = {};
+        (level) ? querry['level'] = level : null;
+        querry['status'] = 'success';
+        let result = await this.app.db.collection('test').find(querry,{projection: {questions: 0}}).toArray();
+        return {
+            data: result
+        };
+    }
+
+    async getAllMiniTest(page = 0, limit = 5){
         let querry = {}
         let result = await this.app.db.collection('mini_test').find(querry, {projection: {questions: 0}}).toArray();
-        return result;
+        return {
+            data: result
+        };
     }
 
 
