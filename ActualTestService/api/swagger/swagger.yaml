@@ -2550,10 +2550,17 @@ definitions:
           explain: Choices A and C are incorrect because you can't "purchase" or "fund" money.
                     Choice D is incorrect because "collected" is followed by the word "from" not "to".
         - paragraph: We look forward to seeing you this Christmas season.
-
                       Yours truly,
-
                       Sid and Sandy Chester
+          answers:
+              optA: value
+              optB: valued
+              optC: valid
+              optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
       part: 6
       level: 1
   ImportParagraphPart7:

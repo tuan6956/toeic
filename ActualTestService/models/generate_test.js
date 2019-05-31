@@ -135,19 +135,19 @@ export default class GenerateTest {
         let name_test ;
         switch(level){
             case 1:{
-                name_test = "Elementary " + count_test + 1;
+                name_test = "Elementary " + count_test;
                 break;
             }
             case 2:{
-                name_test = "Intermediate " + count_test + 1;
+                name_test = "Intermediate " + count_test;
                 break;
             }
             case 3:{
-                name_test = "Upper intermediate " + count_test + 1;
+                name_test = "Upper intermediate " + count_test;
                 break;
             }
             case 4:{
-                name_test = "Advanced " + count_test + 1;
+                name_test = "Advanced " + count_test;
                 break;
             }
 
