@@ -41,6 +41,7 @@ tags:
 - name: "listeningQuestion"
 - name: "readingQuestion"
 - name: TestServer
+- name: Request
 produces:
   - application/json
 paths:
@@ -1425,6 +1426,8 @@ paths:
                 type: integer
               dialogue_link:
                 type: string
+              dialogue_content:
+                type: string
               level: 
                 type: integer
               part: 
@@ -1674,6 +1677,8 @@ paths:
               _id:
                 type: integer
               dialogue_link:
+                type: string
+              dialogue_content:
                 type: string
               level: 
                 type: integer
@@ -2129,7 +2134,7 @@ paths:
   /miniTest:
     x-swagger-router-controller: test
     get:
-      description: Returns the test by level of user and ordinal of the test.
+      description: get any miniTest for checking current level of user
       operationId: getMiniTest
       tags:
         - TestServer
@@ -2275,7 +2280,143 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-
+  /requestGenerateMiniTest:
+    x-swagger-router-controller: test
+    post:
+      description: Request generate mini test
+      operationId: requestGenerateMiniTest
+      tags:
+        - Request
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: level need to generate
+          schema:
+            properties:
+              level:
+                type: integer
+      responses:
+        "200":
+          description: status if create mini test success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /miniTests:
+    x-swagger-router-controller: test
+    get:
+      description: Returns all miniTest
+      operationId: getAllMiniTest
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit record return
+        - in: query
+          name: page
+          type: integer
+          description: page you need to get
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              _id:
+                type: integer
+              createAt:
+                type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /miniTest/{testId}:
+    x-swagger-router-controller: test
+    get:
+      description: Returns the miniTest by id.
+      operationId: getMiniTestById
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: testId
+          type: string
+          required: true
+          description: id of test
+      responses:
+        "200":
+          description: Return the test
+          schema:
+            properties:
+              questions:
+                type: object
+                properties:
+                  part_1:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_2:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_3:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_4:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_5:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_6:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+                  part_7:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        content:
+                          type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:
@@ -2609,6 +2750,8 @@ definitions:
     properties:
       dialogue_link:
         type: string
+      dialogue_content:
+        type: string
       questionObjects:
         type: array
         items:
@@ -2669,6 +2812,8 @@ definitions:
     type: object
     properties:
       dialogue_link:
+        type: string
+      dialogue_content:
         type: string
       questionObjects:
         type: array
