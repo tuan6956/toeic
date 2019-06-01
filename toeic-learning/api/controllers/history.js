@@ -66,8 +66,9 @@ function updateStudiedLesson(req, res) {
                     history[indexOfRoute].lessons[indexLesson].lessonPassed = isStudied;
                 } else if (type == "exercise") {
                     history[indexOfRoute].lessons[indexLesson].exercisePassed = isStudied;
+                } else if (type == "minitest") {
+                    history[indexOfRoute].lessons[indexLesson].passed = isStudied;
                 }
-                
                 if (typeof history[indexOfRoute].progress === "undefined") {
                     history[indexOfRoute].progress = 1 / (history[indexOfRoute].lessons.length * 2);
                 } else {
