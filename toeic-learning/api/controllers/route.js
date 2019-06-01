@@ -65,8 +65,9 @@ function getRouteToday(req, res) {
                     }
                 });
                 if(!flagStudiedAll) { // chưa học hết
+                    console.log('123123123');
                     res.status(200);
-                    res.json({success: true, value: history.history[indexHistoryByDay].lessons});
+                    res.json({success: true, value: history.history[indexHistoryByDay]});
                 } else { // đã học hết và muốn học ngày tiếp theo
                     var query = {level: { $in: inQueryLevel}, _id: {$nin: listLessonStudied}};
                     lessonRepo.getAll(query, 30, 0).then(lessons => {
@@ -110,7 +111,7 @@ function getRouteToday(req, res) {
                     historyRepo.update({email: req.email}, {
                         $push: {
                             history: {
-                              day: now,
+                              date: now,
                               lessons: rs.lessons,
                               dateEnd: rs.dateEnd,
                               timeNeedLearnByDay: rs.timeNeed
