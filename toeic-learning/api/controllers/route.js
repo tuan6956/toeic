@@ -4,7 +4,7 @@ var util = require('util');
 const config = require('./config')
 var moment = require('moment');
 
-const milestoneRepo = require('../../repository/milestoneRepo')
+const minitestRepo = require('../../repository/miniTestRepo')
 const historyRepo = require('../../repository/historyRepo')
 const lessonRepo = require('../../repository/lessonRepo')
 const userRepo = require('../../repository/userRepo')
@@ -29,7 +29,12 @@ function getRouteToday(req, res) {
         email: req.email
     });
     var now = moment().format('YYYY-MM-DD');
-    Promise.all([userFind, historyFind]).then(([user, history]) => {
+    var minitestFind =  minitestRepo.random(1);
+    
+    //     lessonToLearn.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
+        
+    // });
+    Promise.all([userFind, historyFind, minitestFind]).then(([user, history, minitest]) => {
         if (!user) {
             res.status(400);
             res.json({
@@ -72,8 +77,9 @@ function getRouteToday(req, res) {
                 }
 
                 his.lessons.forEach(lesson => {
-                    if (lesson.theory) // đã học lý thuyết
-                        listLessonStudied.push(new ObjectId(lesson._id));
+                    if(lesson.type === 'lesson')
+                        if (lesson.theory) // đã học lý thuyết
+                            listLessonStudied.push(new ObjectId(lesson._id));
                 });
             }
 
@@ -105,6 +111,7 @@ function getRouteToday(req, res) {
                         
 
                         var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
+                        rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
 
                         //cần update history
 
@@ -142,6 +149,8 @@ function getRouteToday(req, res) {
                     lessons.sort(sortLessonByLevelAndUnit);
                    
                     var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
+                    rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
+
                     //cần update history
                     
                     historyRepo.update({
@@ -179,6 +188,7 @@ function getRouteToday(req, res) {
 
                 
                 var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
+                rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
                 historyRepo.insert({
                     email: req.email,
                     history: [{
@@ -243,6 +253,7 @@ function routeToday(lessons, hoursPerDay, dateStart, dateEnd) {
     var minutesByDay = hoursPerDay * 60;
     //thời gian học thực tế lớn hơn lý thuyết => cho học theo thực tế => chia lại lộ trình theo thực tế
     var rs = null;
+
     if (timeNeedLearnByDay < minutesByDay) {
         rs = createRoute(lessons, minutesByDay, dateStart)
     } else {
@@ -266,6 +277,7 @@ function createRoute(lessons, time, start) {
         element.lessonPassed = false;
         element.exercisePassed = false;
         if (!flagLessonsToday) {
+            element.type = "lesson";
             lessonToLearn.push(element);
         }
         // var indexOfRoute= route.findIndex(i => {console.log(i.day, dateStart); return i.day.getTime() === dateStart.getTime()});
@@ -296,6 +308,11 @@ function createRoute(lessons, time, start) {
         // lessonToLearn = [];
 
     }
+    // minitestRepo.random(1).then(minitest => {
+    //     lessonToLearn.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
+        
+    // });
+    
     return {
         lessons: lessonToLearn,
         dateEnd: moment(datetEnd).format('YYYY-MM-DD'),

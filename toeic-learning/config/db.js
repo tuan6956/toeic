@@ -8,4 +8,6 @@ module.exports = {
     DATABASE_COLLECTION_MILESTONE: 'Milestone',
     DATABASE_COLLECTION_USER: 'User',
     DATABASE_COLLECTION_HISTORY: 'History',
+    DATABASE_COLLECTION_MINITEST: 'mini_test',
+
 }   
