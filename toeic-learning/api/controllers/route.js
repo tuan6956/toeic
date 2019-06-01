@@ -111,7 +111,7 @@ function getRouteToday(req, res) {
                         
 
                         var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                        rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
+                        rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                         //cần update history
 
@@ -149,7 +149,7 @@ function getRouteToday(req, res) {
                     lessons.sort(sortLessonByLevelAndUnit);
                    
                     var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                    rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
+                    rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                     //cần update history
                     
@@ -188,7 +188,7 @@ function getRouteToday(req, res) {
 
                 
                 var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest"});
+                rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
                 historyRepo.insert({
                     email: req.email,
                     history: [{
