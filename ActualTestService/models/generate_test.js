@@ -275,42 +275,42 @@ export default class GenerateTest {
                 }
                 else if (index + 1 === test_pending.length) {
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 1);
+                    // await this.createNewTest(level, count_test, 1);
                 }
                 if(test_pending[index].questions.part_2.length < 25){
                     await this.insertQuestionToTest(collections.collections.listening_question, 2, level, (count_test-test_pending.length + index)*25 + test_pending[index].questions.part_2.length, 25-test_pending[index].questions.part_2.length,test_pending[index]._id, test_pending[index].questions.part_2.length, 25);
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 2);
+                    // await this.createNewTest(level, count_test, 2);
                 }
                 if(test_pending[index].questions.part_3.length < 13){
                     await this.insertQuestionToTest(collections.collections.dialogues, 3, level, (count_test-test_pending.length + index)*13 + test_pending[index].questions.part_3.length, 13-test_pending[index].questions.part_3.length,test_pending[index]._id, test_pending[index].questions.part_3.length, 13);
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 3);
+                    // await this.createNewTest(level, count_test, 3);
                 }
                 if(test_pending[index].questions.part_4.length < 10){
                     await this.insertQuestionToTest(collections.collections.dialogues, 4, level, (count_test-test_pending.length + index)*10 + test_pending[index].questions.part_4.length, 10-test_pending[index].questions.part_4.length,test_pending[index]._id, test_pending[index].questions.part_4.length, 10);
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 4);
+                    // await this.createNewTest(level, count_test, 4);
                 }
                 if(test_pending[index].questions.part_5.length < 30){
                     await this.insertQuestionToTest(collections.collections.reading_question, 5, level, (count_test-test_pending.length + index)*30 + test_pending[index].questions.part_5.length, 30-test_pending[index].questions.part_5.length,test_pending[index]._id, test_pending[index].questions.part_5.length, 30);
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 5);
+                    // await this.createNewTest(level, count_test, 5);
                 }
                 if(test_pending[index].questions.part_6.length < 4){
                     await this.insertQuestionToTest(collections.collections.paragraphs, 6, level, (count_test-test_pending.length + index)*4 + test_pending[index].questions.part_6.length, 4-test_pending[index].questions.part_6.length,test_pending[index]._id, test_pending[index].questions.part_6.length, 4);
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 6);
+                    // await this.createNewTest(level, count_test, 6);
                 }
                 if(test_pending[index].questions.part_7.type_1.length < 10){
                     await this.insertQuestionToTest(collections.collections.paragraphs, 7, level, (count_test-test_pending.length + index)*10 + test_pending[index].questions.part_7.type_1.length, 10-test_pending[index].questions.part_7.type_1.length,test_pending[index]._id, test_pending[index].questions.part_7.type_1.length, 10, 1);
@@ -318,14 +318,14 @@ export default class GenerateTest {
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 7, 1);
+                    // await this.createNewTest(level, count_test, 7, 1);
                 }
                 if(test_pending[index].questions.part_7.type_2.length < 5){
                     await this.insertQuestionToTest(collections.collections.paragraphs,7, level, (count_test-test_pending.length + index)*5 + test_pending[index].questions.part_7.type_2.length, 5- test_pending[index].questions.part_7.type_2.length, test_pending[index]._id, test_pending[index].questions.part_7.type_2.length, 5, 2)
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 7, 2);
+                    // await this.createNewTest(level, count_test, 7, 2);
                 }
             }
         }
@@ -644,17 +644,11 @@ export default class GenerateTest {
                         let randomElement =  await this.app.db.collection('reading_question').aggregate( [{ $group: { _id: { id_paragraph: "$id_paragraph", type: "$type"}, count: { $sum: 1 } } }, { $match: { count: 3, '_id.type': 1 }}, {$skip: 1}, {$limit: 1}]).toArray()
                     
                         if(randomElement.length !== 0){
-                            data_insert.questions.part_7.type_1.push(randomElement[0]._id)
+                            data_insert.questions.part_7.type_1.push(randomElement[0]._id.id_paragraph)
                         }
                     }
 
-                    //with type =1 ;
-                    // let n = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).count();
-                    // let r = Math.floor(Math.random() * n);
-                    // let randomElement = this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 1}).limit(1).skip(r).toArray();
-                    // let part = 'part_'+index+'.type_1';
-                    // data_insert.questions[part].push(randomElement[0]._id);
-                    //with type = 2;
+                    
                     let n_2 = await this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).count();
                     let r_2 = Math.floor(Math.random() * n_2);
                     let randomElement_2 = await this.app.db.collection(collections.collections.paragraphs).find({part: index, type: 2}).limit(1).skip(r_2).toArray();
@@ -673,7 +667,7 @@ export default class GenerateTest {
     }
 
     async getMiniTest(){
-        let n_test = this.app.db.collection(collections.collections.mini_test).find().count();
+        let n_test = await this.app.db.collection('mini_test').find().count();
         let r = Math.floor(Math.random() * n_test);
         let result =  await this.app.db.collection(collections.collections.mini_test).find().skip(r).toArray();
         let questions = {
@@ -693,7 +687,7 @@ export default class GenerateTest {
                 switch (index) {
                     case 1:{
                         for(let i = 0; i < result[0].questions.part_1.length; i++){
-                        let id = result[0].questions.part_1[i];
+                            let id = result[0].questions.part_1[i];
                             let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
                             questions.part_1.push(getQuestion)
                         }
