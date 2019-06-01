@@ -84,7 +84,7 @@ var config = {
                 jwt.verify(token, configJWT.secret.accessToken, function (err, decode) {
                     if (err) {
                         req.email = undefined;
-                        next();
+                        next(new Error('account is not existed!'));
                     } else {
                         if(decode.role !== 'user' && decode.role !== "admin") {
                             next(new Error('access denied!'));
