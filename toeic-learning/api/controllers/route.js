@@ -46,7 +46,7 @@ function getRouteToday(req, res) {
         var indexLevel = -1;
         var indexTarget = arrayMilestons.length - 1;
         for (let i = 0; i < arrayMilestons.length; i++) {
-            if(user.level >= arrayMilestons[i] && indexLevel !== -1) 
+            if(user.level <= arrayMilestons[i] && indexLevel !== -1) 
                 indexLevel = i;
             if(user.target.targetPoint  <= arrayMilestons[i] && indexTarget !== -1) 
                 indexTarget = i;
@@ -327,9 +327,9 @@ async function suggestTimeStudy(hoursPerDay, dateStart, dateEnd, target, level) 
     var indexLevel = -1;
     var indexTarget = arrayMilestons.length - 1;
     for (let i = 0; i < arrayMilestons.length; i++) {
-        if(level >= arrayMilestons[i] && indexLevel !== -1) 
+        if(level <= arrayMilestons[i] && indexLevel !== -1) 
             indexLevel = i;
-        if(target  <= arrayMilestons[i] && indexTarget !== -1) 
+        if(target <= arrayMilestons[i] && indexTarget !== -1) 
             indexTarget = i;
     }
     var inQueryLevel = Array.from({
