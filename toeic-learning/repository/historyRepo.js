@@ -8,7 +8,6 @@ exports.insert = data => {
 }
 
 exports.update = (query, dataNew) => {
-    console.log(query, dataNew);
     return db.update(query, dataNew, collection);
 }
 

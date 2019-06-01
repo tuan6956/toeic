@@ -65,8 +65,8 @@ function getRouteToday(req, res) {
                     }
                 });
                 if(!flagStudiedAll) { // chưa học hết
-                    res.status(200);``
-                    res.json({success: true, value: {result: history.history[indexHistoryByDay].lessons}});
+                    res.status(200);
+                    res.json({success: true, value: history.history[indexHistoryByDay].lessons});
                 } else { // đã học hết và muốn học ngày tiếp theo
                     var query = {level: { $in: inQueryLevel}, _id: {$nin: listLessonStudied}};
                     lessonRepo.getAll(query, 30, 0).then(lessons => {
@@ -91,7 +91,7 @@ function getRouteToday(req, res) {
                         // var timeNeedByDay = timeToStudyAllLesson / day;
                         // console.log(day, timeToStudy, timeNeedByDay);
                         res.status(200);
-                        res.json({success: true, value: {result: rs}});
+                        res.json({success: true, value: rs});
                     });
                 }
 
@@ -121,7 +121,7 @@ function getRouteToday(req, res) {
                     // var timeNeedByDay = timeToStudyAllLesson / day;
                     // console.log(day, timeToStudy, timeNeedByDay);
                     res.status(200);
-                    res.json({success: true, value: {result: rs}});
+                    res.json({success: true, value: rs});
                 });
             }
         } else {
@@ -146,7 +146,7 @@ function getRouteToday(req, res) {
                 // var timeNeedByDay = timeToStudyAllLesson / day;
                 // console.log(day, timeToStudy, timeNeedByDay);
                 res.status(200);
-                res.json({success: true, value: {result: rs}});
+                res.json({success: true, value: rs});
             });
         }
     });
@@ -226,7 +226,7 @@ function createRoute(lessons, time, start) {
         // lessonToLearn = [];
 
     }
-    return {lessons: lessonToLearn, dayEnd: moment(datetEnd).format('YYYY-MM-DD'), timeNeed: time};
+    return {lessons: lessonToLearn, dateEnd: moment(datetEnd).format('YYYY-MM-DD'), timeNeed: time};
 }
 
 function suggestTimeStudy(hoursPerDay, dateStart, target, level) {
@@ -273,7 +273,7 @@ function suggestTimeStudy(hoursPerDay, dateStart, target, level) {
                 });
                 if(!flagStudiedAll) { // chưa học hết
                     res.status(200);``
-                    res.json({success: true, value: {result: history.history[indexHistoryByDay].lessons}});
+                    res.json({success: true, value: history.history[indexHistoryByDay].lessons});
                 } else { // đã học hết và muốn học ngày tiếp theo
                     var query = {level: { $in: inQueryLevel}, _id: {$nin: listLessonStudied}};
                     lessonRepo.getAll(query, 30, 0).then(lessons => {
