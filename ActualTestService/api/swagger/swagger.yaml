@@ -2232,8 +2232,6 @@ paths:
                 type: integer
               correct_reading: 
                 type: integer
-              user_id:
-                type: string
               test_id:
                 type: string
       responses:
@@ -2266,8 +2264,6 @@ paths:
                 type: integer
               correct_reading: 
                 type: integer
-              user_id:
-                type: string
               test_id:
                 type: string
       responses:
@@ -2310,8 +2306,8 @@ paths:
   /miniTests:
     x-swagger-router-controller: test
     get:
-      description: Returns all miniTest
-      operationId: getAllMiniTest
+      description: Returns all miniTest for app
+      operationId: getAllMiniTestForApp
       tags:
         - TestServerApp
       security:
@@ -2452,6 +2448,60 @@ paths:
               createAt:
                 type: string
               level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /practiseSkill/{part}:
+    x-swagger-router-controller: test
+    get:
+      description: Return all list test of skill in part user want to
+      operationId: getAllPractiseTestSkills
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: part
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Return all list test of skill in part user want to
+          schema:
+            properties:
+              _id:
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /practiseSkill/{part}/{Id}:
+    x-swagger-router-controller: test
+    get:
+      description: Return all list test of skill in part user want to
+      operationId: getAllPractiseTestSkillsById
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: part
+          type: integer
+          required: true
+        - in: path
+          name: Id
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Return all list test of skill in part user want to
+          schema:
+            properties:
+              _id:
                 type: integer
         default:
           description: Error
