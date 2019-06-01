@@ -333,7 +333,6 @@ async function suggestTimeStudy(hoursPerDay, dateStart, dateEnd, target, level) 
     var day = Math.round((new Date(dateEnd) - new Date(dateStart)) / (1000 * 60 * 60 * 24));
     var timeNeedLearnByDay = timeToStudyAllLesson / day;
     var minutesByDay = hoursPerDay * 60;
-    console.log(timeNeedLearnByDay, timeToStudyAllLesson, day);
     var rs1 = createRoute(lessons, minutesByDay, dateStart);
     var rs2 =  createRoute(lessons, timeNeedLearnByDay, dateStart);
     delete rs1.lessons;
