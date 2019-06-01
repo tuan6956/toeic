@@ -4,8 +4,8 @@ info:
   title: Toeic
 # during dev, should point to your local machine
 
-host: localhost:8000
-# host: 103.114.107.16:8005
+# host: localhost:8000
+host: 103.114.107.16:8005
 # basePath prefixes all resource paths 
 basePath: /api
 # 
@@ -2448,6 +2448,60 @@ paths:
               createAt:
                 type: string
               level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /practiseSkill/{part}:
+    x-swagger-router-controller: test
+    get:
+      description: Return all list test of skill in part user want to
+      operationId: getAllPractiseTestSkills
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: part
+          type: integer
+          required: true
+      responses:
+        "200":
+          description: Return all list test of skill in part user want to
+          schema:
+            properties:
+              _id:
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /practiseSkill/{part}/{Id}:
+    x-swagger-router-controller: test
+    get:
+      description: Return all list test of skill in part user want to
+      operationId: getAllPractiseTestSkillsById
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: part
+          type: integer
+          required: true
+        - in: path
+          name: Id
+          type: string
+          required: true
+      responses:
+        "200":
+          description: Return all list test of skill in part user want to
+          schema:
+            properties:
+              _id:
                 type: integer
         default:
           description: Error

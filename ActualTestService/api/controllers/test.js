@@ -161,6 +161,31 @@ let getAllTestForApp = async(req, res) =>{
 
 }
 
+function getAllPractiseTestSkills(req, res){
+  let part = req.swagger.params.part.value;
+  
+  req.app.models.testModels.getAllPractiseTestSkills(part)
+    .then(result => {
+        handleSuccess(res, 200, result);
+      })
+      .catch(error => {
+        handleError(res, error.status, error.message);
+      });
+}
+
+function getAllPractiseTestSkillsById(req, res){
+  let part = req.swagger.params.part.value;
+  let Id = req.swagger.params.Id.value;
+  
+  req.app.models.testModels.getAllPractiseTestSkillsById(part, Id)
+    .then(result => {
+        handleSuccess(res, 200, result);
+      })
+      .catch(error => {
+        handleError(res, error.status, error.message);
+      });
+}
+
 module.exports = {
     getTheTestByLevelAndOrdinalTest: getTheTestByLevelAndOrdinalTest,
     getMiniTest: getMiniTest,
@@ -171,5 +196,7 @@ module.exports = {
     requestGenerateMiniTest,
     getAllMiniTestForApp,
     getMiniTestById,
-    getAllTestForApp
+    getAllTestForApp,
+    getAllPractiseTestSkills,
+    getAllPractiseTestSkillsById
 }

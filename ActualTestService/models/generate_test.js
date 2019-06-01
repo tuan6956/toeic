@@ -796,6 +796,7 @@ export default class GenerateTest {
                 return item;
             }else{
                 item.doneDate = is_done_test[0].doneDate;
+                item.scores = is_done_test[0].scores;
                 done_tests.push(item);
             }
         }))
@@ -827,6 +828,7 @@ export default class GenerateTest {
                 return item;
             }else{
                 item.doneDate = is_done_mini_test[0].doneDate;
+                item.scores = is_done_test[0].scores;
                 done_mini_tests.push(item);
             }
         }))
@@ -1055,6 +1057,107 @@ export default class GenerateTest {
             test[0].questions.part_7.type_2.length === 5 ){
             await this.app.db.collection('test').updateOne({_id: id_test}, {$set: {'status': 'success'}})
         }
+    }
+
+    async getAllPractiseTestSkills(part){
+        let tests = await this.app.db.collection('test').find({status: 'success'}, {projection: {questions: 0, status: 0, user_complete: 0}}).toArray();
+        tests = tests.map((item, index)=>{
+            let count_test = index + 1
+            item.name = "Skill of part " + part + ' __ ' + count_test;
+            return item
+        })
+        return {
+            data: tests
+        }
+    }
+
+    async getAllPractiseTestSkillsById(part, id_test){
+        let result = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
+        let questions = []
+        if(result[0]){
+                switch (part) {
+                    case 1:{
+                        for(let i = 0; i < result[0].questions.part_1.length; i++){
+                        let id = result[0].questions.part_1[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
+                            questions.push(getQuestion)
+                        }
+                        break;
+                    }
+
+                    case 2: {
+                        for(let i = 0; i < result[0].questions.part_2.length; i++){
+                            let id = result[0].questions.part_2[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
+                            questions.push(getQuestion)
+                        }
+                        break;
+                    }
+                    case 3: {
+                        for(let i = 0; i < result[0].questions.part_3.length; i++){
+                            let id = result[0].questions.part_3[i];
+                            let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id})
+                            let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
+                            get_dialogue.questionObjects = questionObjects;
+                            questions.push(get_dialogue);
+                        }
+                        break;
+                    }
+                    case 4: {
+                        for(let i = 0; i < result[0].questions.part_4.length; i++){
+                            let id = result[0].questions.part_4[i];
+                            let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
+                            get_dialogue.questionObjects = questionObjects;
+                            questions.push(get_dialogue);
+                        }
+                        break;
+                    }
+                    case 5: {
+                        for(let i = 0; i < result[0].questions.part_5.length; i++){
+                            let id = result[0].questions.part_5[i];
+                            let getQuestion = await this.app.db.collection(collections.collections.reading_question).findOne({_id: id})
+                            questions.push(getQuestion)
+                        }
+                        break;
+                    }
+                    case 6: {
+                        for(let i = 0; i < result[0].questions.part_6.length; i++){
+                            let id = result[0].questions.part_6[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.push(get_paragraph);
+                        }
+                        break;
+                    }
+                    case 7:{
+                        for(let i = 0; i < result[0].questions.part_7.type_1.length;i++){
+                            let id = result[0].questions.part_7.type_1[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.push(get_paragraph);
+                        }
+                        for(let i = 0; i < result[0].questions.part_7.type_2.length;i++){
+                            let id = result[0].questions.part_7.type_2[i];
+                            let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
+                            let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
+                            get_paragraph.questionObjects = questionObjects;
+                            questions.push(get_paragraph);
+                        }
+                        break;
+                    }
+                    
+                    default:
+                        break;
+                }
+                
+            result[0].questions = questions;
+
+            return result[0];
+        }
+        return {};
     }
 
 }
