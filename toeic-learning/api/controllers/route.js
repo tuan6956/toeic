@@ -60,9 +60,12 @@ function getRouteToday(req, res) {
             length: indexTarget - indexLevel + 1
         }, (v, k) => k + indexLevel);
 
-        var indexTimeStudy = user.timeStudy.findIndex(date => {
-            return date === now;
-        })
+        var indexTimeStudy  = -1;
+        if (typeof user.timeStudy !== "undefined") {
+            indexTimeStudy = user.timeStudy.findIndex(date => {
+                return date === now;
+            })
+        }
         var timeStudy = 0;
         if (indexTimeStudy != -1)
             timeStudy = user.timeStudy[indexTimeStudy].time;
