@@ -714,6 +714,30 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"         
+    post:
+      description: Update studied info 
+      operationId: updateStudiedLesson
+      tags:
+        - history
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with name.
+          schema:
+            $ref: '#/definitions/StudyUpdate'
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 # complex objects have schema definitions
@@ -775,6 +799,14 @@ definitions:
       lessonId:
         type: string
       testId:
+        type: string
+  StudyUpdate:
+    properties:
+      type:
+        type: string
+      isStudied:
+        type: boolean
+      lessonId:
         type: string
   MessageResp:
     type: object

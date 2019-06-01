@@ -3,14 +3,16 @@
 var util = require('util');
 const config = require('./config')
 const historyRepo = require('../../repository/historyRepo')
-const categoryRepo = require('../../repository/categoryRepo')
+const userRepo = require('../../repository/userRepo')
 const lessonRepo = require('../../repository/lessonRepo')
+var moment = require('moment');
 
 
 var ObjectId = require('mongodb').ObjectID;
 
 module.exports = {
-    getHistory
+    getHistory,
+    updateStudiedLesson
 };
 
 
@@ -41,24 +43,71 @@ function updateStudiedLesson(req, res) {
     var body = req.swagger.params.body.value;
     var lessonId = body.lessonId.trim();
     var type = body.type.trim();
-    var isStudied = body.isStudied.trim();
-
+    var isStudied = false;
+    if (body.isStudied) {
+        isStudied = true;
+    }
+    var now = moment().format('YYYY-MM-DD');
     historyRepo.findOne({
         email: req.email
     }).then(value => {
-        if(value) {
+        if (value) {
             var history = value.history;
-            var indexOfRoute= history.findIndex(his => {return his.date === ""});
 
+            var indexOfRoute = history.findIndex(his => {
+                return his.date === now
+            });
+            if (indexOfRoute != -1) {
+
+                var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
+                    return lesson._id.toString() === lessonId;
+                })
+                if (type == "lesson") {
+                    history[indexOfRoute].lessons[indexLesson].lessonPassed = isStudied;
+                } else if (type == "exercise") {
+                    history[indexOfRoute].lessons[indexLesson].exercisePassed = isStudied;
+                }
+                
+                if (typeof history[indexOfRoute].progress === "undefined") {
+                    history[indexOfRoute].progress = 1 / (history[indexOfRoute].lessons.length * 2);
+                } else {
+                    if(history[indexOfRoute].progress.toPrecision(2) < 1.0)
+                        history[indexOfRoute].progress += (1 / (history[indexOfRoute].lessons.length * 2));
+                }
+                userRepo.findOne({
+                    email: req.email
+                }).then(user => {
+                    var indexTimeStudy = user.timeStudy.findIndex(date => {
+                        return date === now;
+                    })
+                    if(indexTimeStudy != -1) {
+                        history[indexOfRoute].timeStudy = user.timeStudy[indexTimeStudy].time;
+                    } else {
+                        history[indexOfRoute].timeStudy = 0;
+                    }
+                    historyRepo.update({
+                        email: req.email,
+                        'history.date': now
+                    }, {
+                        $set: {
+                            'history.$.lessons': history[indexOfRoute].lessons,
+                            'history.$.progress': history[indexOfRoute].progress,
+                            'history.$.timeStudy': history[indexOfRoute].timeStudy,
+
+
+                        }
+                    })
+                });
+
+            }
         }
         var success = true;
-        var mess = "";
+        var mess = "Update successful";
         var statusCode = 200;
         res.status(statusCode);
         res.json({
             success: success,
             message: mess,
-            value: value
         });
     }).catch(err => {
         res.status(400);
@@ -68,133 +117,5 @@ function updateStudiedLesson(req, res) {
         });
     });
 
-    
-}
 
-function updateMilestone(req, res) {
-
-    var body = req.swagger.params.body.value;
-    var milestoneId = req.swagger.params.milestoneId.value.trim();
-    var milestoneName = '',
-        categoryId = '',
-        lessonId = '',
-        testId = '';
-    var queryMilestone = null, queryCategory = null, queryLesson = null;
-    var milestoneFound = null, categoryFound = null, lessonFound = null;
-
-    if (body.name) {
-        milestoneName = body.name.trim();
-        queryMilestone = {
-            "_id": new ObjectId(milestoneId)
-        };
-    }
-    if (body.categoryId) {
-        categoryId = body.categoryId.trim();
-        queryCategory = {
-            "_id": new ObjectId(categoryId)
-        };
-        categoryFound = categoryRepo.findOne(queryCategory);
-
-    }
-    if (body.lessonId) {
-        lessonId = body.lessonId.trim();
-        queryLesson = {
-            "_id": new ObjectId(lessonId)
-        };
-        lessonFound = lessonRepo.findOne(queryLesson);
-    }
-    if (body.testId)
-        testId = body.testId.trim();
-    var milestoneFound = milestoneRepo.findOne(queryMilestone);
-
-    Promise.all([milestoneFound, categoryFound, lessonFound]).then(([milestone_rs, category, lesson]) => {
-        // var milestone = [...milestone];
-        var milestone = Object.assign(milestone_rs);
-        delete milestone._id;
-        if (!milestone) {
-            res.status(400);
-            res.json({
-                success: false,
-                message: "Milestone not found"
-            });
-            return;
-        }
-
-        var lesson_get = null;
-        if (!lesson && lessonId !== '') {
-            res.status(400);
-            res.json({
-                success: false,
-                message: "Lesson not found"
-            });
-            return;
-        } else if(lesson && lessonId !== '') {
-            lesson_get = lesson;
-        }
-
-        if (!category && categoryId !== '') {
-            res.status(400);
-            res.json({
-                success: false,
-                message: "Category not found"
-            });
-            return;
-        } else if (milestone.category  && categoryId !== category._id) {
-        } else if(category && categoryId !== '') {
-            milestone.category = {
-                _id: new ObjectId(category._id),
-                name: category.name,
-            }
-            
-
-        }
-        
-        
-        
-
-        var lessons = [];
-        if (milestone.category && milestone.category.lessons && lessonId !== '') {
-            lessons.concat(milestone.category.lessons);
-            milestone.category.lessons = lessons;
-        } else if(lessonId !== '') {
-            delete lesson.content;
-            lessons.push(lesson);
-            milestone.category.lessons = lessons;
-
-        }
-
-        if(testId !== '') {
-            milestone.test = testId;
-        }
-        if (milestoneName) {
-            milestone.name = milestoneName;
-        }
-        // milestone.category = {
-        //     _id: category._id,
-        //     title: category.title,
-        //     lessons: lessons
-        // }
-        console.log('4',milestone);
-        milestoneRepo.update({"_id": new ObjectId(milestoneId)}, milestone).then(result => {
-            res.status(200);
-            res.json({
-                success: true,
-                value: milestone
-            });
-        }).catch(err => {
-            console.log(err);
-            res.status(400);
-            res.json({
-                success: false,
-                message: err.err
-            });
-        });
-
-    }).catch(err => {
-        res.status(400);
-        res.json({
-            success: false,
-            message: err.err
-        });
-    });
 }

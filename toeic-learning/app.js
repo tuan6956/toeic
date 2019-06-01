@@ -23,14 +23,14 @@ var config = {
         var token = "" + scopesOrApiKey;
         jwt.verify(token, configJWT.secret, function (err, decode) {
             if (err) {
-                console.log(err);
+                // console.log(err);
                 req.email = undefined;
                 next();
             } else {
                 if(decode.role !== 'user' && decode.role !== "admin") {
                     next(new Error('access denied!'));
-                } else if (decode.role !== "admin" && req.method !== 'GET'){
-                    next(new Error('access denied!'));
+                // } else if (decode.role !== "admin" && req.method !== 'GET'){
+                //     next(new Error('access denied!'));
                 } else {
                     req.email = decode.email;
                     req.role = decode.role;
