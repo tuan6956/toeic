@@ -318,14 +318,14 @@ export default class GenerateTest {
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 2, 1);
+                    await this.createNewTest(level, count_test, 7, 1);
                 }
                 if(test_pending[index].questions.part_7.type_2.length < 5){
                     await this.insertQuestionToTest(collections.collections.paragraphs,7, level, (count_test-test_pending.length + index)*5 + test_pending[index].questions.part_7.type_2.length, 5- test_pending[index].questions.part_7.type_2.length, test_pending[index]._id, test_pending[index].questions.part_7.type_2.length, 5, 2)
                 }
                 else if(index + 1 === test_pending.length){
                     await this.updateStatusTest(level, test_pending[index]._id)
-                    await this.createNewTest(level, count_test, 2, 2);
+                    await this.createNewTest(level, count_test, 7, 2);
                 }
             }
         }
