@@ -2,45 +2,157 @@
 
 var util = require('util');
 const config = require('./config')
+var moment = require('moment');
+
 const milestoneRepo = require('../../repository/milestoneRepo')
-const categoryRepo = require('../../repository/categoryRepo')
+const historyRepo = require('../../repository/historyRepo')
 const lessonRepo = require('../../repository/lessonRepo')
+const userRepo = require('../../repository/userRepo')
 
 
 var ObjectId = require('mongodb').ObjectID;
 const arrayMilestons = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950];
 module.exports = {
-    getRoute: calcTimeStudy
+    getRoute: getRouteToday,
+    abcua: sortLessonByLevelAndUnit
 };
 
 
 
-function calcTimeStudy(req, res) {
-
+function getRouteToday(req, res) {
     // var indexLevel = Math.round(level/50);
     // var indexTarget = Math.round(target/50);
-    var indexLevel = Math.round(0/50);
-    var indexTarget = Math.round(550/50);
-    var hoursPerDay = 2;
-    var dateStart = '2019-05-30';
-    var dateEnd = '2019-06-30';
-    var inQueryLevel = Array.from({length: indexTarget - indexLevel + 1}, (v, k) => k+indexLevel); 
-    var query = {level: { $in: inQueryLevel}};
-    lessonRepo.getAll(query, 30, 0).then(lessons => {
-        lessons.sort(sortLessonByLevelAndUnit);
+    var userFind = userRepo.findOne({email: req.email});
+    var historyFind = historyRepo.findOne({email: req.email});
+    var now = moment().format('YYYY-MM-DD');
+    Promise.all([userFind, historyFind]).then(([user, history]) => {
+        if(!user) {
+            res.status(400);
+            res.json({
+                success: false,
+                message: ''
+            });
+            return;
+        } 
+        var indexLevel = Math.round(user.level/50);
+        var indexTarget = Math.round(user.target.targetPoint/50);
+        var hoursPerDay = user.target.hoursPerDay;
+        var dateStart = user.target.startDate;
+        var dateEnd = user.target.endDate;
+        var inQueryLevel = Array.from({length: indexTarget - indexLevel + 1}, (v, k) => k+indexLevel); 
 
-        var timeToStudyAllLesson = 0;
-        lessons.forEach(lesson => {
-            timeToStudyAllLesson += lesson.estTime;
-        });
-        var rs = dayNeedToStudy(lessons, timeToStudyAllLesson, hoursPerDay, dateStart, dateEnd);
-        // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
-        // var timeNeedByDay = timeToStudyAllLesson / day;
-        // console.log(day, timeToStudy, timeNeedByDay);
-        res.status(200);
-        res.json({success: true, value: {result: rs}});
+        if (history) {
+            var indexHistoryByDay = -1;
+            var listLessonStudied = [];
+            for (let i = 0; i < history.history.length; i++) {
+                const his = history.history[i];
+                if(his.date === now) {
+                    indexHistoryByDay = i;
+                }
+                
+                his.lessons.forEach(lesson => {
+                    if(lesson.theory) // đã học lý thuyết
+                        listLessonStudied.push(new ObjectId(lesson._id));
+                });
+            }
+
+            //đã có rồi thì lấy ra
+            if(indexHistoryByDay != -1) {
+                var flagStudiedAll = true;
+                history.history[indexHistoryByDay].lessons.forEach(lesson => {
+                    if(!lesson.lessonPassed || !exercisePassed) {
+                        flagStudiedAll = false;
+                    }
+                });
+                if(!flagStudiedAll) { // chưa học hết
+                    res.status(200);
+                    res.json({success: true, value: {result: history.history[indexHistoryByDay].lessons}});
+                } else { // đã học hết và muốn học ngày tiếp theo
+                    var query = {level: { $in: inQueryLevel}, _id: {$nin: listLessonStudied}};
+                    lessonRepo.getAll(query, 30, 0).then(lessons => {
+                        lessons.sort(sortLessonByLevelAndUnit);
+                        var timeToStudyAllLesson = 0;
+                        lessons.forEach(lesson => {
+                            timeToStudyAllLesson += lesson.estTime;
+                        });
+                        
+                        var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
+
+                        //cần update history
+    
+                        historyRepo.update({email: req.email, 'history.date': now}, {
+                            $push: {
+                                'history.$.lessons': {
+                                    $each: rs.lessons
+                                }
+                            }
+                        })
+                        // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
+                        // var timeNeedByDay = timeToStudyAllLesson / day;
+                        // console.log(day, timeToStudy, timeNeedByDay);
+                        res.status(200);
+                        res.json({success: true, value: {result: rs}});
+                    });
+                }
+
+            } else {//chua có thì insert vo history
+                var query = {level: { $in: inQueryLevel}, _id: {$nin: listLessonStudied}};
+                lessonRepo.getAll(query, 30, 0).then(lessons => {
+                    lessons.sort(sortLessonByLevelAndUnit);
+                    var timeToStudyAllLesson = 0;
+                    lessons.forEach(lesson => {
+                        timeToStudyAllLesson += lesson.estTime;
+                    });
+                    
+                    var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
+                    //cần update history
+
+                    historyRepo.update({email: req.email}, {
+                        $push: {
+                            history: {
+                              day: now,
+                              lessons: rs.lessons,
+                            }
+                        }
+                    })
+                    // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
+                    // var timeNeedByDay = timeToStudyAllLesson / day;
+                    // console.log(day, timeToStudy, timeNeedByDay);
+                    res.status(200);
+                    res.json({success: true, value: {result: rs}});
+                });
+            }
+        } else {
+            var query = {level: { $in: inQueryLevel}};
+            lessonRepo.getAll(query, 30, 0).then(lessons => {
+                lessons.sort(sortLessonByLevelAndUnit);
+        
+                var timeToStudyAllLesson = 0;
+                lessons.forEach(lesson => {
+                    timeToStudyAllLesson += lesson.estTime;
+                });
+                var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
+                historyRepo.insert({
+                    email: req.email,
+                    history: [
+                       { date: now,
+                        lessons: rs.lessons}
+                    ]
+                    
+                })
+                // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
+                // var timeNeedByDay = timeToStudyAllLesson / day;
+                // console.log(day, timeToStudy, timeNeedByDay);
+                res.status(200);
+                res.json({success: true, value: {result: rs}});
+            });
+        }
     });
+
+    
 }
+
+
 
 function sortLessonByLevelAndUnit(lesson1, lesson2) {
     if(lesson1.level == lesson2.level) {
@@ -49,7 +161,7 @@ function sortLessonByLevelAndUnit(lesson1, lesson2) {
     return lesson1.level - lesson2.level;
 }
 
-function dayNeedToStudy(lessons, timeToStudyAllLesson, hoursPerDay, dateStart, dateEnd) {
+function routeToday(lessons, timeToStudyAllLesson, hoursPerDay, dateStart, dateEnd) {
     var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
     var timeNeedLearnByDay = timeToStudyAllLesson / day;
     var minutesByDay = hoursPerDay*60;
@@ -61,21 +173,23 @@ function dayNeedToStudy(lessons, timeToStudyAllLesson, hoursPerDay, dateStart, d
     // }
     console.log(minutesByDay, timeNeedLearnByDay);
     var x1 = createRoute(lessons, minutesByDay, dateStart);
-    var x2 = createRoute(lessons, timeNeedLearnByDay, dateStart);
-    return [x1, x2];
+    // var x2 = createRoute(lessons, timeNeedLearnByDay, dateStart);
+    // return [x1, x2];
+    return x1;
 }
 
 function createRoute(lessons, time, start) {
-    var dateStart = new Date(start);
+    // var dateStart = new Date(start);
     var route = [];
     var lessonToLearn = [];
     var timeTemp = 0;
     for (let i = 0; i < lessons.length; i++) {
         const element = lessons[i];
         timeTemp += element.estTime;
-
+        element.lessonPassed = false;
+        element.exercisePassed = false;
         lessonToLearn.push(element);
-        var indexOfRoute= route.findIndex(i => {console.log(i.day, dateStart); return i.day.getTime() === dateStart.getTime()});
+        // var indexOfRoute= route.findIndex(i => {console.log(i.day, dateStart); return i.day.getTime() === dateStart.getTime()});
         // var indexOfRoute = -1;
         // for (let j = 0; j < route.length; j++) {
         //     if(route[j].day === dateStart) {
@@ -83,24 +197,25 @@ function createRoute(lessons, time, start) {
         //         break;
         //     }            
         // }
-        console.log(indexOfRoute, dateStart);
-        if(indexOfRoute < 0) {
-            route.push({day: new Date(dateStart.getTime()), lessons: lessonToLearn});
-            // console.log(route);
-        }
-        else {
-            lessonToLearn = lessonToLearn.concat(route[indexOfRoute].lessons);
-            route[indexOfRoute].lessons = lessonToLearn;
-        }
+        // console.log(indexOfRoute, dateStart);
+        // if(indexOfRoute < 0) {
+        //     route.push({day: new Date(dateStart.getTime()), lessons: lessonToLearn});
+        //     // console.log(route);
+        // }
+        // else {
+        //     lessonToLearn = lessonToLearn.concat(route[indexOfRoute].lessons);
+        //     route[indexOfRoute].lessons = lessonToLearn;
+        // }
 
         if(timeTemp > time) {
+            break;
             // console.log(timeTemp, time);
-            timeTemp = 0;
-            dateStart.setDate(dateStart.getDate() + 1);
+            // timeTemp = 0;
+            // dateStart.setDate(dateStart.getDate() + 1);
 
         }
-        lessonToLearn = [];
+        // lessonToLearn = [];
 
     }
-    return route;
+    return {lessons: lessonToLearn};
 }

@@ -21,8 +21,9 @@ var config = {
         next();
       } else if(scopesOrApiKey) {
         var token = "" + scopesOrApiKey;
-        jwt.verify(token, configJWT.secret.accessToken, function (err, decode) {
+        jwt.verify(token, configJWT.secret, function (err, decode) {
             if (err) {
+                console.log(err);
                 req.email = undefined;
                 next();
             } else {
