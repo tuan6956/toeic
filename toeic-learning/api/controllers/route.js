@@ -11,10 +11,10 @@ const userRepo = require('../../repository/userRepo')
 
 
 var ObjectId = require('mongodb').ObjectID;
-const arrayMilestons = [0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950];
+const arrayMilestons = [0, 100, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 990];
 module.exports = {
     getRoute: getRouteToday,
-    abcua: sortLessonByLevelAndUnit
+    getAdvise: getAdvise,
 };
 
 
@@ -38,6 +38,14 @@ function getRouteToday(req, res) {
             });
             return;
         }
+        var indexLevel = -1;
+        var indexTarget = arrayMilestons.length - 1;
+        for (let i = 0; i < arrayMilestons.length; i++) {
+            if(user.level >= arrayMilestons[i] && indexLevel !== -1) 
+                indexLevel = i;
+            if(user.target.targetPoint  <= arrayMilestons[i] && indexTarget !== -1) 
+                indexTarget = i;
+        }
         var indexLevel = Math.round(user.level / 50);
         var indexTarget = Math.round(user.target.targetPoint / 50);
         var hoursPerDay = user.target.hoursPerDay;
@@ -46,7 +54,7 @@ function getRouteToday(req, res) {
         var inQueryLevel = Array.from({
             length: indexTarget - indexLevel + 1
         }, (v, k) => k + indexLevel);
-        
+
         var indexTimeStudy = user.timeStudy.findIndex(date => {
             return date === now;
         })
@@ -78,7 +86,6 @@ function getRouteToday(req, res) {
                     }
                 });
                 if (!flagStudiedAll) { // chưa học hết
-                    console.log('123123123');
                     res.status(200);
                     res.json({
                         success: true,
@@ -93,14 +100,11 @@ function getRouteToday(req, res) {
                             $nin: listLessonStudied
                         }
                     };
-                    lessonRepo.getAll(query, 30, 0).then(lessons => {
+                    lessonRepo.getAll(query, 0, 0).then(lessons => {
                         lessons.sort(sortLessonByLevelAndUnit);
-                        var timeToStudyAllLesson = 0;
-                        lessons.forEach(lesson => {
-                            timeToStudyAllLesson += lesson.estTime;
-                        });
+                        
 
-                        var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
+                        var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
 
                         //cần update history
 
@@ -134,14 +138,10 @@ function getRouteToday(req, res) {
                         $nin: listLessonStudied
                     }
                 };
-                lessonRepo.getAll(query, 30, 0).then(lessons => {
+                lessonRepo.getAll(query, 0, 0).then(lessons => {
                     lessons.sort(sortLessonByLevelAndUnit);
-                    var timeToStudyAllLesson = 0;
-                    lessons.forEach(lesson => {
-                        timeToStudyAllLesson += lesson.estTime;
-                    });
-
-                    var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
+                   
+                    var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
                     //cần update history
                     
                     historyRepo.update({
@@ -174,14 +174,11 @@ function getRouteToday(req, res) {
                     $in: inQueryLevel
                 }
             };
-            lessonRepo.getAll(query, 30, 0).then(lessons => {
+            lessonRepo.getAll(query, 0, 0).then(lessons => {
                 lessons.sort(sortLessonByLevelAndUnit);
 
-                var timeToStudyAllLesson = 0;
-                lessons.forEach(lesson => {
-                    timeToStudyAllLesson += lesson.estTime;
-                });
-                var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
+                
+                var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
                 historyRepo.insert({
                     email: req.email,
                     history: [{
@@ -210,7 +207,22 @@ function getRouteToday(req, res) {
 }
 
 function getAdvise(req, res) {
+    var body = req.swagger.params.body.value;
+    var hoursPerDay = body.hoursPerDay;
+    var target = body.target;
+    var level = body.level;
+    var dateStart = body.dateStart;
+    var dateEnd = body.dateEnd;
 
+
+    suggestTimeStudy(hoursPerDay, dateStart, dateEnd, target, level).then(rs => {
+        res.status(200);
+        res.json({
+            success: true,
+            value: rs
+        });
+    });
+    
 }
 
 
@@ -221,7 +233,11 @@ function sortLessonByLevelAndUnit(lesson1, lesson2) {
     return lesson1.level - lesson2.level;
 }
 
-function routeToday(lessons, timeToStudyAllLesson, hoursPerDay, dateStart, dateEnd) {
+function routeToday(lessons, hoursPerDay, dateStart, dateEnd) {
+    var timeToStudyAllLesson = 0;
+    lessons.forEach(lesson => {
+        timeToStudyAllLesson += lesson.estTime;
+    });
     var day = Math.round((new Date(dateEnd) - new Date(dateStart)) / (1000 * 60 * 60 * 24));
     var timeNeedLearnByDay = timeToStudyAllLesson / day;
     var minutesByDay = hoursPerDay * 60;
@@ -272,7 +288,6 @@ function createRoute(lessons, time, start) {
 
         if (timeTemp > time) {
             flagLessonsToday = true;
-            break;
             // console.log(timeTemp, time);
             timeTemp = 0;
             datetEnd.setDate(datetEnd.getDate() + 1);
@@ -288,9 +303,15 @@ function createRoute(lessons, time, start) {
     };
 }
 
-function suggestTimeStudy(hoursPerDay, dateStart, target, level) {
-    var indexLevel = Math.round(user.level / 50);
-    var indexTarget = Math.round(user.target.targetPoint / 50);
+async function suggestTimeStudy(hoursPerDay, dateStart, dateEnd, target, level) {
+    var indexLevel = -1;
+    var indexTarget = arrayMilestons.length - 1;
+    for (let i = 0; i < arrayMilestons.length; i++) {
+        if(level >= arrayMilestons[i] && indexLevel !== -1) 
+            indexLevel = i;
+        if(target  <= arrayMilestons[i] && indexTarget !== -1) 
+            indexTarget = i;
+    }
     var inQueryLevel = Array.from({
         length: indexTarget - indexLevel + 1
     }, (v, k) => k + indexLevel);
@@ -300,168 +321,27 @@ function suggestTimeStudy(hoursPerDay, dateStart, target, level) {
             $in: inQueryLevel
         }
     };
-    Promise.all([historyFind]).then(([history]) => {
-        if (!user) {
-            res.status(400);
-            res.json({
-                success: false,
-                message: ''
-            });
-            return;
-        }
+    var lessons = null;
+    await lessonRepo.getAll(query, 0, 0).then(value => {
+         lessons = value;
+    })
 
-        var dateEnd = user.target.endDate;
-        var inQueryLevel = Array.from({
-            length: indexTarget - indexLevel + 1
-        }, (v, k) => k + indexLevel);
-
-        if (history) {
-            var indexHistoryByDay = -1;
-            var listLessonStudied = [];
-            for (let i = 0; i < history.history.length; i++) {
-                const his = history.history[i];
-                if (his.date === now) {
-                    indexHistoryByDay = i;
-                }
-
-                his.lessons.forEach(lesson => {
-                    if (lesson.theory) // đã học lý thuyết
-                        listLessonStudied.push(new ObjectId(lesson._id));
-                });
-            }
-
-            //đã có rồi thì lấy ra
-            if (indexHistoryByDay != -1) {
-                var flagStudiedAll = true;
-                history.history[indexHistoryByDay].lessons.forEach(lesson => {
-                    if (!lesson.lessonPassed || !lesson.exercisePassed) {
-                        flagStudiedAll = false;
-                    }
-                });
-                if (!flagStudiedAll) { // chưa học hết
-                    res.status(200);
-                    ``
-                    res.json({
-                        success: true,
-                        value: history.history[indexHistoryByDay].lessons
-                    });
-                } else { // đã học hết và muốn học ngày tiếp theo
-                    var query = {
-                        level: {
-                            $in: inQueryLevel
-                        },
-                        _id: {
-                            $nin: listLessonStudied
-                        }
-                    };
-                    lessonRepo.getAll(query, 30, 0).then(lessons => {
-                        lessons.sort(sortLessonByLevelAndUnit);
-                        var timeToStudyAllLesson = 0;
-                        lessons.forEach(lesson => {
-                            timeToStudyAllLesson += lesson.estTime;
-                        });
-
-                        var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
-
-                        //cần update history
-
-                        historyRepo.update({
-                            email: req.email,
-                            'history.date': now
-                        }, {
-                            $push: {
-                                'history.$.lessons': {
-                                    $each: rs.lessons
-                                }
-                            }
-                        })
-                        // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
-                        // var timeNeedByDay = timeToStudyAllLesson / day;
-                        // console.log(day, timeToStudy, timeNeedByDay);
-                        res.status(200);
-                        res.json({
-                            success: true,
-                            value: {
-                                result: rs
-                            }
-                        });
-                    });
-                }
-
-            } else { //chua có thì insert vo history
-                var query = {
-                    level: {
-                        $in: inQueryLevel
-                    },
-                    _id: {
-                        $nin: listLessonStudied
-                    }
-                };
-                lessonRepo.getAll(query, 30, 0).then(lessons => {
-                    lessons.sort(sortLessonByLevelAndUnit);
-                    var timeToStudyAllLesson = 0;
-                    lessons.forEach(lesson => {
-                        timeToStudyAllLesson += lesson.estTime;
-                    });
-
-                    var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
-                    //cần update history
-
-                    historyRepo.update({
-                        email: req.email
-                    }, {
-                        $push: {
-                            history: {
-                                day: now,
-                                lessons: rs.lessons,
-                            }
-                        }
-                    })
-                    // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
-                    // var timeNeedByDay = timeToStudyAllLesson / day;
-                    // console.log(day, timeToStudy, timeNeedByDay);
-                    res.status(200);
-                    res.json({
-                        success: true,
-                        value: {
-                            result: rs
-                        }
-                    });
-                });
-            }
-        } else {
-            var query = {
-                level: {
-                    $in: inQueryLevel
-                }
-            };
-            lessonRepo.getAll(query, 30, 0).then(lessons => {
-                lessons.sort(sortLessonByLevelAndUnit);
-
-                var timeToStudyAllLesson = 0;
-                lessons.forEach(lesson => {
-                    timeToStudyAllLesson += lesson.estTime;
-                });
-                var rs = routeToday(lessons, timeToStudyAllLesson, hoursPerDay, now, dateEnd);
-                historyRepo.insert({
-                    email: req.email,
-                    history: [{
-                        date: now,
-                        lessons: rs.lessons
-                    }]
-
-                })
-                // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
-                // var timeNeedByDay = timeToStudyAllLesson / day;
-                // console.log(day, timeToStudy, timeNeedByDay);
-                res.status(200);
-                res.json({
-                    success: true,
-                    value: {
-                        result: rs
-                    }
-                });
-            });
-        }
+    var timeToStudyAllLesson = 0;
+    lessons.forEach(lesson => {
+        timeToStudyAllLesson += lesson.estTime;
     });
+    var day = Math.round((new Date(dateEnd) - new Date(dateStart)) / (1000 * 60 * 60 * 24));
+    var timeNeedLearnByDay = timeToStudyAllLesson / day;
+    var minutesByDay = hoursPerDay * 60;
+    console.log(timeNeedLearnByDay, timeToStudyAllLesson, day);
+    var rs1 = createRoute(lessons, minutesByDay, dateStart);
+    var rs2 =  createRoute(lessons, timeNeedLearnByDay, dateStart);
+    delete rs1.lessons;
+    delete rs2.lessons;
+    return {
+        timeNeedReality: rs1.timeNeed, 
+        dateEndReality: rs1.dateEnd,
+        timeNeedTheory: rs2.timeNeed, 
+        dateEndTheory: rs2.dateEnd,
+    };
 }

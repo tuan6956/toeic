@@ -687,6 +687,31 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /route/advise:
+    x-swagger-router-controller: route
+    post:
+      description: Returns all topic
+      operationId: getAdvise
+      tags:
+        - route
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: parameters with name.
+          schema:
+            $ref: '#/definitions/Advise'
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/MessageResp"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      
   /history:
     x-swagger-router-controller: history
     get:
@@ -808,6 +833,27 @@ definitions:
         type: boolean
       lessonId:
         type: string
+  Advise:
+    required: 
+      - hoursPerDay
+      - target
+      - level
+      - dateStart
+      - dateEnd
+    properties:
+      hoursPerDay:
+        type: integer
+      target:
+        type: integer
+      level:
+        type: integer
+      dateStart:
+        type: string
+        format: date
+      dateEnd:
+        type: string
+        format: date
+          
   MessageResp:
     type: object
     required: 
