@@ -555,12 +555,15 @@ export default class GenerateTest {
     async generateMiniTest(){
         let count_test = await this.app.db.collection('test').find({status: 'success'}).count();
         let mini_test = await this.app.db.collection(collections.collections.mini_test).find().count();
-        if(count_test < 3){
-            return;
-        }
+        // if(count_test < 3){
+        //     return;
+        // }
         if(mini_test === 10){
             return;
         }
+
+        mini_test = mini_test + 1;
+        let name_test = 'Mini test ' + mini_test;
 
         let data_insert = {
             questions: {
@@ -575,6 +578,8 @@ export default class GenerateTest {
                     type_2: []
                 }
             },
+            name: name_test,
+            user_complete: 0,
             createAt: new Date()
         }
         
@@ -778,24 +783,70 @@ export default class GenerateTest {
         return result;
     }
 
-    async getAllTestForApp(level, page = 0, limit = 5){
+    async getAllTestForApp(id_user, level, page = 0, limit = 5){
         let querry = {};
         (level) ? querry['level'] = level : null;
         querry['status'] = 'success';
-        let result = await this.app.db.collection('test').find(querry,{projection: {questions: 0}}).toArray();
+
+        let tests = await this.app.db.collection('test').find(querry,{projection: {questions: 0, status: 0}}).toArray();
+        let done_tests = [];
+        let not_do_test = await Promise.all(tests.map(async(item)=>{
+            let is_done_test = await this.app.db.collection('test_users').find({user_id: id_user, test_id: item._id}).toArray();
+            if(is_done_test.length === 0){
+                return item;
+            }else{
+                item.doneDate = is_done_test[0].doneDate;
+                done_tests.push(item);
+            }
+        }))
+
+        done_tests = done_tests.sort((item1, item2)=>{
+            return item1.doneDate[item1.doneDate.length-1].getTime() < item2.doneDate[item2.doneDate.length-1].getTime();
+        })
+
+        not_do_test = not_do_test.sort((item1, item2)=>{
+            return item1.createAt.getTime() < item2.createAt.getTime();
+        })
+
+        let result = [...not_do_test,... done_tests]
+        result = result.filter(item=>{
+            if(item) {return item}
+        })
         return {
             data: result
         };
     }
 
-    async getAllMiniTest(page = 0, limit = 5){
+    async getAllMiniTestForApp(id_user, page = 0, limit = 5){
         let querry = {}
-        let result = await this.app.db.collection('mini_test').find(querry, {projection: {questions: 0}}).toArray();
+        let mini_tests = await this.app.db.collection('mini_test').find(querry, {projection: {questions: 0}}).toArray();
+        let done_mini_tests = []
+        let not_do_mini_tests = await Promise.all(mini_tests.map(async(item)=>{
+            let is_done_mini_test = await this.app.db.collection('mini_test_users').find({user_id: id_user, test_id: item._id}).toArray();
+            if(is_done_mini_test.length === 0){
+                return item;
+            }else{
+                item.doneDate = is_done_mini_test[0].doneDate;
+                done_mini_tests.push(item);
+            }
+        }))
+
+        done_mini_tests = done_mini_tests.sort((item1, item2)=>{
+            return item1.doneDate[item1.doneDate.length-1].getTime() < item2.doneDate[item2.doneDate.length-1].getTime();
+        })
+
+        not_do_mini_tests = not_do_mini_tests.sort((item1, item2)=>{
+            return item1.createAt.getTime() < item2.createAt.getTime();
+        })
+
+        let result = [...not_do_mini_tests, ...done_mini_tests];
+        result = result.filter(item=>{
+            if (item) {return item}
+        })
         return {
             data: result
         };
     }
-
 
     async getMiniTestById(id_mini_test){
 
@@ -946,12 +997,8 @@ export default class GenerateTest {
             reading_scores: scores_Test[correct_reading],
             total: scores_Test[correct_listening] + scores_Test[correct_reading]
         }
-        let scores_test = {
-            test_id: new ObjectId(test_id),
-            result: result
-        }
         await this.app.db.collection('test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
-        await this.app.db.collection('manage_scores_of_users').findOneAndUpdate({user_id: user_id}, {$push: {'scores_test': scores_test}}, {upsert: true})
+        await this.app.db.collection('test_users').findOneAndUpdate({user_id: user_id, test_id: new ObjectId(test_id)}, {$push: {'scores': result, 'doneDate': new Date()}}, {upsert: true})
 
         return new Promise((resolve, reject) =>{
             resolve({
@@ -977,12 +1024,8 @@ export default class GenerateTest {
             reading_scores: scores_MiniTest[correct_reading],
             total: scores_MiniTest[correct_listening] + scores_MiniTest[correct_reading]
         }
-        let scores_test = {
-            test_id: new ObjectId(test_id),
-            result: result
-        }
         await this.app.db.collection('mini_test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
-        await this.app.db.collection('manage_scores_of_users').findOneAndUpdate({user_id: user_id}, {$push: {'scores_mini_test': scores_test}}, {upsert: true})
+        await this.app.db.collection('mini_test_users').findOneAndUpdate({user_id: user_id, test_id: new ObjectId(test_id)}, {$push: {'scores': result, 'doneDate': new Date()}}, {upsert: true})
 
         return new Promise((resolve, reject) =>{
             resolve({

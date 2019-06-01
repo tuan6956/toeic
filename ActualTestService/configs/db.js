@@ -1,6 +1,6 @@
 module.exports = {
-    url: "mongodb://toeic_db:123456zxC@103.114.107.16:27017/Toeic",
-    // url: "mongodb://127.0.0.1:27017",
+    // url: "mongodb://toeic_db:123456zxC@103.114.107.16:27017/Toeic",
+    url: "mongodb://127.0.0.1:27017",
     name: "Toeic",
     collections: {
         user: "User",
@@ -12,7 +12,8 @@ module.exports = {
         manage_question_quantity: "manage_question_quantity",
         test: "test",
         mini_test: "mini_test",
-        manage_scores_of_users: 'manage_scores_of_users',
+        mini_test_users: 'mini_test_users',
+        test_users: "test_users"
     },
     option : {
         useNewUrlParser: true,
