@@ -42,6 +42,7 @@ tags:
 - name: "readingQuestion"
 - name: TestServer
 - name: Request
+- name: TestServerApp
 produces:
   - application/json
 paths:
@@ -1933,7 +1934,7 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
-  /tests:
+  /admin/tests:
     x-swagger-router-controller: test
     get:
       description: Returns all test, this api is used by admin
@@ -2059,7 +2060,7 @@ paths:
       description: Returns the test by level of user and ordinal of the test.
       operationId: getTheTestById
       tags:
-        - TestServer
+        - TestServerApp
       security:
         - auth0: []
       parameters:
@@ -2137,7 +2138,7 @@ paths:
       description: get any miniTest for checking current level of user
       operationId: getMiniTest
       tags:
-        - TestServer
+        - TestServerApp
       security:
         - auth0: []
       # parameters:
@@ -2312,7 +2313,7 @@ paths:
       description: Returns all miniTest
       operationId: getAllMiniTest
       tags:
-        - TestServer
+        - TestServerApp
       security:
         - auth0: []
       parameters:
@@ -2345,7 +2346,7 @@ paths:
       description: Returns the miniTest by id.
       operationId: getMiniTestById
       tags:
-        - TestServer
+        - TestServerApp
       security:
         - auth0: []
       parameters:
@@ -2411,6 +2412,45 @@ paths:
                       properties:
                         content:
                           type: string
+              level: 
+                type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /tests:
+    x-swagger-router-controller: test
+    get:
+      description: Returns all test, this api for app
+      operationId: getAllTestForApp
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: limit record return
+        - in: query
+          name: page
+          type: integer
+          description: page you need to get
+        - in: query
+          name: level
+          type: integer
+          description: filter the test by level
+      responses:
+        "200":
+          description: Return all records you request by paging
+          schema:
+            properties:
+              _id:
+                type: integer
+              user_complete:
+                type: number 
+              createAt:
+                type: string
               level: 
                 type: integer
         default:
@@ -2550,10 +2590,17 @@ definitions:
           explain: Choices A and C are incorrect because you can't "purchase" or "fund" money.
                     Choice D is incorrect because "collected" is followed by the word "from" not "to".
         - paragraph: We look forward to seeing you this Christmas season.
-
                       Yours truly,
-
                       Sid and Sandy Chester
+          answers:
+              optA: value
+              optB: valued
+              optC: valid
+              optD: validate
+          right_answer: optB
+          explain: Choice A is a noun.
+                    Choice C is an adjective that does not fit logically in context. This letter is from a stationery store, so anyone can purchase items there. Something that is "valid" is allowed or permitted.
+                    Choice D is a verb.
       part: 6
       level: 1
   ImportParagraphPart7:
