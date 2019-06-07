@@ -91,10 +91,15 @@ let getResultMiniTest = async (req, res) => {
   });
 }
 
-function getTheTestById(req, res){
+let getTheTestById = async(req, res) =>{
   let testId = req.swagger.params.testId.value;
+  let id_user = await req.app.models.app.db.collection('User').find({email: req.email}).toArray();
+  if (!id_user[0]) {
+    handleError(res, 500, "email is not exist, please check your session login")
+  }
 
-    req.app.models.testModels.getTheTestById(testId)
+
+    req.app.models.testModels.getTheTestById(testId, id_user[0]._id)
     .then(result => {
         handleSuccess(res, 200, result);
       })
@@ -129,10 +134,15 @@ function requestGenerateMiniTest(req, res){
     });
 }
 
-function getMiniTestById(req, res){
+let getMiniTestById = async(req, res) => {
   let testId = req.swagger.params.testId.value;
 
-    req.app.models.testModels.getMiniTestById(testId)
+  let id_user = await req.app.models.app.db.collection('User').find({email: req.email}).toArray();
+  if (!id_user[0]) {
+    handleError(res, 500, "email is not exist, please check your session login")
+  }
+
+    req.app.models.testModels.getMiniTestById(testId, id_user[0]._id)
     .then(result => {
         handleSuccess(res, 200, result);
       })
@@ -164,7 +174,7 @@ let getAllTestForApp = async(req, res) =>{
 function getAllPractiseTestSkills(req, res){
   let part = req.swagger.params.part.value;
   
-  req.app.models.testModels.getAllPractiseTestSkills(part)
+  req.app.models.testModels.getAllPractiseTestSkills(part, id_user[0]._id)
     .then(result => {
         handleSuccess(res, 200, result);
       })
@@ -173,11 +183,15 @@ function getAllPractiseTestSkills(req, res){
       });
 }
 
-function getAllPractiseTestSkillsById(req, res){
+let getAllPractiseTestSkillsById = async(req, res)=>{
   let part = req.swagger.params.part.value;
   let Id = req.swagger.params.Id.value;
+    let id_user = await req.app.models.app.db.collection('User').find({email: req.email}).toArray();
+  if (!id_user[0]) {
+    handleError(res, 500, "email is not exist, please check your session login")
+  }
   
-  req.app.models.testModels.getAllPractiseTestSkillsById(part, Id)
+  req.app.models.testModels.getAllPractiseTestSkillsById(part, Id, id_user[0]._id)
     .then(result => {
         handleSuccess(res, 200, result);
       })
