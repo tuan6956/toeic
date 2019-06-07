@@ -449,7 +449,15 @@ export default class GenerateTest {
         return {};
     }
 
-    async getTheTestById(id_test){
+    async getTheTestById(id_test, id_user){
+
+        let isPayment = await this.checkStatusPayment(id_user);
+        if(!_.isUndefined(isPayment) || !isPayment){
+            throw {
+                status: 500,
+                message: "User have not register account for fee"
+            }
+        }
 
         let result = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
         let questions = {
@@ -844,7 +852,15 @@ export default class GenerateTest {
         };
     }
 
-    async getMiniTestById(id_mini_test){
+    async getMiniTestById(id_mini_test, id_user){
+
+        let isPayment = await this.checkStatusPayment(id_user);
+        if(!_.isUndefined(isPayment) || !isPayment){
+            throw {
+                status: 500,
+                message: "User have not register account for fee"
+            }
+        }
 
         let result = await this.app.db.collection('mini_test').find({_id: ObjectId(id_mini_test)}).toArray();
         let questions = {
@@ -1065,7 +1081,14 @@ export default class GenerateTest {
         }
     }
 
-    async getAllPractiseTestSkillsById(part, id_test){
+    async getAllPractiseTestSkillsById(part, id_test, id_user){
+        let isPayment = await this.checkStatusPayment(id_user);
+        if(!isPayment){
+            throw {
+                status: 500,
+                message: "User have not register account for fee"
+            }
+        }
         let result = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
         let questions = []
         if(result[0]){
@@ -1152,6 +1175,11 @@ export default class GenerateTest {
             return result[0];
         }
         return {};
+    }
+
+    async checkStatusPayment(id_user){
+        let isPayment = await this.app.db.collection('User').find({_id: id_user}).toArray();
+        return isPayment[0].isPayment
     }
 
 }
