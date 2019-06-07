@@ -773,7 +773,7 @@ definitions:
       - content
       - topicId
       - categoryId
-      - milestone
+      - level
       - estTime
     properties:
       content:
@@ -784,7 +784,7 @@ definitions:
         type: string
       title:
         type: string
-      milestone:
+      level:
         type: number
       estTime:
         type: number

@@ -94,7 +94,7 @@ function add(req, res) {
   var categoryId = body.categoryId;
   var topicId = body.topicId;
   var title = body.title;
-  var milestone = body.milestone;
+  var level = body.level;
   var estTime = body.estTime;
   var unit = body.unit;
 
@@ -104,7 +104,7 @@ function add(req, res) {
     categoryId: categoryId,
     topicId: topicId,
     title: title,
-    milestone: milestone,
+    level: level,
     estTime: estTime,
     unit: unit
   };
