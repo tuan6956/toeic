@@ -3,8 +3,8 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-host: 103.114.107.16:8003
-#host: localhost:8003
+#host: 103.114.107.16:8003
+host: localhost:8003
 
 # basePath prefixes all resource paths 
 basePath: /api/learning
@@ -773,6 +773,8 @@ definitions:
       - content
       - topicId
       - categoryId
+      - milestone
+      - estTime
     properties:
       content:
         type: string
@@ -782,7 +784,10 @@ definitions:
         type: string
       title:
         type: string
-
+      milestone:
+        type: number
+      estTime:
+        type: number
   VocabularyReq:
     required:
       - type

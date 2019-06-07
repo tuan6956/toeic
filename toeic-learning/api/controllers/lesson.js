@@ -118,8 +118,9 @@ function add(req, res) {
 
   const topicFound = topicRepo.findOne(queryTopic);
   const categoryFound = categoryRepo.findOne(queryCategory);
+  const lessonUnit = lessonRepo.getAll({level: 5},0,0);
+  Promise.all([topicFound, categoryFound, lessonUnit]).then(([topic, category, lesson]) => {  
 
-  Promise.all([topicFound, categoryFound]).then(([topic, category]) => {
     if (!category) {
       res.status(400);
       res.json({
@@ -136,6 +137,9 @@ function add(req, res) {
       });
       return;
     }
+    data.unit = lesson.length + 1;
+    console.log(data);
+    return;
     lessonRepo.insert(data).then(value => {
       res.status(200);
       res.json({
