@@ -138,7 +138,6 @@ function add(req, res) {
       return;
     }
     data.unit = lesson.length + 1;
-    return;
     lessonRepo.insert(data).then(value => {
       res.status(200);
       res.json({
