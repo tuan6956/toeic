@@ -29,7 +29,7 @@ function getMiniTest(req, res){
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, error.status, error.message);
+        handleError(res, 500, error.message);
       });
 }
 
