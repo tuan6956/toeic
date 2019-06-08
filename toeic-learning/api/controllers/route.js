@@ -43,7 +43,7 @@ function getRouteToday(req, res) {
             });
             return;
         }
-        if (typeof user.isPayment === "undefined") {
+        if (typeof user.isPayment === "undefined" || user.isPayment == false) {
             res.status(200);
             res.json({
                 success: false,
