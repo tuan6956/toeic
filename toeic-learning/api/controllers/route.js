@@ -43,6 +43,14 @@ function getRouteToday(req, res) {
             });
             return;
         }
+        if (typeof user.isPayment === "undefined") {
+            res.status(200);
+            res.json({
+                success: false,
+                message: 'Bạn cần nâng cấp tài khoản để tiếp tục sử dụng ứng dụng này'
+            });
+            return;
+        }
         var indexLevel = -1;
         var indexTarget = arrayMilestons.length - 1;
         for (let i = 0; i < arrayMilestons.length; i++) {
