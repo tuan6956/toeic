@@ -174,7 +174,7 @@ let getAllTestForApp = async(req, res) =>{
 function getAllPractiseTestSkills(req, res){
   let part = req.swagger.params.part.value;
   
-  req.app.models.testModels.getAllPractiseTestSkills(part, id_user[0]._id)
+  req.app.models.testModels.getAllPractiseTestSkills(part)
     .then(result => {
         handleSuccess(res, 200, result);
       })
