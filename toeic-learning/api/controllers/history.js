@@ -9,6 +9,7 @@ var moment = require('moment');
 
 
 var ObjectId = require('mongodb').ObjectID;
+const arrayMilestons = [0, 100, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 990];
 
 module.exports = {
     getHistory,
@@ -77,6 +78,10 @@ function updateStudiedLesson(req, res) {
                 userRepo.findOne({
                     email: req.email
                 }).then(user => {
+                    var currentLevel = history[indexOfRoute].lessons[indexLesson].level;
+                    if(user.level.current !== currentLevel) {
+                        userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})
+                    }
                     var indexTimeStudy = user.timeStudy.findIndex(date => {
                         return date === now;
                     })
