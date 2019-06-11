@@ -58,7 +58,6 @@ function updateStudiedLesson(req, res) {
                 return his.date === now
             });
             if (indexOfRoute != -1) {
-
                 var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
                     return lesson._id.toString() === lessonId;
                 })
