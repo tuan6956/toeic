@@ -451,13 +451,14 @@ export default class GenerateTest {
 
     async getTheTestById(id_test, id_user){
 
-        let isPayment = await this.checkStatusPayment(id_user);
-        if(!_.isUndefined(isPayment) || !isPayment){
-            throw {
-                status: 500,
-                message: "User have not register account for fee"
-            }
-        }
+        // let isPayment = await this.checkStatusPayment(id_user);
+        // if(!_.isUndefined(isPayment) || !isPayment){
+        //     throw {
+        //         status: 200,
+        //         sucess: false,
+        //         messageErorr: "Bạn cần nâng cấp tài khoản để tiếp tục sử dụng ứng dụng này !"
+        //     }
+        // }
 
         let result = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
         let questions = {
@@ -854,13 +855,14 @@ export default class GenerateTest {
 
     async getMiniTestById(id_mini_test, id_user){
 
-        let isPayment = await this.checkStatusPayment(id_user);
-        if(!_.isUndefined(isPayment) || !isPayment){
-            throw {
-                status: 500,
-                message: "User have not register account for fee"
-            }
-        }
+        // let isPayment = await this.checkStatusPayment(id_user);
+        // if(!_.isUndefined(isPayment) || !isPayment){
+        //     throw {
+        //         status: 200,
+        //         sucess: false,
+        //         messageErorr: "Bạn cần nâng cấp tài khoản để tiếp tục sử dụng ứng dụng này !"
+        //     }
+        // }
 
         let result = await this.app.db.collection('mini_test').find({_id: ObjectId(id_mini_test)}).toArray();
         let questions = {
@@ -1082,22 +1084,34 @@ export default class GenerateTest {
     }
 
     async getAllPractiseTestSkillsById(part, id_test, id_user){
-        let isPayment = await this.checkStatusPayment(id_user);
-        if(!isPayment){
-            throw {
-                status: 500,
-                message: "User have not register account for fee"
+        // let isPayment = await this.checkStatusPayment(id_user);
+        // if(!isPayment){
+        //     throw {
+        //         status: 200,
+        //         sucess: false,
+        //         messageErorr: "Bạn cần nâng cấp tài khoản để tiếp tục sử dụng ứng dụng này !"
+        //     }
+        // }
+        let result = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
+        let questions = {
+            part_1: [],
+            part_2: [],
+            part_3: [],
+            part_4: [],
+            part_5: [],
+            part_6: [],
+            part_7: {
+                type_1: [],
+                type_2: []
             }
         }
-        let result = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
-        let questions = []
         if(result[0]){
                 switch (part) {
                     case 1:{
                         for(let i = 0; i < result[0].questions.part_1.length; i++){
                         let id = result[0].questions.part_1[i];
                             let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
-                            questions.push(getQuestion)
+                            questions.part_1.push(getQuestion)
                         }
                         break;
                     }
@@ -1106,7 +1120,7 @@ export default class GenerateTest {
                         for(let i = 0; i < result[0].questions.part_2.length; i++){
                             let id = result[0].questions.part_2[i];
                             let getQuestion = await this.app.db.collection(collections.collections.listening_question).findOne({_id: id})
-                            questions.push(getQuestion)
+                            questions.part_2.push(getQuestion)
                         }
                         break;
                     }
@@ -1116,7 +1130,7 @@ export default class GenerateTest {
                             let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id})
                             let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
                             get_dialogue.questionObjects = questionObjects;
-                            questions.push(get_dialogue);
+                            questions.part_3.push(get_dialogue);
                         }
                         break;
                     }
@@ -1126,7 +1140,7 @@ export default class GenerateTest {
                             let get_dialogue = await this.app.db.collection(collections.collections.dialogues).findOne({_id: id});
                             let questionObjects = await this.app.db.collection(collections.collections.listening_question).find({id_dialogue: new ObjectId(id)}).toArray();
                             get_dialogue.questionObjects = questionObjects;
-                            questions.push(get_dialogue);
+                            questions.part_4.push(get_dialogue);
                         }
                         break;
                     }
@@ -1134,7 +1148,7 @@ export default class GenerateTest {
                         for(let i = 0; i < result[0].questions.part_5.length; i++){
                             let id = result[0].questions.part_5[i];
                             let getQuestion = await this.app.db.collection(collections.collections.reading_question).findOne({_id: id})
-                            questions.push(getQuestion)
+                            questions.part_5.push(getQuestion)
                         }
                         break;
                     }
@@ -1144,7 +1158,7 @@ export default class GenerateTest {
                             let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
                             let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
                             get_paragraph.questionObjects = questionObjects;
-                            questions.push(get_paragraph);
+                            questions.part_6.push(get_paragraph);
                         }
                         break;
                     }
@@ -1154,14 +1168,14 @@ export default class GenerateTest {
                             let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
                             let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
                             get_paragraph.questionObjects = questionObjects;
-                            questions.push(get_paragraph);
+                            questions.part_7.type_1.push(get_paragraph);
                         }
                         for(let i = 0; i < result[0].questions.part_7.type_2.length;i++){
                             let id = result[0].questions.part_7.type_2[i];
                             let get_paragraph = await this.app.db.collection(collections.collections.paragraphs).findOne({_id: id});
                             let questionObjects = await this.app.db.collection(collections.collections.reading_question).find({id_paragraph: new ObjectId(id)}).toArray();
                             get_paragraph.questionObjects = questionObjects;
-                            questions.push(get_paragraph);
+                            questions.part_7.type_2.push(get_paragraph);
                         }
                         break;
                     }
