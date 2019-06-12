@@ -217,14 +217,26 @@ function getListQuestionsOfLesson(req, res){
                 //return;
             })]
         ).then((result) => {
-            var listQuestion = listChoiceQuestions.concat(listFillQuestions);
-            listQuestion = listQuestion.sort(()=>{
+            let questions = {
+                part_1: [],
+                part_2: [],
+                part_3: [],
+                part_4: [],
+                part_5: [],
+                part_6: [],
+                part_7: {
+                    type_1: [],
+                    type_2: []
+                }
+            }
+            questions.part_5 = questions.part_5.concat(listChoiceQuestions);
+            questions.part_5 = questions.part_5.sort(()=>{
                 return Math.random() - 0.5;
             })
             res.status(200);
             res.json({
                 session: session,
-                listQuestion: listQuestion
+                questions: questions
             });
             return;
         })
