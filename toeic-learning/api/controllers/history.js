@@ -48,6 +48,7 @@ function updateStudiedLesson(req, res) {
     if (body.isStudied) {
         isStudied = true;
     }
+    console.log(body);
     var now = moment().format('YYYY-MM-DD');
     historyRepo.findOne({
         email: req.email
