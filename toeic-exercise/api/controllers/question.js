@@ -159,7 +159,9 @@ function getListQuestionsOfLesson(req, res){
             $project:{
                 _id: true,
                 content: true,
-                answers: true
+                answers: true,
+                answerRight: true,
+                explainRight: true
             },
         }
     ]
@@ -220,6 +222,8 @@ function getListQuestionsOfLesson(req, res){
 
             listChoiceQuestions = listChoiceQuestions.map(item=>{
                 item.question_content = item.content;
+                item.right_answer = item.answerRight;
+                delete item.answerRight;
                 delete item.content;
                 return item;
             })
