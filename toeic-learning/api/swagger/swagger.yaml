@@ -3,8 +3,8 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-host: 103.114.107.16:8003
-#host: localhost:8003
+#host: 103.114.107.16:8003
+host: localhost:8003
 
 # basePath prefixes all resource paths 
 basePath: /api/learning
@@ -752,6 +752,33 @@ paths:
           description: parameters with name.
           schema:
             $ref: '#/definitions/StudyUpdate'
+      responses:
+        "200":
+          description: Success
+          schema:
+            # a pointer to a definition
+            $ref: "#/definitions/MessageResp"
+        # responses may fall through to errors
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /history/{lessonId}:
+    # binds a127 app logic to a route
+    x-swagger-router-controller: history
+    get:
+      description: Returns category info with parameters by milestoneId
+      operationId: getHistoryByLesson
+      tags:
+        - history
+      security:
+        - auth0: []
+      parameters:
+        - in: path
+          name: lessonId
+          type: string
+          required: true
+          description: Id lesson
       responses:
         "200":
           description: Success

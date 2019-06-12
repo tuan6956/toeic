@@ -13,7 +13,8 @@ const arrayMilestons = [0, 100, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650
 
 module.exports = {
     getHistory,
-    updateStudiedLesson
+    updateStudiedLesson,
+    getHistoryByLesson
 };
 
 
@@ -48,7 +49,6 @@ function updateStudiedLesson(req, res) {
     if (body.isStudied) {
         isStudied = true;
     }
-    console.log(body);
     var now = moment().format('YYYY-MM-DD');
     historyRepo.findOne({
         email: req.email
@@ -69,7 +69,10 @@ function updateStudiedLesson(req, res) {
                     history[indexOfRoute].lessons[indexLesson].exercisePassed = isStudied;
                 } else if (type == "minitest") {
                     history[indexOfRoute].lessons[indexLesson].passed = isStudied;
+                } else if (type == "vocabulary") {
+                    history[indexOfRoute].lessons[indexLesson].passed = isStudied;
                 }
+
                 if (typeof history[indexOfRoute].progress === "undefined") {
                     history[indexOfRoute].progress = 1 / (history[indexOfRoute].lessons.length * 2);
                 } else {
@@ -116,6 +119,7 @@ function updateStudiedLesson(req, res) {
             message: mess,
         });
     }).catch(err => {
+        console.log(err);
         res.status(400);
         res.json({
             success: false,
@@ -123,5 +127,51 @@ function updateStudiedLesson(req, res) {
         });
     });
 
+
+}
+
+function getHistoryByLesson(req, res) {
+
+
+    var lessonId = req.swagger.params.lessonId.value.trim();
+
+    var now = moment().format('YYYY-MM-DD');
+    historyRepo.findOne({
+        email: req.email
+    }).then(value => {
+        if (value) {
+            var history = value.history;
+
+            var indexOfRoute = history.findIndex(his => {
+                return his.date === now
+            });
+            if (indexOfRoute != -1) {
+                var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
+                    return lesson._id.toString() === lessonId;
+                })
+                var lessonFilter = history[indexOfRoute].lessons[indexLesson];
+                res.status(200);
+                res.json({
+                    success: true,
+                    value: lessonFilter,
+                });
+                return;
+            }
+        }
+        var statusCode = 200;
+        res.status(statusCode);
+        res.json({
+            success: true,
+            value: null,
+        });
+    }).catch(err => {
+        console.log(err);
+        res.status(400);
+        res.json({
+            success: false,
+            message: err.err
+        });
+    });
+    
 
 }
