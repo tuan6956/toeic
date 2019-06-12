@@ -217,6 +217,13 @@ function getListQuestionsOfLesson(req, res){
                 //return;
             })]
         ).then((result) => {
+
+            listChoiceQuestions = listChoiceQuestions.map(item=>{
+                item.question_content = item.content;
+                delete item.content;
+                return item;
+            })
+
             let questions = {
                 part_1: [],
                 part_2: [],
