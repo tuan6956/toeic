@@ -797,6 +797,8 @@ export default class GenerateTest {
         let not_do_test = await Promise.all(tests.map(async(item)=>{
             let is_done_test = await this.app.db.collection('test_users').find({user_id: id_user, test_id: item._id}).toArray();
             if(is_done_test.length === 0){
+                item.doneDate = [];
+                item.scores = [];
                 return item;
             }else{
                 item.doneDate = is_done_test[0].doneDate;
@@ -829,13 +831,17 @@ export default class GenerateTest {
         let not_do_mini_tests = await Promise.all(mini_tests.map(async(item)=>{
             let is_done_mini_test = await this.app.db.collection('mini_test_users').find({user_id: id_user, test_id: item._id}).toArray();
             if(is_done_mini_test.length === 0){
+                item.doneDate = [];
+                item.scores = [];
                 return item;
             }else{
                 item.doneDate = is_done_mini_test[0].doneDate;
-                item.scores = is_done_test[0].scores;
+                item.scores = is_done_mini_test[0].scores;
                 done_mini_tests.push(item);
+                // return {}
             }
         }))
+
 
         done_mini_tests = done_mini_tests.sort((item1, item2)=>{
             return item1.doneDate[item1.doneDate.length-1].getTime() < item2.doneDate[item2.doneDate.length-1].getTime();
