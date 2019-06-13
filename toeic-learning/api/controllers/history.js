@@ -45,6 +45,10 @@ function updateStudiedLesson(req, res) {
     var body = req.swagger.params.body.value;
     var lessonId = body.lessonId.trim();
     var type = body.type.trim();
+    var result = null;
+    if (body.result)
+        result = body.result;
+
     var isStudied = false;
     if (body.isStudied) {
         isStudied = true;
@@ -60,16 +64,18 @@ function updateStudiedLesson(req, res) {
                 return his.date === now
             });
             if (indexOfRoute != -1) {
+                console.log('lessonId', lessonId);
                 var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
                     return lesson._id.toString() === lessonId;
                 })
-                if (type == "lesson") {
+                if (type === "lesson") {
                     history[indexOfRoute].lessons[indexLesson].lessonPassed = isStudied;
-                } else if (type == "exercise") {
+                } else if (type === "exercise") {
                     history[indexOfRoute].lessons[indexLesson].exercisePassed = isStudied;
-                } else if (type == "minitest") {
+                    history[indexOfRoute].lessons[indexLesson].result = result;
+                } else if (type === "minitest") {
                     history[indexOfRoute].lessons[indexLesson].passed = isStudied;
-                } else if (type == "vocabulary") {
+                } else if (type === "vocabulary") {
                     history[indexOfRoute].lessons[indexLesson].passed = isStudied;
                 }
 
@@ -82,6 +88,8 @@ function updateStudiedLesson(req, res) {
                 userRepo.findOne({
                     email: req.email
                 }).then(user => {
+                    console.log(indexOfRoute, indexLesson);
+                    console.log(history[indexOfRoute].lessons[indexLesson]);
                     var currentLevel = history[indexOfRoute].lessons[indexLesson].level;
                     if(user.level.current !== currentLevel) {
                         userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})

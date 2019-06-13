@@ -3,8 +3,8 @@ info:
   version: "0.0.1"
   title: Toeic
 # during dev, should point to your local machine
-host: 103.114.107.16:8003
-#host: localhost:8003
+#host: 103.114.107.16:8003
+host: localhost:8003
 
 # basePath prefixes all resource paths 
 basePath: /api/learning
@@ -858,6 +858,10 @@ definitions:
       testId:
         type: string
   StudyUpdate:
+    required: 
+      - type
+      - isStudied
+      - lessonId
     properties:
       type:
         type: string
@@ -865,6 +869,9 @@ definitions:
         type: boolean
       lessonId:
         type: string
+      result:
+        type: string
+    
   Advise:
     required: 
       - hoursPerDay
