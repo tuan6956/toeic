@@ -159,7 +159,9 @@ function getListQuestionsOfLesson(req, res){
             $project:{
                 _id: true,
                 content: true,
-                answers: true
+                answers: true,
+                answerRight: true,
+                explainRight: true
             },
         }
     ]
@@ -217,14 +219,35 @@ function getListQuestionsOfLesson(req, res){
                 //return;
             })]
         ).then((result) => {
-            var listQuestion = listChoiceQuestions.concat(listFillQuestions);
-            listQuestion = listQuestion.sort(()=>{
+
+            listChoiceQuestions = listChoiceQuestions.map(item=>{
+                item.question_content = item.content;
+                item.right_answer = item.answerRight;
+                delete item.answerRight;
+                delete item.content;
+                return item;
+            })
+
+            let questions = {
+                part_1: [],
+                part_2: [],
+                part_3: [],
+                part_4: [],
+                part_5: [],
+                part_6: [],
+                part_7: {
+                    type_1: [],
+                    type_2: []
+                }
+            }
+            questions.part_5 = questions.part_5.concat(listChoiceQuestions);
+            questions.part_5 = questions.part_5.sort(()=>{
                 return Math.random() - 0.5;
             })
             res.status(200);
             res.json({
                 session: session,
-                listQuestion: listQuestion
+                questions: questions
             });
             return;
         })
