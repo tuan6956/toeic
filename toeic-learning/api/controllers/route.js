@@ -59,7 +59,7 @@ function getRouteToday(req, res) {
             if(user.target.targetPoint  <= arrayMilestons[i] && indexTarget !== -1) 
                 indexTarget = i;
         }
-        var indexLevel = Math.round(user.level / 50);
+        var indexLevel = Math.round(user.level.original / 50);
         var indexTarget = Math.round(user.target.targetPoint / 50);
         var hoursPerDay = user.target.hoursPerDay;
         var dateStart = user.target.startDate;
@@ -93,7 +93,6 @@ function getRouteToday(req, res) {
                             listLessonStudied.push(new ObjectId(lesson._id));
                 });
             }
-
             //đã có rồi thì lấy ra
             if (indexHistoryByDay != -1) {
                 var flagStudiedAll = true;
@@ -148,6 +147,7 @@ function getRouteToday(req, res) {
                 }
 
             } else { //chua có thì insert vo history
+                
                 var query = {
                     level: {
                         $in: inQueryLevel
@@ -158,7 +158,6 @@ function getRouteToday(req, res) {
                 };
                 lessonRepo.getAll(query, 0, 0).then(lessons => {
                     lessons.sort(sortLessonByLevelAndUnit);
-                   
                     var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
                     rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
 
@@ -195,9 +194,7 @@ function getRouteToday(req, res) {
                 }
             };
             lessonRepo.getAll(query, 0, 0).then(lessons => {
-                lessons.sort(sortLessonByLevelAndUnit);
-
-                
+                lessons.sort(sortLessonByLevelAndUnit);    
                 var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
                 rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
                 historyRepo.insert({
@@ -210,7 +207,6 @@ function getRouteToday(req, res) {
                         progress: 0,
                         timeStudy: timeStudy
                     }]
-
                 })
                 // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
                 // var timeNeedByDay = timeToStudyAllLesson / day;
@@ -256,7 +252,7 @@ function sortLessonByLevelAndUnit(lesson1, lesson2) {
 
 function routeToday(lessons, hoursPerDay, dateStart, dateEnd) {
     var timeToStudyAllLesson = 0;
-    lessons.forEach(lesson => {
+    lessons.forEach(lesson => { 
         timeToStudyAllLesson += lesson.estTime;
     });
     var day = Math.round((new Date(dateEnd) - new Date(dateStart)) / (1000 * 60 * 60 * 24));
