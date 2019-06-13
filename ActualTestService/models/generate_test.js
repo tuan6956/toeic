@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import collections from '../configs/db';
+var moment = require('moment');
 var ObjectId = require('mongodb').ObjectID;
 
 const scores_Test = [ 5, 5, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70,
@@ -796,6 +797,8 @@ export default class GenerateTest {
         let not_do_test = await Promise.all(tests.map(async(item)=>{
             let is_done_test = await this.app.db.collection('test_users').find({user_id: id_user, test_id: item._id}).toArray();
             if(is_done_test.length === 0){
+                item.doneDate = [];
+                item.scores = [];
                 return item;
             }else{
                 item.doneDate = is_done_test[0].doneDate;
@@ -828,13 +831,17 @@ export default class GenerateTest {
         let not_do_mini_tests = await Promise.all(mini_tests.map(async(item)=>{
             let is_done_mini_test = await this.app.db.collection('mini_test_users').find({user_id: id_user, test_id: item._id}).toArray();
             if(is_done_mini_test.length === 0){
+                item.doneDate = [];
+                item.scores = [];
                 return item;
             }else{
                 item.doneDate = is_done_mini_test[0].doneDate;
-                item.scores = is_done_test[0].scores;
+                item.scores = is_done_mini_test[0].scores;
                 done_mini_tests.push(item);
+                // return {}
             }
         }))
+
 
         done_mini_tests = done_mini_tests.sort((item1, item2)=>{
             return item1.doneDate[item1.doneDate.length-1].getTime() < item2.doneDate[item2.doneDate.length-1].getTime();
@@ -1014,6 +1021,7 @@ export default class GenerateTest {
         await this.app.db.collection('test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
         await this.app.db.collection('test_users').findOneAndUpdate({user_id: user_id, test_id: new ObjectId(test_id)}, {$push: {'scores': result, 'doneDate': new Date()}}, {upsert: true})
 
+
         return new Promise((resolve, reject) =>{
             resolve({
                 result: result
@@ -1021,7 +1029,7 @@ export default class GenerateTest {
         });
     }
 
-    async getResultMiniTest(correct_listening, correct_reading, test_id, user_id){
+    async getResultMiniTest(correct_listening, correct_reading, test_id, user_id, email){
         if(correct_reading > 10 || correct_listening > 10 || correct_reading < 0 || correct_listening < 0){
             return new Promise((resolve, reject)=>{
                 reject({
@@ -1040,6 +1048,78 @@ export default class GenerateTest {
         }
         await this.app.db.collection('mini_test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
         await this.app.db.collection('mini_test_users').findOneAndUpdate({user_id: user_id, test_id: new ObjectId(test_id)}, {$push: {'scores': result, 'doneDate': new Date()}}, {upsert: true})
+
+
+        let isPass = result.total > 990*55/100;
+
+        //update history if minitest need to pass in route.
+
+        let history = await this.app.db.collection(collections.collections.history).find({email: email}).toArray();
+        let now = moment().format('YYYY-MM-DD');
+        // let now = moment('2019-06-02').format('YYYY-MM-DD');
+
+        if(!history[0]){
+            return new Promise((resolve, reject)=>{
+                reject({
+                    status: 500,
+                    message: "Collect DB wrong!"
+                })
+            })
+        }else{
+            let indexHistoryDate = history[0].history.findIndex(value=>{
+                return value.date === now;
+            })
+            if (indexHistoryDate !== -1) {
+                let indexOfLesson =  history[0].history[indexHistoryDate].lessons.findIndex(value=>{
+                    return value.type === "minitest"
+                })
+                if(history[0].history[indexHistoryDate].lessons[indexOfLesson]._id.equals(new ObjectId(test_id))){
+                    history[0].history[indexHistoryDate].lessons[indexOfLesson].passed = isPass;
+                }
+
+                if (typeof history[0].history[indexHistoryDate].progress === "undefined") {
+                    history[0].history[indexHistoryDate].progress = 1 / (history[0].history[indexHistoryDate].lessons.length * 2);
+                } else {
+                    if(history[0].history[indexHistoryDate].progress.toPrecision(2) < 1.0)
+                        history[0].history[indexHistoryDate].progress += (1 / (history[0].history[indexHistoryDate].lessons.length * 2));
+                }
+
+                let userResult = await this.app.db.collection(collections.collections.user).find({email: email}).toArray();
+                let user = userResult[0];
+                    let currentLevel = history[0].history[indexHistoryDate].lessons[indexOfLesson].level;
+                    if(!_.isUndefined(currentLevel)){
+                        console.log("vafo")
+                        if(user.level.current !== currentLevel) {
+                            this.app.db.collection('User').findOneAndUpdate({email: req.email}, {$set: {'level.current': currentLevel}})
+                        }
+                    }
+                    let indexTimeStudy = user.timeStudy.findIndex(date => {
+                        return date === now;
+                    })
+                    if(indexTimeStudy != -1) {
+                        history[0].history[indexHistoryDate].timeStudy = user.timeStudy[indexTimeStudy].time;
+                    } else {
+                        history[0].history[indexHistoryDate].timeStudy = 0;
+                    }
+
+                    this.app.db.collection(collections.collections.history).updateMany({
+                        email: email,
+                        'history.date': now
+                    }, {
+                        $set: {
+                            'history.$.lessons': history[0].history[indexHistoryDate].lessons,
+                            'history.$.progress': history[0].history[indexHistoryDate].progress,
+                            'history.$.timeStudy': history[0].history[indexHistoryDate].timeStudy,
+
+
+                        }
+                    })
+
+            }
+            else{
+                console.log("Date is not map")
+            }
+        }
 
         return new Promise((resolve, reject) =>{
             resolve({

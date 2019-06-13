@@ -13,7 +13,8 @@ module.exports = {
         test: "test",
         mini_test: "mini_test",
         mini_test_users: 'mini_test_users',
-        test_users: "test_users"
+        test_users: "test_users",
+        history: "History",
     },
     option : {
         useNewUrlParser: true,
