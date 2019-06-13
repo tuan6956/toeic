@@ -17,6 +17,8 @@ module.exports = {
     getAdvise: getAdvise,
 };
 
+const categoryGrammar = "5cd2f5b8396de30e8833ab4b";
+const categoryVocabulary =   "5cffdf91d7af6c0f8c107cb5";
 
 
 function getRouteToday(req, res) {
@@ -147,7 +149,6 @@ function getRouteToday(req, res) {
                 }
 
             } else { //chua có thì insert vo history
-                
                 var query = {
                     level: {
                         $in: inQueryLevel
@@ -156,13 +157,26 @@ function getRouteToday(req, res) {
                         $nin: listLessonStudied
                     }
                 };
+                // lessonGrammarQuery = lessonRepo.getAll(query, 0, 0);
+                // lessonGrammarQuery = lessonRepo.getAll(query, 0, 0);
+
                 lessonRepo.getAll(query, 0, 0).then(lessons => {
-                    lessons.sort(sortLessonByLevelAndUnit);
-                    var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
+                    var lessonGrammar = lessons.filter(lesson => {return lesson.categoryId === categoryGrammar});
+                    var lessonVocabulary = lessons.filter(lesson => {return lesson.categoryId === categoryVocabulary});
+
+                    lessonGrammar.sort(sortLessonByLevelAndUnit);
+                    var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
                     rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
 
+                    var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
+
+                    itemLessonVocabularRandom.passed = false;
+                    itemLessonVocabularRandom.type = 'vocabulary';
+
+                    rs.lessons.push(itemLessonVocabularRandom);
+                    console.log(rs.lessons);
                     //cần update history
-                    
+            
                     historyRepo.update({
                         email: req.email
                     }, {
@@ -194,9 +208,20 @@ function getRouteToday(req, res) {
                 }
             };
             lessonRepo.getAll(query, 0, 0).then(lessons => {
-                lessons.sort(sortLessonByLevelAndUnit);    
-                var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
+
+                lessonGrammar = lessons.filter(lesson => {return lesson.categoryid === categoryGrammar});
+                lessonVocabulary = lessons.filter(lesson => {return lesson.categoryid === categoryVocabulary});
+
+                lessonGrammar.sort(sortLessonByLevelAndUnit);
+                var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
                 rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+
+                var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
+                itemLessonVocabularRandom.passed = false;
+                itemLessonVocabularRandom.type = 'vocabulary';
+
+                rs.lessons.push(itemLessonVocabularRandom);
+
                 historyRepo.insert({
                     email: req.email,
                     history: [{
