@@ -18,6 +18,7 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.0",
     "lodash": "^4.17.11",
+    "moment": "^2.24.0",
     "mongodb": "^3.1.13",
     "morgan": "^1.9.1",
     "multer": "^1.4.1",
@@ -29,7 +30,6 @@
     "yamljs": "^0.3.0",
     "yarn": "^1.13.0"
   },
-  
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
