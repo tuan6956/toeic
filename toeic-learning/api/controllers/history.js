@@ -6,6 +6,7 @@ const historyRepo = require('../../repository/historyRepo')
 const userRepo = require('../../repository/userRepo')
 const lessonRepo = require('../../repository/lessonRepo')
 var moment = require('moment');
+var _ = require('lodash');
 
 
 var ObjectId = require('mongodb').ObjectID;
@@ -22,9 +23,14 @@ function getHistory(req, res) {
     historyRepo.findOne({
         email: req.email
     }).then(value => {
+        var now = moment().format('YYYY-MM-DD');
+
         var success = true;
         var mess = "";
         var statusCode = 200;
+        _.remove(value.history, function(n) {
+            return n.date === now ;
+        });    
         res.status(statusCode);
         res.json({
             success: success,
@@ -64,7 +70,7 @@ function updateStudiedLesson(req, res) {
                 return his.date === now
             });
             if (indexOfRoute != -1) {
-                console.log('lessonId', lessonId);
+                // console.log('lessonId', lessonId);
                 var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
                     return lesson._id.toString() === lessonId;
                 })
@@ -88,8 +94,8 @@ function updateStudiedLesson(req, res) {
                 userRepo.findOne({
                     email: req.email
                 }).then(user => {
-                    console.log(indexOfRoute, indexLesson);
-                    console.log(history[indexOfRoute].lessons[indexLesson]);
+                    // console.log(indexOfRoute, indexLesson);
+                    // console.log(history[indexOfRoute].lessons[indexLesson]);
                     var currentLevel = history[indexOfRoute].lessons[indexLesson].level;
                     if(user.level.current !== currentLevel) {
                         userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})
@@ -110,8 +116,6 @@ function updateStudiedLesson(req, res) {
                             'history.$.lessons': history[indexOfRoute].lessons,
                             'history.$.progress': history[indexOfRoute].progress,
                             'history.$.timeStudy': history[indexOfRoute].timeStudy,
-
-
                         }
                     })
                 });
