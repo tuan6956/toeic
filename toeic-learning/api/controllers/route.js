@@ -18,7 +18,7 @@ module.exports = {
 };
 
 const categoryGrammar = "5cd2f5b8396de30e8833ab4b";
-const categoryVocabulary =   "5cffdf91d7af6c0f8c107cb5";
+const categoryVocabulary = "5cffdf91d7af6c0f8c107cb5";
 
 
 function getRouteToday(req, res) {
@@ -174,7 +174,6 @@ function getRouteToday(req, res) {
                     itemLessonVocabularRandom.type = 'vocabulary';
 
                     rs.lessons.push(itemLessonVocabularRandom);
-                    console.log(rs.lessons);
                     //cần update history
             
                     historyRepo.update({
@@ -209,8 +208,8 @@ function getRouteToday(req, res) {
             };
             lessonRepo.getAll(query, 0, 0).then(lessons => {
 
-                var lessonGrammar = lessons.filter(lesson => {return lesson.categoryid === categoryGrammar});
-                var lessonVocabulary = lessons.filter(lesson => {return lesson.categoryid === categoryVocabulary});
+                var lessonGrammar = lessons.filter(lesson => {return lesson.categoryId === categoryGrammar});
+                var lessonVocabulary = lessons.filter(lesson => {return lesson.categoryId === categoryVocabulary});
 
                 lessonGrammar.sort(sortLessonByLevelAndUnit);
                 var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
