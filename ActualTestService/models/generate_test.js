@@ -1029,7 +1029,7 @@ export default class GenerateTest {
         });
     }
 
-    async getResultMiniTest(correct_listening, correct_reading, test_id, user_id, email){
+    async getResultMiniTest(correct_listening, correct_reading, test_id, user_id, email, isCheckOriginal=false){
         if(correct_reading > 10 || correct_listening > 10 || correct_reading < 0 || correct_listening < 0){
             return new Promise((resolve, reject)=>{
                 reject({
@@ -1048,7 +1048,21 @@ export default class GenerateTest {
         }
         await this.app.db.collection('mini_test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
         await this.app.db.collection('mini_test_users').findOneAndUpdate({user_id: user_id, test_id: new ObjectId(test_id)}, {$push: {'scores': result, 'doneDate': new Date()}}, {upsert: true})
-
+        
+        if(isCheckOriginal){
+            console.log(email, user_id)
+            await this.app.db.collection('User').findOneAndUpdate({_id: user_id}, {$set: {"level.original": result.total}}, { returnOriginal:false }, 
+                (error, result) => {
+                        if (error) {
+                           return new Promise((resolve, reject)=>{
+                                reject({
+                                    status: 500,
+                                    message: error
+                                })
+                            }) 
+                        }
+                    })
+        }
 
         let isPass = result.total > 990*55/100;
 
@@ -1059,12 +1073,13 @@ export default class GenerateTest {
         // let now = moment('2019-06-02').format('YYYY-MM-DD');
 
         if(!history[0]){
-            return new Promise((resolve, reject)=>{
-                reject({
-                    status: 500,
-                    message: "Collect DB wrong!"
-                })
-            })
+            // return new Promise((resolve, reject)=>{
+            //     reject({
+            //         status: 500,
+            //         message: "Collect DB wrong!"
+            //     })
+            // })
+            console.log("History is null")
         }else{
             let indexHistoryDate = history[0].history.findIndex(value=>{
                 return value.date === now;
@@ -1088,7 +1103,6 @@ export default class GenerateTest {
                 let user = userResult[0];
                     let currentLevel = history[0].history[indexHistoryDate].lessons[indexOfLesson].level;
                     if(!_.isUndefined(currentLevel)){
-                        console.log("vafo")
                         if(user.level.current !== currentLevel) {
                             this.app.db.collection('User').findOneAndUpdate({email: req.email}, {$set: {'level.current': currentLevel}})
                         }
