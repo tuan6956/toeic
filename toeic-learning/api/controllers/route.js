@@ -209,8 +209,8 @@ function getRouteToday(req, res) {
             };
             lessonRepo.getAll(query, 0, 0).then(lessons => {
 
-                lessonGrammar = lessons.filter(lesson => {return lesson.categoryid === categoryGrammar});
-                lessonVocabulary = lessons.filter(lesson => {return lesson.categoryid === categoryVocabulary});
+                var lessonGrammar = lessons.filter(lesson => {return lesson.categoryid === categoryGrammar});
+                var lessonVocabulary = lessons.filter(lesson => {return lesson.categoryid === categoryVocabulary});
 
                 lessonGrammar.sort(sortLessonByLevelAndUnit);
                 var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
