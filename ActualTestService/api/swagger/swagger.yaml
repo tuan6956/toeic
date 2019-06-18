@@ -4,7 +4,7 @@ info:
   title: Toeic
 # during dev, should point to your local machine
 
-# host: localhost:8000
+# host: localhost:8005
 host: 103.114.107.16:8005
 # basePath prefixes all resource paths 
 basePath: /api
@@ -2266,6 +2266,9 @@ paths:
                 type: integer
               test_id:
                 type: string
+              isCheckOriginal:
+                type: boolean
+                default: false
       responses:
         "200":
           description: Return all records you request by paging
