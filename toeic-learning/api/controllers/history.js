@@ -29,7 +29,7 @@ function getHistory(req, res) {
         var mess = "";
         var statusCode = 200;
         _.remove(value.history, function(n) {
-            return n.date === now ;
+            return n.date === now;
         });    
         res.status(statusCode);
         res.json({
@@ -74,6 +74,7 @@ function updateStudiedLesson(req, res) {
                 var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
                     return lesson._id.toString() === lessonId;
                 })
+                console.log(history[indexOfRoute].lessons[indexLesson])
                 if (type === "lesson") {
                     history[indexOfRoute].lessons[indexLesson].lessonPassed = isStudied;
                 } else if (type === "exercise") {
@@ -100,14 +101,18 @@ function updateStudiedLesson(req, res) {
                     if(user.level.current !== currentLevel) {
                         userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})
                     }
-                    var indexTimeStudy = user.timeStudy.findIndex(date => {
-                        return date === now;
-                    })
-                    if(indexTimeStudy != -1) {
-                        history[indexOfRoute].timeStudy = user.timeStudy[indexTimeStudy].time;
-                    } else {
-                        history[indexOfRoute].timeStudy = 0;
+                    console.log(user)
+                    if(user.timeStudy) {
+                        var indexTimeStudy = user.timeStudy.findIndex(date => {
+                            return date === now;
+                        })
+                        if(indexTimeStudy != -1) {
+                            history[indexOfRoute].timeStudy = user.timeStudy[indexTimeStudy].time;
+                        } else {
+                            history[indexOfRoute].timeStudy = 0;
+                        }
                     }
+                    
                     historyRepo.update({
                         email: req.email,
                         'history.date': now
