@@ -90,18 +90,28 @@ function getRouteToday(req, res) {
                 }
 
                 his.lessons.forEach(lesson => {
-                    if(lesson.type === 'lesson')
-                        if (lesson.theory) // đã học lý thuyết
+                    if(lesson.type === "lesson")
+                        if (lesson.lessonPassed && lesson.exercisePassed ) {
                             listLessonStudied.push(new ObjectId(lesson._id));
+                        }
+                    else
+                        if (!lesson.passed) {
+                            listLessonStudied.push(new ObjectId(lesson._id));
+                        }
                 });
             }
             //đã có rồi thì lấy ra
             if (indexHistoryByDay != -1) {
                 var flagStudiedAll = true;
                 history.history[indexHistoryByDay].lessons.forEach(lesson => {
-                    if (!lesson.lessonPassed || !lesson.exercisePassed) {
-                        flagStudiedAll = false;
-                    }
+                    if(lesson.type === "lesson")
+                        if (!lesson.lessonPassed || !lesson.exercisePassed ) {
+                            flagStudiedAll = false;
+                        }
+                    else
+                        if (!lesson.passed) {
+                            flagStudiedAll = false;
+                        }
                 });
                 if (!flagStudiedAll) { // chưa học hết
                     res.status(200);

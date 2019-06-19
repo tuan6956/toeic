@@ -51,10 +51,7 @@ function updateStudiedLesson(req, res) {
     var body = req.swagger.params.body.value;
     var lessonId = body.lessonId.trim();
     var type = body.type.trim();
-    var result = null;
-    if (body.result)
-        result = body.result;
-
+   
     var isStudied = false;
     if (body.isStudied) {
         isStudied = true;
@@ -79,7 +76,6 @@ function updateStudiedLesson(req, res) {
                     history[indexOfRoute].lessons[indexLesson].lessonPassed = isStudied;
                 } else if (type === "exercise") {
                     history[indexOfRoute].lessons[indexLesson].exercisePassed = isStudied;
-                    history[indexOfRoute].lessons[indexLesson].result = result;
                 } else if (type === "minitest") {
                     history[indexOfRoute].lessons[indexLesson].passed = isStudied;
                 } else if (type === "vocabulary") {
