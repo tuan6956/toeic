@@ -84,8 +84,35 @@ let getResultMiniTest = async (req, res) => {
 
   let result = req.app.models.testModels.getResultMiniTest(correct_listening, correct_reading, test_id, id_user[0]._id, req.email, isCheckOriginal)
   result.then(result => {
-      // res.redirect('http://'+ req.headers.host +'/api/miniTest?listening='+ result.result.listening_scores +'&reading='+result.result.reading_scores+'&total='+result.result.total)
     handleSuccess(res, 200, result);
+  })
+  .catch(error => {
+    handleError(res, error.status, error.message);
+  });
+}
+
+let getResultPracticeSkillFollowPart = async (req, res) => {
+
+  let test_id = _.get(req.body, 'test_id');
+  let quantity_correct_answers = _.get(req.body, 'quantity_correct_answers');
+  let total = _.get(req.body, 'total');
+  let part = _.get(req.body, 'part');
+
+  if(quantity_correct_answers > total){
+    handleError(res, 500, "quantity_correct_answers can not greater than total")
+  }
+
+  let result_practices = quantity_correct_answers.toString() + '/'+ total.toString();
+
+  let id_user = await req.app.models.app.db.collection('User').find({email: req.email}).toArray();
+
+  if (!id_user[0]) {
+    handleError(res, 500, "email is not exist, please check your session login")
+  }
+
+  let result = req.app.models.testModels.getResultPracticeSkillFollowPart(result_practices, test_id, id_user[0]._id, part)
+  result.then(result => {
+    handleSuccess(res, 200, {result: result.result, message: result.message});
   })
   .catch(error => {
     handleError(res, error.status, error.message);
@@ -169,13 +196,19 @@ let getAllTestForApp = async(req, res) =>{
     .catch(error => {
       handleError(res, error.status, error.message);
     });
-
 }
 
-function getAllPractiseTestSkills(req, res){
+let getAllPractiseTestSkills = async (req, res) => {
+
   let part = req.swagger.params.part.value;
-  
-  req.app.models.testModels.getAllPractiseTestSkills(part)
+
+  let id_user = await req.app.models.app.db.collection('User').find({email: req.email}).toArray();
+
+
+  if (!id_user[0]) {
+    handleError(res, 500, "email is not exist, please check your session login")
+  }
+  req.app.models.testModels.getAllPractiseTestSkills(part, id_user[0]._id)
     .then(result => {
         handleSuccess(res, 200, result);
       })
@@ -213,5 +246,6 @@ module.exports = {
     getMiniTestById,
     getAllTestForApp,
     getAllPractiseTestSkills,
-    getAllPractiseTestSkillsById
+    getAllPractiseTestSkillsById,
+    getResultPracticeSkillFollowPart
 }
