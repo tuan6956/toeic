@@ -1142,13 +1142,90 @@ export default class GenerateTest {
         });
     }
 
-    async updateStatusTest(level, id_test){
-        // let status = await this.app.db.collection('manage_question_quantity').find({level: level}).toArray();
-        // if (status[0].quantity_question.part_1 && status[0].quantity_question.part_2 && status[0].quantity_question.part_3
-        // && status[0].quantity_question.part_4 && status[0].quantity_question.part_5 && status[0].quantity_question.part_6 && status[0].quantity_question.part_7_1
-        // & status[0].quantity_question.part_7_2 ) {
-        //    await this.app.db.collection('test').updateOne({_id: id_test},{status: "success"});
+    async getResultPracticeSkillFollowPart(result, test_id, user_id, part){
+
+        // await this.app.db.collection('mini_test').updateMany({_id: new ObjectId(test_id)}, { $inc: { user_complete: 1 }})
+        let querry = {
+            $push: {
+                'scores': result, 
+                'doneDate': new Date()
+            }
+        }
+        await this.app.db.collection('mini_practice_skill_users').findOneAndUpdate({user_id: user_id, test_id: new ObjectId(test_id), part: part}, querry, {upsert: true})
+
+        //update history if minitest need to pass in route.
+
+        // let history = await this.app.db.collection(collections.collections.history).find({email: email}).toArray();
+        // let now = moment().format('YYYY-MM-DD');
+
+
+        // if(!history[0]){
+        //     console.log("History is null")
+        // }else{
+        //     let indexHistoryDate = history[0].history.findIndex(value=>{
+        //         return value.date === now;
+        //     })
+        //     if (indexHistoryDate !== -1) {
+        //         let indexOfLesson =  history[0].history[indexHistoryDate].lessons.findIndex(value=>{
+        //             return value.type === "minitest"
+        //         })
+        //         if(history[0].history[indexHistoryDate].lessons[indexOfLesson]._id.equals(new ObjectId(test_id))){
+        //             history[0].history[indexHistoryDate].lessons[indexOfLesson].passed = isPass;
+        //         }
+
+        //         if (typeof history[0].history[indexHistoryDate].progress === "undefined") {
+        //             history[0].history[indexHistoryDate].progress = 1 / (history[0].history[indexHistoryDate].lessons.length * 2);
+        //         } else {
+        //             if(history[0].history[indexHistoryDate].progress.toPrecision(2) < 1.0)
+        //                 history[0].history[indexHistoryDate].progress += (1 / (history[0].history[indexHistoryDate].lessons.length * 2));
+        //         }
+
+        //         let userResult = await this.app.db.collection(collections.collections.user).find({email: email}).toArray();
+        //         let user = userResult[0];
+        //             let currentLevel = history[0].history[indexHistoryDate].lessons[indexOfLesson].level;
+        //             if(!_.isUndefined(currentLevel)){
+        //                 if(user.level.current !== currentLevel) {
+        //                     this.app.db.collection('User').findOneAndUpdate({email: req.email}, {$set: {'level.current': currentLevel}})
+        //                 }
+        //             }
+        //             let indexTimeStudy = user.timeStudy.findIndex(date => {
+        //                 return date === now;
+        //             })
+        //             if(indexTimeStudy != -1) {
+        //                 history[0].history[indexHistoryDate].timeStudy = user.timeStudy[indexTimeStudy].time;
+        //             } else {
+        //                 history[0].history[indexHistoryDate].timeStudy = 0;
+        //             }
+
+        //             this.app.db.collection(collections.collections.history).updateMany({
+        //                 email: email,
+        //                 'history.date': now
+        //             }, {
+        //                 $set: {
+        //                     'history.$.lessons': history[0].history[indexHistoryDate].lessons,
+        //                     'history.$.progress': history[0].history[indexHistoryDate].progress,
+        //                     'history.$.timeStudy': history[0].history[indexHistoryDate].timeStudy,
+
+
+        //                 }
+        //             })
+
+        //     }
+        //     else{
+        //         console.log("Date is not map")
+        //     }
         // }
+
+        return new Promise((resolve, reject) =>{
+            resolve({
+                result: result,
+                status: 200,
+                message: "submit result success"
+            })
+        });
+    }
+
+    async updateStatusTest(level, id_test){
 
         let test = await this.app.db.collection('test').find({_id: ObjectId(id_test)}).toArray();
        
@@ -1165,15 +1242,42 @@ export default class GenerateTest {
         }
     }
 
-    async getAllPractiseTestSkills(part){
+    async getAllPractiseTestSkills(part, id_user){
         let tests = await this.app.db.collection('test').find({status: 'success'}, {projection: {questions: 0, status: 0, user_complete: 0}}).toArray();
-        tests = tests.map((item, index)=>{
-            let count_test = index + 1
-            item.name = "Skill of part " + part + ' __ ' + count_test;
-            return item
+        
+        let done_practices = []
+
+         let not_do_practise = await Promise.all(tests.map(async(item, index)=>{
+             let count_test = index + 1
+            item.name = "Skill of part " + part + ' - ' + count_test;
+            let is_done_practise = await this.app.db.collection('mini_practice_skill_users').find({user_id: id_user, test_id: item._id}).toArray();
+            if(is_done_practise.length === 0){
+                item.doneDate = [];
+                item.scores = [];
+                return item;
+            }else{
+                item.doneDate = is_done_practise[0].doneDate;
+                item.scores = is_done_practise[0].scores;
+                done_practices.push(item);
+            }
+        }))
+
+
+        done_practices = done_practices.sort((item1, item2)=>{
+            return item1.doneDate[item1.doneDate.length-1].getTime() < item2.doneDate[item2.doneDate.length-1].getTime();
         })
+
+        not_do_practise = not_do_practise.sort((item1, item2)=>{
+            return item1.createAt.getTime() < item2.createAt.getTime();
+        })
+
+        let result = [...not_do_practise, ...done_practices];
+        result = result.filter(item=>{
+            if (item) {return item}
+        })
+
         return {
-            data: tests
+            data: result
         }
     }
 

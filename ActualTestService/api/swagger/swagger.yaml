@@ -2280,6 +2280,38 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /submitPracticeSkillFollowPart:
+    x-swagger-router-controller: test
+    post:
+      description: submit result of the test, server return your scores
+      operationId: getResultPracticeSkillFollowPart
+      tags:
+        - TestServer
+      security:
+        - auth0: []
+      parameters:
+        - in: body
+          name: body
+          description: post quantity correct answers
+          schema:
+            properties:
+              quantity_correct_answers:
+                type: integer
+              total: 
+                type: integer
+              test_id:
+                type: string
+              part:
+                type: integer
+      responses:
+        "200":
+          description: abc
+          schema:
+            $ref: "#/definitions/SuccessResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /requestGenerateMiniTest:
     x-swagger-router-controller: test
     post:
