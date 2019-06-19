@@ -15,6 +15,7 @@ module.exports = {
         mini_test_users: 'mini_test_users',
         test_users: "test_users",
         history: "History",
+        mini_practice_skill_users: "mini_practice_skill_users",
     },
     option : {
         useNewUrlParser: true,
