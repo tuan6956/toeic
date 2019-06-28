@@ -234,6 +234,23 @@ let getAllPractiseTestSkillsById = async(req, res)=>{
       });
 }
 
+let getPredictScores = async(req, res)=>{
+  
+  // let id_user = await req.app.models.app.db.collection('User').find({email: req.email}).toArray();
+  // if (!id_user[0]) {
+  //   handleError(res, 500, "email is not exist, please check your session login")
+  // }
+  
+  req.app.models.testModels.getPredictScores('id_user[0]._id')
+    .then(result => {
+      console.log(result)
+        handleSuccess(res, 200, result);
+      })
+      .catch(error => {
+        handleError(res, error.status, error.message);
+      });
+}
+
 module.exports = {
     getTheTestByLevelAndOrdinalTest: getTheTestByLevelAndOrdinalTest,
     getMiniTest: getMiniTest,
@@ -247,5 +264,6 @@ module.exports = {
     getAllTestForApp,
     getAllPractiseTestSkills,
     getAllPractiseTestSkillsById,
-    getResultPracticeSkillFollowPart
+    getResultPracticeSkillFollowPart,
+    getPredictScores
 }

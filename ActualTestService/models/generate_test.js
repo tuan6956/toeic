@@ -1394,6 +1394,13 @@ export default class GenerateTest {
         return isPayment[0].isPayment
     }
 
+
+    async getPredictScores(id_user){
+        return new Promise((resolve, reject)=>{
+            resolve({data : {scores: 500}})
+        })
+    }
+
 }
 
 // user: Adminstrator
