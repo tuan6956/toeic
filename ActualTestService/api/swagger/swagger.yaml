@@ -2542,6 +2542,29 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /predict:
+    x-swagger-router-controller: test
+    get:
+      description: Return your scores with predict systems
+      operationId: getPredictScores
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      responses:
+        "200":
+          description: Return all list test of skill in part user want to
+          schema:
+            properties:
+              data:
+                type: object
+                properties:
+                  scores:
+                    type: integer
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:
