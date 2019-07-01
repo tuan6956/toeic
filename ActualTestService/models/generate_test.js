@@ -802,7 +802,9 @@ export default class GenerateTest {
                 return item;
             }else{
                 item.doneDate = is_done_test[0].doneDate;
-                item.scores = is_done_test[0].scores;
+                item.scores = is_done_test[0].scores.map(item=>{
+                    return item.total.toString();
+                })
                 done_tests.push(item);
             }
         }))
@@ -836,7 +838,9 @@ export default class GenerateTest {
                 return item;
             }else{
                 item.doneDate = is_done_mini_test[0].doneDate;
-                item.scores = is_done_mini_test[0].scores;
+                item.scores = is_done_mini_test[0].scores.map(item=>{
+                    return item.total.toString();
+                })
                 done_mini_tests.push(item);
                 // return {}
             }
