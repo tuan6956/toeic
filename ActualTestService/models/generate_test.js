@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import collections from '../configs/db';
+import { lchown } from 'fs';
 var moment = require('moment');
 var ObjectId = require('mongodb').ObjectID;
 
@@ -802,7 +803,9 @@ export default class GenerateTest {
                 return item;
             }else{
                 item.doneDate = is_done_test[0].doneDate;
-                item.scores = is_done_test[0].scores;
+                item.scores = is_done_test[0].scores.map(item=>{
+                    return item.total.toString();
+                })
                 done_tests.push(item);
             }
         }))
@@ -836,7 +839,9 @@ export default class GenerateTest {
                 return item;
             }else{
                 item.doneDate = is_done_mini_test[0].doneDate;
-                item.scores = is_done_mini_test[0].scores;
+                item.scores = is_done_mini_test[0].scores.map(item=>{
+                    return item.total.toString();
+                })
                 done_mini_tests.push(item);
                 // return {}
             }
@@ -1394,6 +1399,25 @@ export default class GenerateTest {
         return isPayment[0].isPayment
     }
 
+
+    async getPredictScores(id_user){
+        return new Promise((resolve, reject)=>{
+            resolve({data : {scores: 500}})
+        })
+    }
+    async getAnalysisUserSkill(id_user){
+        let good_skills = [];
+        let bad_skills = [
+            "Kĩ năng nghe phần 3 của bạn còn yếu, bạn cần luyện tập nghe phần 3 nhiều hơn.",
+            "Kĩ năng đọc phần 7 của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
+        ]
+        return new Promise((resolve, reject)=>{
+            resolve({data : {
+                good_skills: good_skills,
+                bad_skills: bad_skills
+            }})
+        })
+    }
 }
 
 // user: Adminstrator
