@@ -179,11 +179,12 @@ function getRouteToday(req, res) {
                     rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                     var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
-
-                    itemLessonVocabularRandom.passed = false;
-                    itemLessonVocabularRandom.type = 'vocabulary';
-
-                    rs.lessons.push(itemLessonVocabularRandom);
+                    if(itemLessonVocabularRandom) {
+                        itemLessonVocabularRandom.passed = false;
+                        itemLessonVocabularRandom.type = 'vocabulary';
+                        rs.lessons.push(itemLessonVocabularRandom);
+                    }
+        
                     //cần update history
             
                     historyRepo.update({
@@ -264,7 +265,15 @@ function getAdvise(req, res) {
     var level = body.level;
     var dateStart = body.dateStart;
     var dateEnd = body.dateEnd;
-
+    if(target < level) {
+        res.status(200);
+        res.json({
+            success: false,
+            message: "Target is less level",
+            value: null
+        });
+        return;
+    }
 
     suggestTimeStudy(hoursPerDay, dateStart, dateEnd, target, level).then(rs => {
         res.status(200);
