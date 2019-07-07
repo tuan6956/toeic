@@ -1406,17 +1406,21 @@ export default class GenerateTest {
         })
     }
     async getAnalysisUserSkill(id_user){
-        let good_skills = [];
-        let bad_skills = [
-            "Kĩ năng nghe phần 3 của bạn còn yếu, bạn cần luyện tập nghe phần 3 nhiều hơn.",
-            "Kĩ năng đọc phần 7 của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
+        let data = [
+            { 
+                "desc": "Kĩ năng nghe phần 3 của bạn còn yếu, bạn cần luyện tập nghe phần 3 nhiều hơn.",
+                "isNegative": true
+            }, 
+            {
+                "desc": "Kĩ năng đọc phần 7 của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
+                "isNegative": true
+           }
         ]
         return new Promise((resolve, reject)=>{
-            resolve({data : {
-                good_skills: good_skills,
-                bad_skills: bad_skills
-            }})
+            resolve({data: data})
         })
+
+       
     }
 }
 
