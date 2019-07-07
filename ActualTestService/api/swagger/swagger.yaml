@@ -2565,6 +2565,31 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /analysisSkils:
+    x-swagger-router-controller: test
+    get:
+      description: Return your scores with predict systems
+      operationId: getAnalysisUserSkill
+      tags:
+        - TestServerApp
+      security:
+        - auth0: []
+      responses:
+        "200":
+          description: Return all disadvantage skill user need to improve more than,
+          schema:
+            properties:
+              data:
+                type: object
+                properties:
+                  advantage:
+                    type: array
+                    items:
+                      type: string
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
 definitions:
   ErrorResponse:
     required:
