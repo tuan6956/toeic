@@ -16,7 +16,10 @@ exports.findOne = query => {
 }
 
 exports.getAll = (obj, limit, skip) => {
-    return db.getExclude(obj,{content: 0}, collection, limit, skip);
+    if(limit != -1) {
+        return db.getExclude(obj,{content: 0}, collection, limit, skip);
+    } 
+    return db.get(obj,{content: 0}, collection);
 }
 
 exports.delete = query => {
