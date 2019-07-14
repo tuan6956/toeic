@@ -1423,7 +1423,7 @@ export default class GenerateTest {
     }
 
     async getAnalysisUserSkill(id_user){
-        id_user = new ObjectId("5ce95a39ce990e092c6431f0");
+        // id_user = new ObjectId("5ce95a39ce990e092c6431f0");
         let data = [];
         for(let i =1; i <= 7; i++){
             let avg = await this.avaragePractiseSkillFlowToPart(id_user, i);
