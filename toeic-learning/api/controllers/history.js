@@ -6,7 +6,7 @@ const historyRepo = require('../../repository/historyRepo')
 const userRepo = require('../../repository/userRepo')
 const lessonRepo = require('../../repository/lessonRepo')
 var moment = require('moment');
-
+var _ = require('lodash');
 
 var ObjectId = require('mongodb').ObjectID;
 const arrayMilestons = [0, 100, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 990];
