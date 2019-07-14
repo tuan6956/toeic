@@ -244,10 +244,12 @@ function getListQuestionsOfLesson(req, res){
             questions.part_5 = questions.part_5.sort(()=>{
                 return Math.random() - 0.5;
             })
+            var isExercise = listChoiceQuestions.length != 0;
             res.status(200);
             res.json({
                 session: session,
-                questions: questions
+                questions: questions,
+                isExercise: isExercise
             });
             return;
         })
