@@ -228,10 +228,11 @@ function getRouteToday(req, res) {
                 rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                 var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
-                itemLessonVocabularRandom.passed = false;
-                itemLessonVocabularRandom.type = 'vocabulary';
-
-                rs.lessons.push(itemLessonVocabularRandom);
+                if(itemLessonVocabularRandom) {
+                    itemLessonVocabularRandom.passed = false;
+                    itemLessonVocabularRandom.type = 'vocabulary';
+                    rs.lessons.push(itemLessonVocabularRandom);
+                }
 
                 historyRepo.insert({
                     email: req.email,
