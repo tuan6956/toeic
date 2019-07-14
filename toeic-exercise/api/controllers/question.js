@@ -498,6 +498,7 @@ function getResultExerciseOfLesson(req, res){
     const db = req.app.db;
     var mapSession = req.app.users.getUser(userId);
     var sessionObject = mapSession.get(session);
+    
     const option = {
         fields: {
             pointReward: 1
@@ -623,14 +624,14 @@ function handleAnswerQuestion(res, db, nameCollection, sessionObject, questionId
                     result: true,
                     record: result.explainRight
                 })
-             } else if(sessionObject.timeAnswer < helpers.TIMEANSWER){
+            }else if(sessionObject.timeAnswer < helpers.TIMEANSWER){
                 sessionObject.timeAnswer = sessionObject.timeAnswer + 1;
                 res.status(200);
                 res.json({
                     result: true,
                     record: result.explainRight
                 })
-            } else{
+            }else{
                 res.status(400);
                 res.json({
                     message: "Invalid the request. Too many answers"
@@ -668,4 +669,3 @@ function handleAnswerQuestion(res, db, nameCollection, sessionObject, questionId
         })
     })
 }
-

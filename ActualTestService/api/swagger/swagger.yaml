@@ -2580,14 +2580,12 @@ paths:
           schema:
             properties:
               data:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    desc:
+                type: object
+                properties:
+                  advantage:
+                    type: array
+                    items:
                       type: string
-                    isNegative:
-                      type: boolean
         default:
           description: Error
           schema:
