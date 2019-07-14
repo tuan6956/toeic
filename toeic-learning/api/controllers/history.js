@@ -82,9 +82,12 @@ function updateStudiedLesson(req, res) {
                     if(user.level.current !== currentLevel) {
                         userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})
                     }
-                    var indexTimeStudy = user.timeStudy.findIndex(date => {
-                        return date === now;
-                    })
+                    var indexTimeStudy = -1;
+                    if(user.timeStudy) {
+                        indexTimeStudy = user.timeStudy.findIndex(date => {
+                            return date === now;
+                        })
+                    }
                     if(indexTimeStudy != -1) {
                         history[indexOfRoute].timeStudy = user.timeStudy[indexTimeStudy].time;
                     } else {
