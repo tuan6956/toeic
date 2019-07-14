@@ -21,9 +21,14 @@ function getHistory(req, res) {
     historyRepo.findOne({
         email: req.email
     }).then(value => {
+        var now = moment().format('YYYY-MM-DD');
+
         var success = true;
         var mess = "";
         var statusCode = 200;
+        _.remove(value.history, function(n) {
+            return n.date === now ;
+        });    
         res.status(statusCode);
         res.json({
             success: success,
@@ -101,8 +106,6 @@ function updateStudiedLesson(req, res) {
                             'history.$.lessons': history[indexOfRoute].lessons,
                             'history.$.progress': history[indexOfRoute].progress,
                             'history.$.timeStudy': history[indexOfRoute].timeStudy,
-
-
                         }
                     })
                 });
