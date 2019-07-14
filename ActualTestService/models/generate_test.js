@@ -1405,18 +1405,49 @@ export default class GenerateTest {
             resolve({data : {scores: 500}})
         })
     }
+
+    async avaragePractiseSkillFlowToPart(id_user, part){
+        let result = await this.app.db.collection('mini_practice_skill_users').find({user_id: id_user, part: part}, {projection: {doneDate: 0, test_user: 0}}).toArray();
+        let total_answer_correct = 0;
+        let total_answer = 0;
+        for(let i = 0; i < result.length; i++){
+            for (let j = result[i].scores.length - 1; j >= 0; j--) {
+                let correct_ans = result[i].scores[i].slice(0,1);
+                let total = result[i].scores[i].slice(2,3);
+
+                total_answer_correct+= parseInt(correct_ans);
+                total_answer+= parseInt(total);
+            }
+        }
+        return total_answer_correct/total_answer;
+    }
+
     async getAnalysisUserSkill(id_user){
-        let good_skills = [];
-        let bad_skills = [
-            "Kĩ năng nghe phần 3 của bạn còn yếu, bạn cần luyện tập nghe phần 3 nhiều hơn.",
-            "Kĩ năng đọc phần 7 của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
-        ]
+        // id_user = new ObjectId("5ce95a39ce990e092c6431f0");
+        let data = [];
+        for(let i =1; i <= 7; i++){
+            let avg = await this.avaragePractiseSkillFlowToPart(id_user, i);
+            if(avg < 0.5){
+                if(i <=4){
+                    data.push({
+                        "desc": "Kĩ năng nghe phần " + i + " của bạn còn yếu, bạn cần luyện tập nghe phần "+ i +" nhiều hơn.",
+                        "isNegative": true
+                    })
+                }else{
+                    data.push({
+                        "desc": "Kĩ năng đọc phần "+ i +" của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
+                        "isNegative": true
+                    })
+                }
+            }
+        }
+
+       
         return new Promise((resolve, reject)=>{
-            resolve({data : {
-                good_skills: good_skills,
-                bad_skills: bad_skills
-            }})
+            resolve({data: data})
         })
+
+       
     }
 }
 
