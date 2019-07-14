@@ -17,6 +17,8 @@ module.exports = {
     getAdvise: getAdvise,
 };
 
+const categoryGrammar = "5cd2f5b8396de30e8833ab4b";
+const categoryVocabulary = "5cffdf91d7af6c0f8c107cb5";
 
 
 function getRouteToday(req, res) {
@@ -35,6 +37,7 @@ function getRouteToday(req, res) {
         
     // });
     Promise.all([userFind, historyFind, minitestFind]).then(([user, history, minitest]) => {
+        // console.log(minitest._id)
         if (!user) {
             res.status(400);
             res.json({
@@ -59,7 +62,7 @@ function getRouteToday(req, res) {
             if(user.target.targetPoint  <= arrayMilestons[i] && indexTarget !== -1) 
                 indexTarget = i;
         }
-        var indexLevel = Math.round(user.level / 50);
+        var indexLevel = Math.round(user.level.original / 50);
         var indexTarget = Math.round(user.target.targetPoint / 50);
         var hoursPerDay = user.target.hoursPerDay;
         var dateStart = user.target.startDate;
@@ -88,19 +91,28 @@ function getRouteToday(req, res) {
                 }
 
                 his.lessons.forEach(lesson => {
-                    if(lesson.type === 'lesson')
-                        if (lesson.theory) // đã học lý thuyết
+                    if(lesson.type === "lesson")
+                        if (lesson.lessonPassed && lesson.exercisePassed ) {
                             listLessonStudied.push(new ObjectId(lesson._id));
+                        }
+                    else
+                        if (!lesson.passed) {
+                            listLessonStudied.push(new ObjectId(lesson._id));
+                        }
                 });
             }
-
             //đã có rồi thì lấy ra
             if (indexHistoryByDay != -1) {
                 var flagStudiedAll = true;
                 history.history[indexHistoryByDay].lessons.forEach(lesson => {
-                    if (!lesson.lessonPassed || !lesson.exercisePassed) {
-                        flagStudiedAll = false;
-                    }
+                    if(lesson.type === "lesson")
+                        if (!lesson.lessonPassed || !lesson.exercisePassed ) {
+                            flagStudiedAll = false;
+                        }
+                    else
+                        if (!lesson.passed) {
+                            flagStudiedAll = false;
+                        }
                 });
                 if (!flagStudiedAll) { // chưa học hết
                     res.status(200);
@@ -122,7 +134,7 @@ function getRouteToday(req, res) {
                         
 
                         var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                        rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+                        rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                         //cần update history
 
@@ -156,14 +168,26 @@ function getRouteToday(req, res) {
                         $nin: listLessonStudied
                     }
                 };
-                lessonRepo.getAll(query, 0, 0).then(lessons => {
-                    lessons.sort(sortLessonByLevelAndUnit);
-                   
-                    var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                    rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+                // lessonGrammarQuery = lessonRepo.getAll(query, 0, 0);
+                // lessonGrammarQuery = lessonRepo.getAll(query, 0, 0);
 
+                lessonRepo.getAll(query, 0, 0).then(lessons => {
+                    var lessonGrammar = lessons.filter(lesson => {return lesson.categoryId === categoryGrammar});
+                    var lessonVocabulary = lessons.filter(lesson => {return lesson.categoryId === categoryVocabulary});
+
+                    lessonGrammar.sort(sortLessonByLevelAndUnit);
+                    var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
+                    rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
+
+                    var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
+                    if(itemLessonVocabularRandom) {
+                        itemLessonVocabularRandom.passed = false;
+                        itemLessonVocabularRandom.type = 'vocabulary';
+                        rs.lessons.push(itemLessonVocabularRandom);
+                    }
+        
                     //cần update history
-                    
+            
                     historyRepo.update({
                         email: req.email
                     }, {
@@ -195,11 +219,20 @@ function getRouteToday(req, res) {
                 }
             };
             lessonRepo.getAll(query, 0, 0).then(lessons => {
-                lessons.sort(sortLessonByLevelAndUnit);
 
-                
-                var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+                var lessonGrammar = lessons.filter(lesson => {return lesson.categoryId === categoryGrammar});
+                var lessonVocabulary = lessons.filter(lesson => {return lesson.categoryId === categoryVocabulary});
+
+                lessonGrammar.sort(sortLessonByLevelAndUnit);
+                var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
+                rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
+
+                var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
+                itemLessonVocabularRandom.passed = false;
+                itemLessonVocabularRandom.type = 'vocabulary';
+
+                rs.lessons.push(itemLessonVocabularRandom);
+
                 historyRepo.insert({
                     email: req.email,
                     history: [{
@@ -210,7 +243,6 @@ function getRouteToday(req, res) {
                         progress: 0,
                         timeStudy: timeStudy
                     }]
-
                 })
                 // var day = Math.round((new Date(dateEnd)-new Date(dateStart))/(1000*60*60*24));
                 // var timeNeedByDay = timeToStudyAllLesson / day;
@@ -234,7 +266,15 @@ function getAdvise(req, res) {
     var level = body.level;
     var dateStart = body.dateStart;
     var dateEnd = body.dateEnd;
-
+    if(target < level) {
+        res.status(200);
+        res.json({
+            success: false,
+            message: "Target is less level",
+            value: null
+        });
+        return;
+    }
 
     suggestTimeStudy(hoursPerDay, dateStart, dateEnd, target, level).then(rs => {
         res.status(200);
@@ -256,7 +296,7 @@ function sortLessonByLevelAndUnit(lesson1, lesson2) {
 
 function routeToday(lessons, hoursPerDay, dateStart, dateEnd) {
     var timeToStudyAllLesson = 0;
-    lessons.forEach(lesson => {
+    lessons.forEach(lesson => { 
         timeToStudyAllLesson += lesson.estTime;
     });
     var day = Math.round((new Date(dateEnd) - new Date(dateStart)) / (1000 * 60 * 60 * 24));
