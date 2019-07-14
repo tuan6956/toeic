@@ -6,10 +6,9 @@ const historyRepo = require('../../repository/historyRepo')
 const userRepo = require('../../repository/userRepo')
 const lessonRepo = require('../../repository/lessonRepo')
 var moment = require('moment');
-var _ = require('lodash');
+
 
 var ObjectId = require('mongodb').ObjectID;
-const arrayMilestons = [0, 100, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 990];
 
 module.exports = {
     getHistory,
@@ -21,14 +20,9 @@ function getHistory(req, res) {
     historyRepo.findOne({
         email: req.email
     }).then(value => {
-        var now = moment().format('YYYY-MM-DD');
-
         var success = true;
         var mess = "";
         var statusCode = 200;
-        _.remove(value.history, function(n) {
-            return n.date === now ;
-        });    
         res.status(statusCode);
         res.json({
             success: success,
@@ -64,6 +58,7 @@ function updateStudiedLesson(req, res) {
                 return his.date === now
             });
             if (indexOfRoute != -1) {
+
                 var indexLesson = history[indexOfRoute].lessons.findIndex(lesson => {
                     return lesson._id.toString() === lessonId;
                 })
@@ -83,16 +78,13 @@ function updateStudiedLesson(req, res) {
                 userRepo.findOne({
                     email: req.email
                 }).then(user => {
-                    var currentLevel = history[indexOfRoute].lessons[indexLesson].level;
-                    if(user.level.current !== currentLevel) {
-                        userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})
-                    }
                     var indexTimeStudy = -1;
                     if(user.timeStudy) {
                         indexTimeStudy = user.timeStudy.findIndex(date => {
                             return date === now;
                         })
                     }
+
                     if(indexTimeStudy != -1) {
                         history[indexOfRoute].timeStudy = user.timeStudy[indexTimeStudy].time;
                     } else {
@@ -106,6 +98,8 @@ function updateStudiedLesson(req, res) {
                             'history.$.lessons': history[indexOfRoute].lessons,
                             'history.$.progress': history[indexOfRoute].progress,
                             'history.$.timeStudy': history[indexOfRoute].timeStudy,
+
+
                         }
                     })
                 });
