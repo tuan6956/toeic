@@ -133,7 +133,7 @@ function getRouteToday(req, res) {
                         
 
                         var rs = routeToday(lessons, hoursPerDay, now, dateEnd);
-                        rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+                        rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                         //cần update history
 
@@ -176,7 +176,7 @@ function getRouteToday(req, res) {
 
                     lessonGrammar.sort(sortLessonByLevelAndUnit);
                     var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
-                    rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+                    rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                     var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
                     if(itemLessonVocabularRandom) {
@@ -224,7 +224,7 @@ function getRouteToday(req, res) {
 
                 lessonGrammar.sort(sortLessonByLevelAndUnit);
                 var rs = routeToday(lessonGrammar, hoursPerDay, now, dateEnd);
-                rs.lessons.push({_id: new ObjectId(minitest._id),passed: false, type: "minitest", title: 'Mini Test'});
+                rs.lessons.push({_id: new ObjectId(minitest[0]._id),passed: false, type: "minitest", title: 'Mini Test'});
 
                 var itemLessonVocabularRandom = lessonVocabulary[Math.floor(Math.random()*lessonVocabulary.length)];
                 itemLessonVocabularRandom.passed = false;
