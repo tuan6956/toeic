@@ -115,7 +115,7 @@ let getResultPracticeSkillFollowPart = async (req, res) => {
     handleSuccess(res, 200, {result: result.result, message: result.message});
   })
   .catch(error => {
-    handleError(res, error.status, error.message);
+    handleError(res, "500", "Error");
   });
 }
 
@@ -132,7 +132,7 @@ let getTheTestById = async(req, res) =>{
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, error.status, error.message);
+        handleError(res, "500", "Error");
       });
 }
 
@@ -158,7 +158,7 @@ function requestGenerateMiniTest(req, res){
         handleSuccess(res, 200, result);
       })
     .catch(error => {
-      handleError(res, error.status, error.message);
+      handleError(res, "500", "Error");
     });
 }
 
@@ -175,7 +175,7 @@ let getMiniTestById = async(req, res) => {
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, error.status, error.message);
+        handleError(res, "500", "Error");
       });
 }
 
@@ -230,7 +230,7 @@ let getAllPractiseTestSkillsById = async(req, res)=>{
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, error.status, error.message);
+        handleError(res, "500", "Error");
       });
 }
 
@@ -247,7 +247,7 @@ let getPredictScores = async(req, res)=>{
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, error.status, error.message);
+        handleError(res, "500", "Error");
       });
 }
 
@@ -263,7 +263,7 @@ let getAnalysisUserSkill = async(req, res) =>{
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, error.status, error.message);
+        handleError(res, "500", "Error");
       });
 }
 
