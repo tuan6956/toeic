@@ -94,10 +94,9 @@ function updateStudiedLesson(req, res) {
                     // console.log(indexOfRoute, indexLesson);
                     // console.log(history[indexOfRoute].lessons[indexLesson]);
                     var currentLevel = history[indexOfRoute].lessons[indexLesson].level;
-                    if(user.level.current !== currentLevel) {
-                        userRepo.update({email: req.email}, {$set: {'level.current': currentLevel}})
+                    if(user.level.current !==  arrayMilestons[currentLevel]) {
+                        userRepo.update({email: req.email}, {$set: {'level.current': arrayMilestons[currentLevel]}})
                     }
-                    console.log(user)
                     if(user.timeStudy) {
                         var indexTimeStudy = -1;
                         if(user.timeStudy) {
