@@ -211,7 +211,7 @@ function getRouteToday(req, res) {
                     });
                 });
             }
-        } else {
+        } else { // Chưa có lịch sử
             var query = {
                 level: {
                     $in: inQueryLevel
