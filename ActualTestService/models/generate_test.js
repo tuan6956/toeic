@@ -1056,7 +1056,7 @@ export default class GenerateTest {
         
         if(isCheckOriginal){
             console.log(email, user_id)
-            await this.app.db.collection('User').findOneAndUpdate({_id: user_id}, {$set: {"level.original": result.total}}, { returnOriginal:false }, 
+            await this.app.db.collection('User').findOneAndUpdate({_id: user_id}, {$set: {"level.original": result.total, "level.current": result.total}}, { returnOriginal:false }, 
                 (error, result) => {
                         if (error) {
                            return new Promise((resolve, reject)=>{
