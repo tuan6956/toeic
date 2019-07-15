@@ -87,7 +87,8 @@ let getResultMiniTest = async (req, res) => {
     handleSuccess(res, 200, result);
   })
   .catch(error => {
-    handleError(res, error.status, error.message);
+    console.log(error.toString())
+    handleError(res, 500, error.toString());
   });
 }
 
@@ -115,7 +116,7 @@ let getResultPracticeSkillFollowPart = async (req, res) => {
     handleSuccess(res, 200, {result: result.result, message: result.message});
   })
   .catch(error => {
-    handleError(res, "500", "Error");
+    handleError(res, 500, "Error");
   });
 }
 
@@ -132,7 +133,7 @@ let getTheTestById = async(req, res) =>{
         handleSuccess(res, 200, result);
       })
       .catch(error => {
-        handleError(res, "500", "Error");
+        handleError(res, 500, "Error");
       });
 }
 
