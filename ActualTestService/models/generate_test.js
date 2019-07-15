@@ -1425,22 +1425,30 @@ export default class GenerateTest {
     async getAnalysisUserSkill(id_user){
         // id_user = new ObjectId("5ce95a39ce990e092c6431f0");
         let data = [];
-        for(let i =1; i <= 7; i++){
-            let avg = await this.avaragePractiseSkillFlowToPart(id_user, i);
-            if(avg < 0.5){
-                if(i <=4){
-                    data.push({
-                        "desc": "Kĩ năng nghe phần " + i + " của bạn còn yếu, bạn cần luyện tập nghe phần "+ i +" nhiều hơn.",
-                        "isNegative": true
-                    })
-                }else{
-                    data.push({
-                        "desc": "Kĩ năng đọc phần "+ i +" của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
-                        "isNegative": true
-                    })
-                }
-            }
-        }
+        // for(let i =1; i <= 7; i++){
+        //     let avg = await this.avaragePractiseSkillFlowToPart(id_user, i);
+        //     if(avg < 0.5){
+        //         if(i <=4){
+        //             data.push({
+        //                 "desc": "Kĩ năng nghe phần " + i + " của bạn còn yếu, bạn cần luyện tập nghe phần "+ i +" nhiều hơn.",
+        //                 "isNegative": true
+        //             })
+        //         }else{
+        //             data.push({
+        //                 "desc": "Kĩ năng đọc phần "+ i +" của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
+        //                 "isNegative": true
+        //             })
+        //         }
+        //     }
+        // }
+
+        data = [{
+            "desc": "Kĩ năng đọc phần 6 của bạn còn yếu, bạn cần luyện tập đọc nhiều chủ đề và nâng cao từ vựng nhiều hơn.",
+            "isNegative": true
+        },{
+            "desc": "Kĩ năng nghe phần 3 của bạn còn yếu, bạn cần luyện tập nghe phần 3 nhiều hơn.",
+            "isNegative": true
+        }]
 
        
         return new Promise((resolve, reject)=>{
