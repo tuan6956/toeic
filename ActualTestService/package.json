@@ -28,7 +28,7 @@
     "swagger-express-mw": "^0.7.0",
     "swagger-ui-express": "^4.0.2",
     "yamljs": "^0.3.0",
-    "yarn": "^1.13.0"
+    "yarn": "^1.17.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
