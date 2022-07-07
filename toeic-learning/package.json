@@ -12,7 +12,7 @@
     "express": "^4.12.3",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.11",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "mongodb": "^3.1.8",
     "swagger-express-mw": "^0.1.0",
     "swagger-ui-express": "^4.0.1",
